@@ -13,15 +13,18 @@ tap_text() { # tap the first node whose text or content-desc equals $1
   [ -n "$b" ] || { echo "not found: $1"; return 1; }
   set -- $b; adb shell input tap $(( ($1+$3)/2 )) $(( ($2+$4)/2 ))
 }
+MAIN=$PKG/org.qosp.notes.ui.MainActivity
 for mode in no yes; do
   adb shell cmd uimode night $mode; adb shell am force-stop $PKG
-  adb shell monkey -p $PKG -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1
+  # explicit component: the debug build also has a LeakCanary launcher icon
+  adb shell am start -W -n $PKG/org.qosp.notes.ui.launcher.LauncherActivity >/dev/null; sleep 3
   shot "main-night_$mode"
-  adb shell am start -a android.intent.action.VIEW -d "blackpearl://notes/editor_create?newNoteIsList=false" $PKG >/dev/null
-  adb shell input text "Black%sPearl%stest"; shot "editor-night_$mode"
-  adb shell input keyevent KEYCODE_BACK; adb shell input keyevent KEYCODE_BACK
-  tap_text "Open navigation drawer" || adb shell input swipe 5 800 600 800; shot "drawer-night_$mode"
-  tap_text "Settings" && shot "settings-night_$mode"
-  tap_text "Color scheme" && shot "palettes-night_$mode"
-  adb shell input keyevent KEYCODE_BACK
+  adb shell am start -W -n $MAIN -a android.intent.action.VIEW -d "blackpearl://notes/editor_create?newNoteIsList=false" >/dev/null
+  sleep 2; adb shell input text "Black%sPearl%stest"; adb shell input keyevent KEYCODE_ENTER
+  adb shell input text "Material%s3%snote"; shot "editor-night_$mode"
+  adb shell input keyevent KEYCODE_BACK; sleep 1; adb shell input keyevent KEYCODE_BACK; sleep 2
+  shot "list-night_$mode"
+  adb shell input swipe 2 900 700 900 300; shot "drawer-night_$mode"
+  tap_text "Settings" && shot "settings-night_$mode" && \
+    { tap_text "Color scheme" && shot "palettes-night_$mode"; adb shell input keyevent KEYCODE_BACK; }
 done
