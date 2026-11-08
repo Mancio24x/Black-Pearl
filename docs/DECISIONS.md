@@ -32,3 +32,8 @@ Newest last. Format: date — decision — why.
     (guarded by `AppearancePreferencesTest`).
 12. **2026-11-08 — Customization = runtime theme overlays** (`Shape.*`, `NoteFont.*`, palettes, AMOLED) applied in
     `BaseActivity`, mirroring the Atlante approach (palettes + personal theme) without new libraries.
+13. **2026-11-08 — Image layout stored in the note text** as a standalone Markdown image line
+    `![alt](path "=align,width")` (see `ImageBlocks`). No DB/backup/sync format change, no migration; position survives
+    close, restart, backup, sync and export because it is plain text. Files stay attachments (deleting an attachment
+    also removes its image lines). Text wrapping beside images: not implemented (Markwon/TextView can't flow text
+    around a drawable without replacing the renderer). Drag & drop: not implemented; contextual menu instead.

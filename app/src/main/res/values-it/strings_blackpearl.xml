@@ -24,4 +24,16 @@
     <string name="preferences_note_font_system">Di sistema</string>
     <string name="preferences_note_font_serif">Con grazie (serif)</string>
     <string name="preferences_note_font_mono">Monospaziato</string>
+    <string name="image_insert_in_text">Inserisci nel testo</string>
+    <string name="image_actions_title">Immagine</string>
+    <string name="image_move_up">Sposta su</string>
+    <string name="image_move_down">Sposta giù</string>
+    <string name="image_align_left">Allinea a sinistra</string>
+    <string name="image_align_center">Centra</string>
+    <string name="image_align_right">Allinea a destra</string>
+    <string name="image_size_small">Piccola (25%)</string>
+    <string name="image_size_medium">Media (50%)</string>
+    <string name="image_size_large">Grande (75%)</string>
+    <string name="image_size_full">Larghezza piena</string>
+    <string name="image_remove_from_note">Rimuovi dalla nota (l\'allegato resta)</string>
 </resources>

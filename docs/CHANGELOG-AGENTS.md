@@ -20,3 +20,10 @@ Append one short entry per significant task: files, decisions, tests (with resul
 - Fix: `showPreferenceDialog` mapped clicks to the unfiltered enum list (wrong choice when an option is unsupported).
 - Tests: `assembleDebug` OK; `testDebugUnitTest` 78 tests, 0 failures (new `AppearancePreferencesTest`). Not yet checked on a device.
 - Open: review UI preview screenshots; manual check on phone; note colors (feature 2) still use the old fixed tints.
+
+## 2026-11-08 — Feature 1: repositionable images (branch feature/image-layout)
+- Files: `ui/editor/markdown/ImageBlocks.kt`, `ImageLayoutPlugin.kt`, `di/MarkwonModule.kt`, `ui/editor/EditorFragment.kt`,
+  `values/ids_blackpearl.xml`, `strings_blackpearl.xml` (en, it), tests `ImageBlocksTest`, `ImageLayoutPersistenceTest`.
+- Data safety: edits update both the EditText (editor source of truth) and the saved note.
+- Tests: `testDebugUnitTest` 90 tests, 0 failures; `assembleDebug` OK. Not yet checked on a device.
+- Open: drag & drop, text wrap beside images (see DECISIONS #13).

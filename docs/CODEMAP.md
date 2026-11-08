@@ -12,6 +12,7 @@ Tests: `app/src/test/java/org/qosp/notes/` (unit, JVM/Robolectric) and `app/src/
 | Note card in lists (color, preview) | `J/ui/common/recycler/NoteViewHolder.kt`, `NoteRecyclerAdapter.kt`, `J/ui/utils/views/NoteCardView.kt`, `R/layout/layout_note.xml` |
 | Editor (text, markdown toolbar, menu) | `J/ui/editor/EditorFragment.kt` (large), `EditorViewModel.kt`, `R/layout/fragment_editor.xml`, `R/menu/editor_top.xml`, `editor_bottom.xml` |
 | Markdown rendering | `J/di/MarkwonModule.kt`, `J/ui/editor/markdown/*`, `J/ui/utils/coil/CoilImagesPlugin.kt` |
+| Repositionable images (feature 1) | `J/ui/editor/markdown/ImageBlocks.kt` (format + move/align/size/remove, pure), `ImageLayoutPlugin.kt` (render + click), `EditorFragment` (`setupImageLayout`, `editContent`, `showImageActions`, attachment menu "Insert in text"); tests `ImageBlocksTest`, `data/ImageLayoutPersistenceTest` |
 | Insert image / link / table (markdown) | `J/ui/editor/dialog/InsertImageDialog.kt`, `InsertHyperlinkDialog.kt`, `InsertTableDialog.kt` |
 | Checklists (tasks) | `J/data/model/NoteTask.kt`, `J/ui/tasks/*`, `R/layout/layout_task.xml` |
 | Note colors | `J/data/model/NoteColor.kt`, `EditorFragment.showColorChangeDialog()`, `J/ui/utils/ContextUtils.kt` (color resolve), `NoteViewHolder.kt` |
