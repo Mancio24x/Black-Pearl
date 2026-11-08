@@ -19,7 +19,8 @@ Newest last. Format: date — decision — why.
    Firebase Test Lab, Play bundle) removed and replaced by `build.yml` / `release.yml`. `FUNDING.yml` removed (upstream's).
 7. **2026-11-08 — About screen** keeps Quillpad website/contributors/support links as attribution; only the "source code"
    link points to Black Pearl.
-8. **2026-11-08 — Icon** is original vector art (`graphics/black-pearl/*.svg`), adaptive + monochrome as vector drawables,
-   legacy PNGs rendered from the SVG. Upstream Quillpad artwork in `graphics/` kept for attribution/history.
+8. **2026-11-08 — Icon** = owner-provided artwork (`graphics/black-pearl/icon-source.png`), cropped to its dark square;
+   adaptive foreground = inset bitmap (`mipmap-*/ic_launcher_art.png`), gradient vector background, vector monochrome
+   (`graphics/black-pearl/monochrome.svg`). Upstream Quillpad artwork in `graphics/` kept for attribution/history.
 9. **2026-11-08 — Release signing** via `-Pkeystore/-Pstorepass/-Pkeyalias/-Pkeypass` (inherited mechanism),
    keystore stored base64 in GitHub secret `KEYSTORE_BASE64`. Releases are created as **drafts**; the owner publishes them.
