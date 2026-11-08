@@ -37,3 +37,6 @@ Newest last. Format: date — decision — why.
     close, restart, backup, sync and export because it is plain text. Files stay attachments (deleting an attachment
     also removes its image lines). Text wrapping beside images: not implemented (Markwon/TextView can't flow text
     around a drawable without replacing the renderer). Drag & drop: not implemented; contextual menu instead.
+14. **2026-11-08 — Note colors reuse the existing `NoteColor` column** (no new table/field, no migration). Tints stay
+    per light/dark theme; `NoteColorContrastTest` enforces WCAG AA (≥ 4.5:1) of note text on every color for every
+    palette (dark Cyan darkened to #22606F to pass).

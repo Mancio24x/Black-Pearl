@@ -19,6 +19,7 @@ import kotlinx.coroutines.withContext
 import me.msoul.datastore.defaultOf
 import org.qosp.notes.components.MediaStorageManager
 import org.qosp.notes.data.model.Note
+import org.qosp.notes.data.model.NoteColor
 import org.qosp.notes.data.model.Notebook
 import org.qosp.notes.data.repo.NoteRepository
 import org.qosp.notes.data.repo.NotebookRepository
@@ -108,6 +109,9 @@ class ActivityViewModel(
 
     fun showNotes(vararg notes: Note) =
         update(*notes) { it.copy(isHidden = false, modifiedDate = Instant.now().epochSecond) }
+
+    fun colorNotes(color: NoteColor, vararg notes: Note) =
+        update(*notes) { it.copy(color = color, modifiedDate = Instant.now().epochSecond) }
 
     fun hideNotes(vararg notes: Note) =
         update(*notes) { it.copy(isHidden = true, modifiedDate = Instant.now().epochSecond) }

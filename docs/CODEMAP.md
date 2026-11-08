@@ -15,7 +15,7 @@ Tests: `app/src/test/java/org/qosp/notes/` (unit, JVM/Robolectric) and `app/src/
 | Repositionable images (feature 1) | `J/ui/editor/markdown/ImageBlocks.kt` (format + move/align/size/remove, pure), `ImageLayoutPlugin.kt` (render + click), `EditorFragment` (`setupImageLayout`, `editContent`, `showImageActions`, attachment menu "Insert in text"); tests `ImageBlocksTest`, `data/ImageLayoutPersistenceTest` |
 | Insert image / link / table (markdown) | `J/ui/editor/dialog/InsertImageDialog.kt`, `InsertHyperlinkDialog.kt`, `InsertTableDialog.kt` |
 | Checklists (tasks) | `J/data/model/NoteTask.kt`, `J/ui/tasks/*`, `R/layout/layout_task.xml` |
-| Note colors | `J/data/model/NoteColor.kt`, `EditorFragment.showColorChangeDialog()`, `J/ui/utils/ContextUtils.kt` (color resolve), `NoteViewHolder.kt` |
+| Note colors | `J/data/model/NoteColor.kt`, picker `J/ui/common/NoteColorDialog.kt` (editor menu + list multi-select `action_color_selected` → `ActivityViewModel.colorNotes`), tints `colorNote*` in `R/values*/themes.xml`, `J/ui/utils/ContextUtils.kt`, `NoteViewHolder.kt`; tests `NoteColorContrastTest`, `data/NoteColorPersistenceTest` |
 | Attachments (images, audio, video, files) | `J/data/model/Attachment.kt`, `J/ui/attachments/*`, `J/components/MediaStorageManager.kt`, `R/xml/file_provider_paths.xml` |
 | Camera photo | `J/ui/utils/ActivityResultUtils.kt` (`TakePictureContract`), `EditorFragment.takePhotoLauncher` |
 | Media viewer / audio player / recorder | `J/ui/media/*`, `J/ui/recorder/*` |

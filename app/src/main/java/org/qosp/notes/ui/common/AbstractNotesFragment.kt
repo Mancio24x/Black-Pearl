@@ -364,6 +364,10 @@ abstract class AbstractNotesFragment(@LayoutRes resId: Int) : BaseFragment(resId
                     )
                 }
                 R.id.action_hide_selected -> activityModel.hideNotes(*selectedNotes)
+                R.id.action_color_selected -> {
+                    val common = selectedNotes.map { it.color }.distinct().singleOrNull()
+                    showNoteColorDialog(common) { activityModel.colorNotes(it, *selectedNotes) }
+                }
                 R.id.action_duplicate_selected -> activityModel.duplicateNotes(*selectedNotes)
                 R.id.action_move_selected -> showMoveToNotebookDialog(*selectedNotes)
                 R.id.action_export_selected -> {

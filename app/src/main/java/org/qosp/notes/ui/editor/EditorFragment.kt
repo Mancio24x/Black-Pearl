@@ -76,6 +76,7 @@ import org.qosp.notes.ui.attachments.recycler.AttachmentsGridManager
 import org.qosp.notes.ui.attachments.uri
 import org.qosp.notes.ui.common.BaseDialog
 import org.qosp.notes.ui.common.BaseFragment
+import org.qosp.notes.ui.common.showNoteColorDialog
 import org.qosp.notes.ui.common.showMoveToNotebookDialog
 import org.qosp.notes.ui.editor.dialog.InsertHyperlinkDialog
 import org.qosp.notes.ui.editor.dialog.InsertImageDialog
@@ -1230,19 +1231,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     }
 
     private fun showColorChangeDialog() {
-        val selected = NoteColor.entries.indexOf(data.note?.color).coerceAtLeast(0)
-        val dialog = BaseDialog.build(requireContext()) {
-            setTitle(getString(R.string.action_change_color))
-            setSingleChoiceItems(
-                NoteColor.entries.map { it.localizedName }.toTypedArray(),
-                selected
-            ) { _, which ->
-                model.setColor(NoteColor.entries[which])
-            }
-            setPositiveButton(getString(R.string.action_done)) { _, _ -> }
-        }
-
-        dialog.show()
+        showNoteColorDialog(data.note?.color) { model.setColor(it) }
     }
 
     private fun showRemindersDialog(note: Note) {
@@ -1341,24 +1330,6 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
         model.updateTaskList(updatedTasks)
     }
-
-    private val NoteColor.localizedName
-        get() = getString(
-            when (this) {
-                NoteColor.Default -> R.string.default_string
-                NoteColor.Red -> R.string.preferences_color_scheme_red
-                NoteColor.Orange -> R.string.preferences_color_scheme_orange
-                NoteColor.Yellow -> R.string.preferences_color_scheme_yellow
-                NoteColor.Green -> R.string.preferences_color_scheme_green
-                NoteColor.Teal -> R.string.preferences_color_scheme_teal
-                NoteColor.Cyan -> R.string.preferences_color_scheme_cyan
-                NoteColor.Blue -> R.string.preferences_color_scheme_blue
-                NoteColor.Purple -> R.string.preferences_color_scheme_purple
-                NoteColor.Pink -> R.string.preferences_color_scheme_pink
-                NoteColor.Brown -> R.string.preferences_color_scheme_brown
-                NoteColor.Gray -> R.string.preferences_color_scheme_gray
-            }
-        )
 
     companion object {
         const val MARKDOWN_DIALOG_RESULT = "MARKDOWN_DIALOG_RESULT"

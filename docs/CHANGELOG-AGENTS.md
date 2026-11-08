@@ -27,3 +27,9 @@ Append one short entry per significant task: files, decisions, tests (with resul
 - Data safety: edits update both the EditText (editor source of truth) and the saved note.
 - Tests: `testDebugUnitTest` 90 tests, 0 failures; `assembleDebug` OK. Not yet checked on a device.
 - Open: drag & drop, text wrap beside images (see DECISIONS #13).
+
+## 2026-11-08 — Feature 2: note colors (branch feature/note-colors)
+- Files: `ui/common/NoteColorDialog.kt`, `EditorFragment.kt` (picker), `AbstractNotesFragment.kt` + `menu/main_selected_notes.xml`
+  (multi-select), `ActivityViewModel.colorNotes`, `values-night/themes.xml` (Cyan), strings, tests `NoteColorContrastTest`,
+  `NoteColorPersistenceTest`.
+- Tests: `testDebugUnitTest` 94 tests, 0 failures; `assembleDebug` OK. Not yet checked on a device.
