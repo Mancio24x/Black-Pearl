@@ -25,4 +25,16 @@
     <string name="preferences_note_font_system">System</string>
     <string name="preferences_note_font_serif">Serif</string>
     <string name="preferences_note_font_mono">Monospace</string>
+    <string name="image_insert_in_text">Insert in text</string>
+    <string name="image_actions_title">Image</string>
+    <string name="image_move_up">Move up</string>
+    <string name="image_move_down">Move down</string>
+    <string name="image_align_left">Align left</string>
+    <string name="image_align_center">Center</string>
+    <string name="image_align_right">Align right</string>
+    <string name="image_size_small">Small (25%)</string>
+    <string name="image_size_medium">Medium (50%)</string>
+    <string name="image_size_large">Large (75%)</string>
+    <string name="image_size_full">Full width</string>
+    <string name="image_remove_from_note">Remove from note (keep attachment)</string>
 </resources>

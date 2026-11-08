@@ -82,6 +82,8 @@ import org.qosp.notes.ui.editor.dialog.InsertImageDialog
 import org.qosp.notes.ui.editor.dialog.InsertTableDialog
 import org.qosp.notes.ui.editor.markdown.MarkdownSpan
 import org.qosp.notes.ui.editor.markdown.applyTo
+import org.qosp.notes.ui.editor.markdown.ImageBlocks
+import org.qosp.notes.ui.editor.markdown.ImageLayoutPlugin
 import org.qosp.notes.ui.editor.markdown.insertMarkdown
 import org.qosp.notes.ui.editor.markdown.toggleCheckmarkCurrentLine
 import org.qosp.notes.ui.media.MediaActivity
@@ -313,6 +315,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         observeData()
         setupEditTexts()
         setupMarkdown()
+        setupImageLayout()
         setupListeners()
 
         toolbar.setTitleTextColor(Color.TRANSPARENT)
@@ -532,6 +535,68 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         }
     }
 
+    // --- Black Pearl: repositionable images (see ImageBlocks / ImageLayoutPlugin) ---
+
+    private fun setupImageLayout() {
+        binding.textViewContentPreview.setTag(
+            R.id.tag_image_click_listener,
+            ImageLayoutPlugin.ImageClickListener { ref -> if (data.note?.isDeleted == false) showImageActions(ref) }
+        )
+    }
+
+    /**
+     * Applies an image edit to the current text. The EditText is the source of truth while editing,
+     * so it is updated too: otherwise the next keystroke would save the old text over this change.
+     */
+    private fun editContent(transform: (String) -> String) {
+        val fromEditor = binding.editTextContent.text?.toString().orEmpty()
+        val current = fromEditor.ifEmpty { data.note?.content ?: return }
+        val updated = transform(current)
+        if (updated == current) return
+        binding.editTextContent.withOnlyTextWatcher<MarkwonEditorTextWatcher> { setText(updated) }
+        model.setNoteContent(updated)
+    }
+
+    private fun insertImageInText(attachment: Attachment) {
+        val cursor = model.selectedRange.second
+        var newCursor = -1
+        editContent { content ->
+            val (updated, end) = ImageBlocks.insert(content, cursor, attachment.path, attachment.description.substringBeforeLast('.'))
+            newCursor = end
+            updated
+        }
+        if (newCursor >= 0) model.selectedRange = newCursor to newCursor
+    }
+
+    private fun showImageActions(ref: ImageBlocks.Ref) {
+        val current = ImageBlocks.blocks(binding.editTextContent.text?.toString().orEmpty().ifEmpty { data.note?.content.orEmpty() })
+            .filter { it.destination == ref.destination }.getOrNull(ref.occurrence)?.layout ?: ImageBlocks.Layout()
+        fun layout(l: ImageBlocks.Layout) = editContent { ImageBlocks.setLayout(it, ref, l) }
+        BottomSheet.show(getString(R.string.image_actions_title), parentFragmentManager) {
+            action(R.string.image_move_up, R.drawable.ic_up) { editContent { ImageBlocks.move(it, ref, up = true) } }
+            action(R.string.image_move_down, R.drawable.ic_down) { editContent { ImageBlocks.move(it, ref, up = false) } }
+            action(R.string.image_align_left, R.drawable.ic_photo, condition = current.align != ImageBlocks.Align.LEFT) {
+                layout(current.copy(align = ImageBlocks.Align.LEFT))
+            }
+            action(R.string.image_align_center, R.drawable.ic_photo, condition = current.align != ImageBlocks.Align.CENTER) {
+                layout(current.copy(align = ImageBlocks.Align.CENTER))
+            }
+            action(R.string.image_align_right, R.drawable.ic_photo, condition = current.align != ImageBlocks.Align.RIGHT) {
+                layout(current.copy(align = ImageBlocks.Align.RIGHT))
+            }
+            listOf(25 to R.string.image_size_small, 50 to R.string.image_size_medium, 75 to R.string.image_size_large)
+                .forEach { (pct, label) ->
+                    action(label, R.drawable.ic_photo, condition = current.widthPercent != pct) {
+                        layout(current.copy(widthPercent = pct))
+                    }
+                }
+            action(R.string.image_size_full, R.drawable.ic_photo, condition = current.widthPercent != null) {
+                layout(current.copy(widthPercent = null))
+            }
+            action(R.string.image_remove_from_note, R.drawable.ic_bin) { editContent { ImageBlocks.remove(it, ref) } }
+        }
+    }
+
     private fun setupAttachmentsRecycler() = with(binding) {
         // Create the adapter
         val listener = object : AttachmentRecyclerListener {
@@ -564,10 +629,23 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                             EditAttachmentDialog.build(noteId, attachment.path).show(parentFragmentManager, null)
                         }
                         action(R.string.action_delete, R.drawable.ic_bin) {
+                            // also drop its image lines from the text, so no broken image is left behind
+                            editContent { content ->
+                                generateSequence(content) { c ->
+                                    ImageBlocks.remove(c, ImageBlocks.Ref(attachment.path)).takeIf { it != c }
+                                }.last()
+                            }
                             model.deleteAttachment(attachment)
                         }
                         action(R.string.action_share, R.drawable.ic_share) {
                             shareAttachment(requireContext(), attachment)
+                        }
+                        action(
+                            R.string.image_insert_in_text,
+                            R.drawable.ic_photo,
+                            condition = attachment.type == Attachment.Type.IMAGE && data.note?.isList == false,
+                        ) {
+                            insertImageInText(attachment)
                         }
                     }
                 }
