@@ -2,6 +2,7 @@
 # Captures screenshots of key screens on a running emulator/device. Output: ui-shots/
 # Usage: scripts/capture-ui.sh [apk]   (APK built with -PTESTLAB_BUILD=true skips the welcome screen)
 set -uo pipefail
+trap "exit 0" EXIT  # screenshots are informative: never fail the job
 APK=${1:-app/build/outputs/apk/debug/app-debug.apk}
 PKG=io.github.mancio24x.blackpearl
 OUT=ui-shots; mkdir -p "$OUT"
@@ -22,9 +23,15 @@ for mode in no yes; do
   adb shell am start -W -n $MAIN -a android.intent.action.VIEW -d "blackpearl://notes/editor_create?newNoteIsList=false" >/dev/null
   sleep 2; adb shell input text "Black%sPearl%stest"; adb shell input keyevent KEYCODE_ENTER
   adb shell input text "Material%s3%snote"; shot "editor-night_$mode"
-  adb shell input keyevent KEYCODE_BACK; sleep 1; adb shell input keyevent KEYCODE_BACK; sleep 2
+  # back to the list: relaunch (BACK from a deep-linked editor may leave the app)
+  adb shell am start -W -n $PKG/org.qosp.notes.ui.launcher.LauncherActivity >/dev/null; sleep 3
   shot "list-night_$mode"
-  adb shell input swipe 2 900 700 900 300; shot "drawer-night_$mode"
-  tap_text "Settings" && shot "settings-night_$mode" && \
-    { tap_text "Color scheme" && shot "palettes-night_$mode"; adb shell input keyevent KEYCODE_BACK; }
+  # navigation button = top-left of the toolbar
+  read -r W H < <(adb shell wm size | grep -o '[0-9]*x[0-9]*' | tail -1 | tr x ' ')
+  adb shell input tap $(( W * 7 / 100 )) $(( H * 9 / 100 )); shot "drawer-night_$mode"
+  if tap_text "Settings"; then
+    shot "settings-night_$mode"
+    tap_text "Color scheme" && shot "palettes-night_$mode"
+    adb shell input keyevent KEYCODE_BACK
+  fi
 done
