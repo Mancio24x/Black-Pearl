@@ -30,6 +30,10 @@
             android:title="@string/action_move_to"
             app:showAsAction="never"/>
     <item
+            android:id="@+id/action_color_selected"
+            android:title="@string/action_change_color"
+            app:showAsAction="never"/>
+    <item
             android:id="@+id/action_duplicate_selected"
             android:title="@string/action_duplicate"
             app:showAsAction="never"/>

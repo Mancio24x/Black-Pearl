@@ -37,4 +37,5 @@
     <string name="image_size_large">Large (75%)</string>
     <string name="image_size_full">Full width</string>
     <string name="image_remove_from_note">Remove from note (keep attachment)</string>
+    <string name="note_color_none">No color</string>
 </resources>
