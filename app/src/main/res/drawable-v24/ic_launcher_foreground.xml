@@ -1,28 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Black Pearl launcher foreground. Source: graphics/black-pearl/foreground.svg -->
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp" android:height="108dp"
-    android:viewportWidth="108" android:viewportHeight="108">
-    <!-- Notebook -->
-    <path android:fillColor="#FFFFFF"
-        android:pathData="M39,27 H69 A4,4 0 0 1 73,31 V77 A4,4 0 0 1 69,81 H39 A4,4 0 0 1 35,77 V31 A4,4 0 0 1 39,27 Z" />
-    <path android:fillColor="#D5DBE3"
-        android:pathData="M37,27 H40.5 V81 H37 A2,2 0 0 1 35,79 V29 A2,2 0 0 1 37,27 Z" />
-    <!-- Treasure-map X -->
-    <path android:strokeColor="#111111" android:strokeWidth="4.2" android:strokeLineCap="round"
-        android:pathData="M43.5,39.5 L56.5,52.5 M56.5,39.5 L43.5,52.5" />
-    <!-- Quill -->
-    <group android:rotation="-45" android:pivotX="54" android:pivotY="54"
-        android:translateX="5" android:translateY="5">
-        <path android:strokeColor="#FFFFFF" android:strokeWidth="4" android:strokeLineCap="round"
-            android:pathData="M25,54 L39,54" />
-        <path android:fillColor="#FFFFFF" android:strokeColor="#FFFFFF" android:strokeWidth="2.6"
-            android:strokeLineJoin="round" android:pathData="M38,54 C47,47 66,42 88,46.5 C80,53 62,61 44,58.5 C41,58 39,56 38,54 Z" />
-        <path android:strokeColor="#111111" android:strokeWidth="2.2" android:strokeLineCap="round"
-            android:pathData="M25,54 L39,54" />
-        <path android:fillColor="#111111" android:pathData="M38,54 C47,47 66,42 88,46.5 C80,53 62,61 44,58.5 C41,58 39,56 38,54 Z" />
-        <path android:strokeColor="#FFFFFF" android:strokeWidth="0.9" android:strokeLineCap="round"
-            android:pathData="M40,54.2 L86,47.2 M58,51.4 L61.5,46.1 M70,49.6 L73.5,44.9 M52,55.4 L49,59.6 M66,53.3 L63.5,58.4" />
-        <path android:fillColor="#D4A646" android:pathData="M26,52.4 L18.5,54.1 L26,55.8 Z" />
-    </group>
-</vector>
+<!-- Black Pearl launcher foreground: owner-provided artwork (graphics/black-pearl/icon-source.png),
+     cropped to the dark square and inset into the 72dp visible area of the 108dp adaptive canvas. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@mipmap/ic_launcher_art"
+    android:inset="18dp" />
