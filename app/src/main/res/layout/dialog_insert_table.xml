@@ -8,7 +8,7 @@
     <org.qosp.notes.ui.utils.views.ExtendedEditText
             android:id="@+id/edit_text_columns"
             android:hint="@string/hint_number_columns"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
             android:background="@drawable/background_edit_text"
             android:inputType="numberDecimal"
             android:maxLines="1"
@@ -24,7 +24,7 @@
     <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_text_rows"
             android:hint="@string/hint_number_rows"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
             android:background="@drawable/background_edit_text"
             android:inputType="numberDecimal"
             android:maxLines="1"

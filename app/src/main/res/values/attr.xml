@@ -2,7 +2,6 @@
 <resources>
     <attr name="colorBackground" format="color"/>
     <attr name="colorBottomAppBarBackground" format="color"/>
-    <attr name="colorOutline" format="color"/>
     <attr name="colorShadow" format="color"/>
     <attr name="colorTextOverlay" format="color"/>
     <attr name="colorHighlightMask" format="color"/>

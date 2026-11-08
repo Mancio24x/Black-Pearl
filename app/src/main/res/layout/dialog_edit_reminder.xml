@@ -9,7 +9,7 @@
     <org.qosp.notes.ui.utils.views.ExtendedEditText
             android:id="@+id/edit_text_reminder_name"
             android:hint="@string/reminders_hint_name"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
             android:background="@drawable/background_edit_text"
             android:inputType="textMultiLine|textCapSentences"
             android:scrollHorizontally="false"
@@ -29,7 +29,7 @@
             android:gravity="center|end"
             android:layout_marginHorizontal="16dp"
             app:icon="@drawable/ic_date"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+            style="@style/Widget.Material3.Button.OutlinedButton"/>
 
     <com.google.android.material.button.MaterialButton
             android:id="@+id/button_set_time"
@@ -39,5 +39,5 @@
             android:layout_marginHorizontal="16dp"
             android:gravity="center|end"
             app:icon="@drawable/ic_time"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+            style="@style/Widget.Material3.Button.OutlinedButton"/>
 </LinearLayout>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_color_scheme_black_pearl">Black Pearl</string>
+    <string name="preferences_color_scheme_rose">Rosa petalo</string>
+    <string name="preferences_color_scheme_lavender">Lavanda</string>
+    <string name="preferences_color_scheme_sage">Salvia</string>
+    <string name="preferences_color_scheme_dusty_blue">Blu polvere</string>
+    <string name="preferences_color_scheme_sand">Sabbia</string>
+    <string name="preferences_color_scheme_night_violet">Notte viola</string>
+    <string name="preferences_color_scheme_graphite">Grafite</string>
+    <string name="preferences_color_scheme_monochrome">Monocromatico</string>
+</resources>

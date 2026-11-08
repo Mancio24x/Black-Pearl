@@ -63,7 +63,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="?attr/colorOutline"/>
+                    android:background="?attr/colorOutlineVariant"/>
 
             <!-- View -->
             <!-- Notebook -->
@@ -185,7 +185,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="?attr/colorOutline"/>
+                    android:background="?attr/colorOutlineVariant"/>
 
             <!-- Other -->
                 <TextView
@@ -228,7 +228,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="?attr/colorOutline"/>
+                    android:background="?attr/colorOutlineVariant"/>
 
             <!-- Backup -->
                 <TextView
@@ -266,7 +266,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="?attr/colorOutline"/>
+                    android:background="?attr/colorOutlineVariant"/>
 
             <!-- Syncing -->
                 <TextView

@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
+import com.google.android.material.color.DynamicColors
+import org.qosp.notes.preferences.ColorScheme
 import org.qosp.notes.preferences.PreferenceRepository
 import org.qosp.notes.preferences.ThemeMode
 import org.qosp.notes.ui.utils.Toaster
@@ -33,7 +35,7 @@ open class BaseActivity : AppCompatActivity() {
                     .getAll()
                     .map {
                         Triple(
-                            it.colorScheme.styleResource,
+                            it.colorScheme,
                             it.themeMode.mode,
                             it.darkThemeMode.styleResource
                         )
@@ -41,7 +43,11 @@ open class BaseActivity : AppCompatActivity() {
                     .first()
             }
 
-            theme.applyStyle(colorScheme, true)
+            theme.applyStyle(colorScheme.styleResource, true)
+            if (colorScheme == ColorScheme.SYSTEM) {
+                // Material You: full M3 scheme from the wallpaper (Android 12+), no-op elsewhere
+                DynamicColors.applyToActivityIfAvailable(this@BaseActivity)
+            }
 
             if (themeMode != AppCompatDelegate.getDefaultNightMode()) {
                 AppCompatDelegate.setDefaultNightMode(themeMode)

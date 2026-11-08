@@ -87,7 +87,7 @@
 
             <org.qosp.notes.ui.utils.views.ExtendedEditText
                     android:id="@+id/edit_text_content"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                     android:hint="@string/editor_hint_content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -98,7 +98,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/text_view_content_preview"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                     android:textIsSelectable="true"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -171,7 +171,7 @@
         <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="?attr/colorOutline"/>
+                android:background="?attr/colorOutlineVariant"/>
 
         <HorizontalScrollView
                 android:layout_width="match_parent"

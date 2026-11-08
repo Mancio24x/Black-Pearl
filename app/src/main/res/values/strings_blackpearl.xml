@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Strings added by Black Pearl (kept apart from upstream strings.xml to ease upstream merges). -->
+<resources>
+    <string name="preferences_color_scheme_black_pearl">Black Pearl</string>
+    <string name="preferences_color_scheme_rose">Rose petal</string>
+    <string name="preferences_color_scheme_lavender">Lavender</string>
+    <string name="preferences_color_scheme_sage">Sage</string>
+    <string name="preferences_color_scheme_dusty_blue">Dusty blue</string>
+    <string name="preferences_color_scheme_sand">Sand</string>
+    <string name="preferences_color_scheme_night_violet">Night violet</string>
+    <string name="preferences_color_scheme_graphite">Graphite</string>
+    <string name="preferences_color_scheme_monochrome">Monochrome</string>
+</resources>
