@@ -27,3 +27,6 @@ buildSrc/build/
 
 # GitHub App credentials
 gha-creds-*.json
+# Signing keys (never commit)
+*.jks
+*.keystore

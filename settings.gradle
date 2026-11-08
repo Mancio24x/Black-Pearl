@@ -14,7 +14,7 @@ plugins {
 }
 
 include ':app'
-rootProject.name = "quillpad"
+rootProject.name = "black-pearl"
 
 buildCache {
     local {

@@ -17,11 +17,11 @@ android {
     namespace = "org.qosp.notes"
 
     defaultConfig {
-        applicationId = "io.github.quillpad"
+        applicationId = "io.github.mancio24x.blackpearl"
         minSdk = 24
         targetSdk = 37
-        versionCode = 56
-        versionName = "1.5.14"
+        versionCode = 1
+        versionName = "0.1.0"
 
         testInstrumentationRunner = "org.qosp.notes.TestRunner"
 

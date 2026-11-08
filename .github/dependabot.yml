@@ -1,0 +1,16 @@
+# Dependabot opens PRs; nothing is merged automatically. Each PR must pass the Build workflow
+# and be reviewed (check release notes for breaking changes) before merging.
+version: 2
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    groups:
+      androidx:
+        patterns: [ "androidx.*" ]
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"

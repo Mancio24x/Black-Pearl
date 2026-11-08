@@ -1,48 +1,57 @@
-<!-- infigraph-instructions -->
+# AGENTS.md — Black Pearl
 
-# Infigraph — Code Intelligence
+Instructions for every AI coding agent (Codex, Claude Code, others). Keep this file short; details live in `docs/`.
 
-This project is indexed by Infigraph. Use Infigraph tools FIRST for all code tasks. Fall back to grep/read only if
-Infigraph returns nothing or for non-code files.
+## Project in one paragraph
 
-## Rules
+Black Pearl is an Android note-taking app, a GPL-3.0 fork of [Quillpad](https://github.com/quillpad/quillpad)
+(base commit recorded in `docs/DECISIONS.md`). Single Gradle module `:app`, Kotlin, Views + Fragments + ViewBinding
+(a few Compose screens), Room database, Koin DI, Markwon for Markdown. Kotlin package is still `org.qosp.notes`
+(inherited; do not rename). The installed app id is `io.github.mancio24x.blackpearl` (never change it after the first public release).
 
-1. Check `list_projects` before indexing — don't re-index
-2. **`search`** for ALL code search — hybrid BM25+vector+grep in one call, auto-escalates
-3. **`get_doc_context`** before editing any function — returns source+callers+callees in one call
-4. **`trace_callers`** / **`find_all_references`** before refactoring — never grep for callers
-5. **`trace_callees`** / **`transitive_impact`** for blast radius — never manually trace call chains
-6. Read files directly only for non-code files (configs, docs, manifests) or edit tool line-number context
+## Where to look (read in this order, stop as soon as you know enough)
 
-## Workflows
+1. This file.
+2. `docs/CODEMAP.md` — feature → file paths. **Start every task here.**
+3. Only the files CODEMAP points to.
+4. `docs/ARCHITECTURE.md` / `docs/DECISIONS.md` only when changing structure, data model, sync or backup.
+5. `docs/TESTING.md` for build/test commands.
 
-- **Find code:** `search` → if need symbol detail: `get_code_snippet` or `symbol_context`
-- **Before editing:** `get_doc_context`
-- **Before refactoring:** `find_all_references` → `transitive_impact` → edit
-- **Onboarding:** `index_project` → `get_architecture` → `get_stats`
-- **Multi-repo:** `group_create` → `group_add` × N → `group_index` → `group_sync` → `group_link`
+## Token-saving rules (mandatory)
 
-> Each tool description says what it replaces — check descriptions when unsure which tool to use.
+1. **Targeted analysis.** Read AGENTS.md → CODEMAP.md → identify the feature → read only the relevant files.
+   No full-repo scans unless strictly necessary.
+2. **Efficient search.** Use `rg`, `git grep`, `git diff`. Print line ranges (`sed -n '120,180p'`), not whole files.
+   Exclude: `build/`, `build-cache/`, `.gradle/`, `app/schemas/`, `app/src/main/res/values-*/` (translations),
+   `fastlane/`, binary files (`*.png`, `*.jar`). Example: `rg -n "NoteColor" app/src/main/java`.
+3. **Minimal changes.** Edit methods, not whole classes. Small, reviewable, testable diffs. Reuse existing components.
+4. **No needless rewrites.** Do not replace the database (Room), UI framework, libraries, architecture or sync
+   system without a demonstrable technical need recorded in `docs/DECISIONS.md`.
+5. **Concise docs.** Update CODEMAP/docs only when relevant components change. No long generic prose.
+6. **Proportional tests.** First run tests for the touched component (`./gradlew testDebugUnitTest --tests '*Foo*'`).
+   Before merging to `main`, run the full CI set (see `docs/TESTING.md`).
+7. **No unrequested changes.** No extra features, no cosmetic or architectural refactors outside the task.
+8. **Context log.** After each significant task, append to `docs/CHANGELOG-AGENTS.md`: files changed, decisions,
+   tests run (and results), open issues. Do not rewrite docs that are still valid.
+9. **Efficient communication.** Report: changes made, tests passed, problems found, decisions needing approval.
+10. **Quality over savings.** Never skip safety, data-integrity or necessary verification to save tokens.
 
-## Session Continuity — MANDATORY
+## Hard rules (data safety)
 
-- **On session start:** MUST call `get_latest_session` to resume prior context
-- **After context compaction:** if you see "continued from a previous conversation" or a compaction summary, IMMEDIATELY
-  call `save_session` with whatever context survived before doing anything else
-- **MUST call `save_session` IMMEDIATELY (before responding to the user)** when ANY of these occur. No session-end
-  signal exists — if you don't save now, context is lost forever:
-    1. **Finding** — root cause identified, discovered a bug, learned how something works
-    2. **Milestone** — bug fixed and verified, feature committed, test passing, build green
-    3. **Decision** — chose an approach, ruled something out, changed strategy
-    4. **Task done** — any pending task from a prior session is completed
-    5. **Periodic** — if you have NOT called `save_session` in the last 5 exchanges with the user, call it NOW
-       regardless of whether anything dramatic happened. This is a hard rule, not a suggestion.
-- Do NOT defer saves ("I'll save later"). Do NOT batch them. Do NOT wait for user to ask.
-- "Later" does not exist — context compaction or session end can happen at any moment.
-- Same-day saves merge: summary/pending_tasks overwrite, decisions append, files_touched union
-- **Narrative dumps:** On every `save_session`, include `narrative` field with full session story — what was explored,
-  found, reasoned, decided, and why. Chronological prose, not terse bullets. Written to
-  `.infigraph/sessions/session_YYYY-MM-DD.md` and embedded for semantic search. On session start, if
-  `get_latest_session` shows a narrative log path, read it when structured fields aren't enough context.
+- User notes must never be lost. Any Room schema change needs: version bump, a `Migration` in
+  `app/src/main/java/org/qosp/notes/data/AppDatabase.kt`, exported schema in `app/schemas/`, and a test in
+  `app/src/androidTest/java/org/qosp/notes/data/DatabaseMigrationTest.kt` with pre-existing data.
+- Backup format (`data/Backup.kt`, `components/backup/BackupManager.kt`) must stay able to restore older backups.
+- Note content is plain Markdown and is synced as-is to Nextcloud / local folders. Do not invent new inline syntax
+  without a compatibility plan (see `docs/DECISIONS.md`).
+- Never commit secrets, keystores or `local.properties`. Signing keys live only in GitHub Actions secrets.
+- Never claim a test passed if it was not executed. Instrumented tests need an emulator/device.
 
-<!-- infigraph-instructions -->
+## Workflow
+
+- `main` is stable. One branch per feature: `feature/<name>` (e.g. `feature/pdf-export`). One feature at a time.
+- Per feature: implement → tests → build → review → commit → PR → CI green → merge.
+- Clear commit messages (`feat:`, `fix:`, `docs:`, `ci:`, `chore:`).
+- Two agents must not edit the same files concurrently.
+- `upstream` remote = original Quillpad (fetch only). Never push there; never auto-merge upstream changes —
+  cherry-pick reviewed fixes only.
