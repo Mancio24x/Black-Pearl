@@ -7,5 +7,7 @@ Append one short entry per significant task: files, decisions, tests (with resul
   `nav_graph.xml`, `ActivityResultUtils.kt`), launcher icons, `graphics/black-pearl/`, docs, `.github/workflows/*`,
   `.github/dependabot.yml`; removed Infigraph configs and upstream workflows.
 - Decisions: see DECISIONS.md #1–9.
-- Tests: see entry below once run.
-- Open: GitHub repo not created (gh token invalid); signing secrets not set; fastlane metadata and notification icon still Quillpad's.
+- Tests: local `assembleDebug` + `testDebugUnitTest` OK (75 tests, 0 failures); APK badging verified
+  (package io.github.mancio24x.blackpearl, label "Black Pearl"); CI Build on main green. Instrumented tests not run.
+- Release signing key generated and stored outside the repo (owner's Mac); GitHub secrets set.
+- Open: fastlane metadata and notification icon still Quillpad's; Dependabot PRs #1–#10 to review.
