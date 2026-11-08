@@ -38,6 +38,6 @@ Tests: `app/src/test/java/org/qosp/notes/` (unit, JVM/Robolectric) and `app/src/
 | DI modules (Koin) | `J/di/*` |
 | About screen, links | `J/ui/about/AboutFragment.kt`, `R/values/no_translate_strings.xml` |
 | App name, app id, version | `R/values/no_translate_strings.xml` (`app_name`), `app/build.gradle.kts` |
-| Launcher icon | `R/drawable-v24/ic_launcher_*.xml`, `R/mipmap-*/`, sources `graphics/black-pearl/*.svg` |
+| Launcher icon | `R/drawable-v24/ic_launcher_*.xml`, `R/mipmap-*/`, source `graphics/black-pearl/icon-source.png` |
 | Static shortcuts / deep link | `R/xml-v25/shortcuts.xml`, `nav_graph.xml` (`blackpearl://notes/...`) |
 | CI | `.github/workflows/build.yml`, `release.yml`, `ui-preview.yml` (+ `scripts/capture-ui.sh`), `.github/dependabot.yml` |
