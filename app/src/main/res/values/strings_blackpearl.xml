@@ -10,4 +10,19 @@
     <string name="preferences_color_scheme_night_violet">Night violet</string>
     <string name="preferences_color_scheme_graphite">Graphite</string>
     <string name="preferences_color_scheme_monochrome">Monochrome</string>
+    <string name="preferences_color_scheme_custom">My color</string>
+    <string name="preferences_custom_color">My color</string>
+    <string name="preferences_custom_color_summary">Pick a color or type its hex code: the whole Material 3 theme is generated from it (Android 12+).</string>
+    <string name="preferences_custom_color_hex">Hex color</string>
+    <string name="preferences_custom_color_invalid">Use 6 hex digits, e.g. 1B4F72</string>
+    <string name="preferences_custom_color_apply">Apply</string>
+    <string name="preferences_card_shape">Corner shape</string>
+    <string name="preferences_card_shape_square">Square</string>
+    <string name="preferences_card_shape_rounded">Rounded</string>
+    <string name="preferences_card_shape_extra_rounded">Extra rounded</string>
+    <string name="preferences_note_font">Note font</string>
+    <string name="preferences_note_font_inter">Inter</string>
+    <string name="preferences_note_font_system">System</string>
+    <string name="preferences_note_font_serif">Serif</string>
+    <string name="preferences_note_font_mono">Monospace</string>
 </resources>

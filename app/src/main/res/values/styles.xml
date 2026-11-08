@@ -47,13 +47,14 @@
 
     <!-- Note card & Editor -->
     <style name="TextAppearance.Custom.NoteTitle" parent="TextAppearance.AppCompat.Title">
-        <item name="android:fontFamily">@font/inter_font_family</item>
+        <item name="android:fontFamily">?attr/noteFontFamily</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">?attr/colorNoteText</item>
     </style>
 
     <style name="TextAppearance.Custom.NoteBody" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:fontFamily">?attr/noteFontFamily</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">?attr/colorNoteText</item>
     </style>
@@ -96,7 +97,7 @@
 
     <style name="DialogRoundedShape" parent="">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">28dp</item>
+        <item name="cornerSize">?attr/dialogCornerSize</item>
     </style>
 
     <style name="DialogTitle">

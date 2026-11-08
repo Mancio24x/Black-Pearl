@@ -52,6 +52,23 @@ enum class ColorScheme(
     NIGHT_VIOLET(R.string.preferences_color_scheme_night_violet, R.style.Palette_NightViolet),
     GRAPHITE(R.string.preferences_color_scheme_graphite, R.style.Palette_Graphite),
     MONOCHROME(R.string.preferences_color_scheme_monochrome, R.style.Palette_Monochrome),
+    CUSTOM(R.string.preferences_color_scheme_custom, R.style.Palette_BlackPearl) {
+        // Personal seed color (PreferenceRepository.getCustomSeedColor), applied with DynamicColors
+        override fun isSupported(): Boolean = Build.VERSION.SDK_INT >= 31
+    },
+}
+
+enum class CardShape(override val nameResource: Int, val styleResource: Int) : HasNameResource, EnumPreference by key("card_shape") {
+    SQUARE(R.string.preferences_card_shape_square, R.style.Shape_Square),
+    ROUNDED(R.string.preferences_card_shape_rounded, R.style.Shape_Rounded) { override val isDefault = true },
+    EXTRA_ROUNDED(R.string.preferences_card_shape_extra_rounded, R.style.Shape_ExtraRounded),
+}
+
+enum class NoteFont(override val nameResource: Int, val styleResource: Int) : HasNameResource, EnumPreference by key("note_font") {
+    INTER(R.string.preferences_note_font_inter, R.style.NoteFont_Inter) { override val isDefault = true },
+    SYSTEM(R.string.preferences_note_font_system, R.style.NoteFont_System),
+    SERIF(R.string.preferences_note_font_serif, R.style.NoteFont_Serif),
+    MONO(R.string.preferences_note_font_mono, R.style.NoteFont_Mono),
 }
 
 enum class SortMethod(override val nameResource: Int) : HasNameResource, EnumPreference by key("sort_method") {

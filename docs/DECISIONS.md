@@ -23,3 +23,11 @@ Newest last. Format: date — decision — why.
    legacy PNGs rendered from the SVG. Upstream Quillpad artwork in `graphics/` kept for attribution/history.
 9. **2026-11-08 — Release signing** via `-Pkeystore/-Pstorepass/-Pkeyalias/-Pkeypass` (inherited mechanism),
    keystore stored base64 in GitHub secret `KEYSTORE_BASE64`. Releases are created as **drafts**; the owner publishes them.
+10. **2026-11-08 — Material 3 by theme migration, not screen rewrite.** Parent theme `Theme.Material3.DayNight`;
+    app color attrs reference M3 roles; widget styles → Material3. Screens/layouts otherwise unchanged.
+11. **2026-11-08 — Palettes are generated** with Google's Material color utilities (bundled in the Material library)
+    by `tools/palette-gen`, as static XML (works on API 24+). "Follow system" and "My color" use `DynamicColors`
+    (Android 12+ only; hidden on older devices). Preference values are enum names: never rename existing constants
+    (guarded by `AppearancePreferencesTest`).
+12. **2026-11-08 — Customization = runtime theme overlays** (`Shape.*`, `NoteFont.*`, palettes, AMOLED) applied in
+    `BaseActivity`, mirroring the Atlante approach (palettes + personal theme) without new libraries.

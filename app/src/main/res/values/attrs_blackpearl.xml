@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Black Pearl customization attributes (set by overlays in styles_blackpearl.xml). -->
+<resources>
+    <attr name="noteCardCornerRadius" format="dimension"/>
+    <attr name="dialogCornerSize" format="dimension"/>
+    <attr name="noteFontFamily" format="reference|string"/>
+</resources>

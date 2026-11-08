@@ -30,11 +30,14 @@ Tests: `app/src/test/java/org/qosp/notes/` (unit, JVM/Robolectric) and `app/src/
 | Sync: Nextcloud Notes | `J/data/sync/nextcloud/*`, `J/ui/sync/nextcloud/*` |
 | Sync: local folder (SAF, .md/.txt files) | `J/data/sync/fs/StorageBackend.kt`, `StorageConfig.kt` |
 | Settings / preferences | `J/ui/settings/*`, `J/preferences/*` |
-| Theme (light/dark/dynamic) | `J/ui/theme/*`, `R/values*/themes.xml`, `R/values/colors.xml` |
+| Theme (Material 3, light/dark/AMOLED) | `R/values*/themes.xml` (app attrs → M3 roles), `J/ui/BaseActivity.kt` (applies overlays), `J/ui/theme/Theme.kt` (Compose reads View theme) |
+| Color palettes (17 + dynamic + personal seed) | generated `R/values*/palettes.xml` ← `tools/palette-gen/` (edit table, run `run.sh`); enum `ColorScheme` in `J/preferences/PreferenceEnums.kt` |
+| Appearance customization (corners, note font, my color) | `R/values/styles_blackpearl.xml`, `attrs_blackpearl.xml`, enums `CardShape`/`NoteFont`, `J/ui/settings/AppearanceDialogs.kt`, `SettingsFragment.kt`, seed in `PreferenceRepository.getCustomSeedColor()` |
+| Black Pearl strings | `R/values/strings_blackpearl.xml`, `R/values-it/strings_blackpearl.xml` (keep new strings here, not in upstream `strings.xml`) |
 | Home-screen widget | `J/ui/widget/*`, `R/xml/notes_widget_info.xml` |
 | DI modules (Koin) | `J/di/*` |
 | About screen, links | `J/ui/about/AboutFragment.kt`, `R/values/no_translate_strings.xml` |
 | App name, app id, version | `R/values/no_translate_strings.xml` (`app_name`), `app/build.gradle.kts` |
 | Launcher icon | `R/drawable-v24/ic_launcher_*.xml`, `R/mipmap-*/`, sources `graphics/black-pearl/*.svg` |
 | Static shortcuts / deep link | `R/xml-v25/shortcuts.xml`, `nav_graph.xml` (`blackpearl://notes/...`) |
-| CI | `.github/workflows/build.yml`, `release.yml`, `.github/dependabot.yml` |
+| CI | `.github/workflows/build.yml`, `release.yml`, `ui-preview.yml` (+ `scripts/capture-ui.sh`), `.github/dependabot.yml` |

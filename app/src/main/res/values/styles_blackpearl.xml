@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Black Pearl customization overlays, applied at runtime in BaseActivity (see PreferenceEnums.kt). -->
+<resources>
+    <!-- Corner shapes: CardShape preference -->
+    <style name="Shape.Square" parent="">
+        <item name="noteCardCornerRadius">4dp</item>
+        <item name="dialogCornerSize">8dp</item>
+        <item name="shapeAppearanceCornerExtraSmall">@style/ShapeBP.2</item>
+        <item name="shapeAppearanceCornerSmall">@style/ShapeBP.4</item>
+        <item name="shapeAppearanceCornerMedium">@style/ShapeBP.4</item>
+        <item name="shapeAppearanceCornerLarge">@style/ShapeBP.8</item>
+        <item name="shapeAppearanceCornerExtraLarge">@style/ShapeBP.8</item>
+    </style>
+    <!-- Material 3 defaults -->
+    <style name="Shape.Rounded" parent="">
+        <item name="noteCardCornerRadius">12dp</item>
+        <item name="dialogCornerSize">28dp</item>
+    </style>
+    <style name="Shape.ExtraRounded" parent="">
+        <item name="noteCardCornerRadius">24dp</item>
+        <item name="dialogCornerSize">32dp</item>
+        <item name="shapeAppearanceCornerExtraSmall">@style/ShapeBP.8</item>
+        <item name="shapeAppearanceCornerSmall">@style/ShapeBP.16</item>
+        <item name="shapeAppearanceCornerMedium">@style/ShapeBP.24</item>
+        <item name="shapeAppearanceCornerLarge">@style/ShapeBP.28</item>
+        <item name="shapeAppearanceCornerExtraLarge">@style/ShapeBP.32</item>
+    </style>
+    <style name="ShapeBP" parent=""><item name="cornerFamily">rounded</item></style>
+    <style name="ShapeBP.2"><item name="cornerSize">2dp</item></style>
+    <style name="ShapeBP.4"><item name="cornerSize">4dp</item></style>
+    <style name="ShapeBP.8"><item name="cornerSize">8dp</item></style>
+    <style name="ShapeBP.16"><item name="cornerSize">16dp</item></style>
+    <style name="ShapeBP.24"><item name="cornerSize">24dp</item></style>
+    <style name="ShapeBP.28"><item name="cornerSize">28dp</item></style>
+    <style name="ShapeBP.32"><item name="cornerSize">32dp</item></style>
+
+    <!-- Note text font: NoteFont preference -->
+    <style name="NoteFont.Inter" parent=""><item name="noteFontFamily">@font/inter_font_family</item></style>
+    <style name="NoteFont.System" parent=""><item name="noteFontFamily">sans-serif</item></style>
+    <style name="NoteFont.Serif" parent=""><item name="noteFontFamily">serif</item></style>
+    <style name="NoteFont.Mono" parent=""><item name="noteFontFamily">monospace</item></style>
+</resources>

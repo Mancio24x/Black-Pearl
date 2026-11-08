@@ -47,6 +47,11 @@
         <item name="colorDrawerHeaderBackground">?attr/colorPrimaryContainer</item>
         <item name="colorPrimaryTranscluent">?attr/colorSecondaryContainer</item>
 
+        <!-- Customization defaults (overridden by Shape.* / NoteFont.* overlays) -->
+        <item name="noteCardCornerRadius">12dp</item>
+        <item name="dialogCornerSize">28dp</item>
+        <item name="noteFontFamily">@font/inter_font_family</item>
+
         <item name="popupTheme">@style/Widget.Custom.PopupMenu</item>
         <item name="materialAlertDialogTheme">@style/DialogTheme</item>
     </style>

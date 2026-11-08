@@ -7,6 +7,8 @@ data class AppPreferences(
     val themeMode: ThemeMode = defaultOf(),
     val darkThemeMode: DarkThemeMode = defaultOf(),
     val colorScheme: ColorScheme = defaultOf(),
+    val cardShape: CardShape = defaultOf(),
+    val noteFont: NoteFont = defaultOf(),
     val sortMethod: SortMethod = defaultOf(),
     val sortTagsMethod: SortTagsMethod = defaultOf(),
     val sortNavdrawerNotebooksMethod: SortNavdrawerNotebooksMethod = defaultOf(),

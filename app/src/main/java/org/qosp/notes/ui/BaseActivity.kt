@@ -9,11 +9,11 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.WindowCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import com.google.android.material.color.DynamicColors
+import com.google.android.material.color.DynamicColorsOptions
 import org.qosp.notes.preferences.ColorScheme
 import org.qosp.notes.preferences.PreferenceRepository
 import org.qosp.notes.preferences.ThemeMode
@@ -30,23 +30,25 @@ open class BaseActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         runBlocking {
-            val (colorScheme, themeMode, darkThemeModeStyle) = withContext(Dispatchers.IO) {
-                preferenceRepository
-                    .getAll()
-                    .map {
-                        Triple(
-                            it.colorScheme,
-                            it.themeMode.mode,
-                            it.darkThemeMode.styleResource
-                        )
-                    }
-                    .first()
+            val (prefs, customSeed) = withContext(Dispatchers.IO) {
+                preferenceRepository.getAll().first() to preferenceRepository.getCustomSeedColor().first()
             }
+            val colorScheme = prefs.colorScheme
+            val themeMode = prefs.themeMode.mode
+            val darkThemeModeStyle = prefs.darkThemeMode.styleResource
 
             theme.applyStyle(colorScheme.styleResource, true)
-            if (colorScheme == ColorScheme.SYSTEM) {
-                // Material You: full M3 scheme from the wallpaper (Android 12+), no-op elsewhere
-                DynamicColors.applyToActivityIfAvailable(this@BaseActivity)
+            theme.applyStyle(prefs.cardShape.styleResource, true)
+            theme.applyStyle(prefs.noteFont.styleResource, true)
+            when (colorScheme) {
+                // Material You from the wallpaper (Android 12+), no-op elsewhere
+                ColorScheme.SYSTEM -> DynamicColors.applyToActivityIfAvailable(this@BaseActivity)
+                // Full M3 scheme generated from the personal seed color (Android 12+)
+                ColorScheme.CUSTOM -> DynamicColors.applyToActivityIfAvailable(
+                    this@BaseActivity,
+                    DynamicColorsOptions.Builder().setContentBasedSource(customSeed).build()
+                )
+                else -> Unit
             }
 
             if (themeMode != AppCompatDelegate.getDefaultNightMode()) {

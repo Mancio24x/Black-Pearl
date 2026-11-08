@@ -14,12 +14,10 @@ inline fun <reified T> Fragment.showPreferenceDialog(
     items: Array<String>? = null,
     crossinline onClick: (T) -> Unit,
 ) where T : Enum<T>, T : EnumPreference {
-    val enumValues = enumValues<T>()
+    // Only supported values are listed; map the clicked row back to the same filtered list.
+    val enumValues = enumValues<T>().filter { it !is HasSupportRequirement || it.isSupported() }
     val selectedIndex = enumValues.indexOf(selected)
     val items = items ?: enumValues
-        .filter {
-            it !is HasSupportRequirement || it.isSupported()
-        }
         .map {
             if (it is HasNameResource) requireContext().getString(it.nameResource) else ""
         }
