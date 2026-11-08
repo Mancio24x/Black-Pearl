@@ -11,6 +11,13 @@ and translations. The original README is in [docs/QUILLPAD_README.md](docs/QUILL
 Planned Black Pearl features: repositionable images, improved note colors, offline OCR, PDF export
 (see [docs/ROADMAP.md](docs/ROADMAP.md)).
 
+## ⬇️ Download
+
+**[Release page — APK + source code (zip / tar.gz)](https://github.com/Mancio24x/Black-Pearl/releases/latest)**
+
+- Direct APK: [black-pearl latest release](https://github.com/Mancio24x/Black-Pearl/releases/latest) → *Assets* → `black-pearl-x.y.z.apk`
+- **Obtainium** (automatic updates): add `https://github.com/Mancio24x/Black-Pearl`
+
 ## Try it on your phone (debug APK)
 
 1. GitHub → **Actions** → **Build** → open the latest green run on `main`.
