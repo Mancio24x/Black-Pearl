@@ -64,8 +64,8 @@ Append one short entry per significant task: files, decisions, tests (with resul
 ## 2026-11-09 — QA pass (branch qa/test-and-cleanup)
 - Bugs fixed: editor content source when the user emptied the text (could resurrect deleted text on image/OCR insert);
   image menu could target a non-standalone copy of the same image; "]" in image captions broke Markdown; OCR progress
-  dialog leaked if the screen closed; fa/ro/sv translations were stripped from the APK and ar/fa/ro/sv missing from
-  the per-app language list; Appearance previews read Configuration via LocalContext.
+  dialog leaked if the screen closed; Romanian (99% translated) was stripped from the APK and ar/ro were missing from
+  the per-app language list (fa/sv stay excluded: ~10% translated); Appearance previews read Configuration via LocalContext.
 - Cleanup: 250 unused strings (all locales), 8 unused drawables, unused colors.xml; Black Pearl strings marked
   English+Italian only (MissingTranslation).
 - Tests: new device test `NoteLifecycleTest`; CI now runs ALL device tests. Unit tests 108 OK.
