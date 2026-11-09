@@ -15,6 +15,7 @@ tap_text() { # tap the first node whose text or content-desc equals $1
   set -- $b; adb shell input tap $(( ($1+$3)/2 )) $(( ($2+$4)/2 ))
 }
 MAIN=$PKG/org.qosp.notes.ui.MainActivity
+adb logcat -c
 new_note() { # $1 = "true" for a checklist, then title and body lines (use %s for spaces)
   local list=$1; shift
   adb shell am start -W -n $MAIN -a android.intent.action.VIEW -d "blackpearl://notes/editor_create?newNoteIsList=$list" >/dev/null
@@ -66,3 +67,5 @@ for mode in no yes; do
   sleep 3; adb shell input text "Black%sPearl%stest"; adb shell input keyevent KEYCODE_ENTER
   adb shell input text "Material%s3%snote"; shot "editor-night_$mode"
 done
+# Theme / crash messages of this run, for diagnosis
+adb logcat -d -v time BlackPearlTheme:V ColorResLoaderCreator:V ColorResourcesTableCreator:V AndroidRuntime:E '*:S' > "$OUT/logcat.txt"
