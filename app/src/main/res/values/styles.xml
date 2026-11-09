@@ -13,12 +13,10 @@
         <item name="android:ellipsize">end</item>
     </style>
 
-    <style name="Widget.Custom.FloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
-        <item name="backgroundTint">?attr/colorPrimary</item>
-        <item name="tint">?attr/colorOnPrimary</item>
+    <style name="Widget.Custom.FloatingActionButton" parent="Widget.Material3.FloatingActionButton.Primary">
     </style>
 
-    <style name="Widget.Custom.BottomAppBar" parent="Widget.MaterialComponents.BottomAppBar">
+    <style name="Widget.Custom.BottomAppBar" parent="Widget.Material3.BottomAppBar">
         <item name="backgroundTint">?attr/colorBottomAppBarBackground</item>
     </style>
 
@@ -34,7 +32,7 @@
         <item name="android:textSize">20sp</item>
     </style>
 
-    <style name="Widget.Custom.PopupMenu" parent="Widget.MaterialComponents.PopupMenu.Overflow">
+    <style name="Widget.Custom.PopupMenu" parent="Widget.Material3.PopupMenu.Overflow">
         <item name="radioButtonStyle">@style/Widget.Custom.RadioButton.ZeroMinWidth</item>
         <item name="checkboxStyle">@style/Widget.Custom.CheckBox.ZeroMinWidth</item>
     </style>
@@ -49,13 +47,14 @@
 
     <!-- Note card & Editor -->
     <style name="TextAppearance.Custom.NoteTitle" parent="TextAppearance.AppCompat.Title">
-        <item name="android:fontFamily">@font/inter_font_family</item>
+        <item name="android:fontFamily">?attr/noteFontFamily</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">?attr/colorNoteText</item>
     </style>
 
-    <style name="TextAppearance.Custom.NoteBody" parent="TextAppearance.MaterialComponents.Body1">
+    <style name="TextAppearance.Custom.NoteBody" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:fontFamily">?attr/noteFontFamily</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">?attr/colorNoteText</item>
     </style>
@@ -87,18 +86,18 @@
         <item name="android:paddingEnd">10dp</item>
     </style>
 
-    <style name="DialogTheme" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+    <style name="DialogTheme" parent="@style/ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="materialAlertDialogTitleTextStyle">@style/DialogTitle</item>
         <item name="alertDialogStyle">@style/MaterialAlertDialogRounded</item>
     </style>
 
-    <style name="MaterialAlertDialogRounded" parent="MaterialAlertDialog.MaterialComponents">
+    <style name="MaterialAlertDialogRounded" parent="MaterialAlertDialog.Material3">
         <item name="shapeAppearanceOverlay">@style/DialogRoundedShape</item>
     </style>
 
     <style name="DialogRoundedShape" parent="">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">16dp</item>
+        <item name="cornerSize">?attr/dialogCornerSize</item>
     </style>
 
     <style name="DialogTitle">
@@ -117,7 +116,7 @@
 
     <style name="BottomSheetAction">
         <item name="android:background">@drawable/state_drawer_item_background</item>
-        <item name="android:textViewStyle">@style/TextAppearance.MaterialComponents.Subtitle2</item>
+        <item name="android:textViewStyle">@style/TextAppearance.Material3.TitleSmall</item>
         <item name="android:drawablePadding">16dp</item>
         <item name="android:padding">12dp</item>
         <item name="android:gravity">center|start</item>

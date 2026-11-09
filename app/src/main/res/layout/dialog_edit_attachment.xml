@@ -7,7 +7,7 @@
     <org.qosp.notes.ui.utils.views.ExtendedEditText
             android:id="@+id/edit_text_description"
             android:hint="@string/attachments_hint_description"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
             android:background="@drawable/background_edit_text"
             android:inputType="textMultiLine|textCapSentences"
             android:scrollHorizontally="false"

@@ -30,7 +30,7 @@
 
         <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/about_item_text_view"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 

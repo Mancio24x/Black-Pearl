@@ -24,7 +24,8 @@ Status legend: **Existing** (inherited from Quillpad, untouched) · **To improve
 
 | # | Feature | Status | Branch |
 |---|---|---|---|
-| 0 | Rebranding (name, app id, icon), docs, CI | Completed | `main` |
+| 0 | Rebranding (name, app id, icon), docs, CI | Verified (CI + release) | `main` |
+| 0b | Material 3 UI + customization (17 palettes, dynamic colors, my color, corners, note font, AMOLED) | Completed | `feature/material3-ui` |
 | 1 | Repositionable images in notes | Planned | `feature/image-layout` |
 | 2 | Colored notes (improve existing palette/menu/contrast) | Planned — To improve | `feature/note-colors` |
 | 3 | Offline OCR ("Scan text") | Planned | `feature/offline-ocr` |

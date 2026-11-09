@@ -61,7 +61,7 @@ class TaskViewHolder(
 
             if (!inPreview) {
                 // Style textView to match editText
-                TextViewCompat.setTextAppearance(textView, R.style.TextAppearance_MaterialComponents_Body1)
+                TextViewCompat.setTextAppearance(textView, R.style.TextAppearance_Material3_BodyLarge)
                 with(ConstraintSet()) {
                     clone(root)
                     connect(textView.id, ConstraintSet.START, checkBox.id, ConstraintSet.END, 0)

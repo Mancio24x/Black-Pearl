@@ -15,6 +15,7 @@ Create `local.properties` with `sdk.dir=/path/to/Android/sdk` (never commit it).
 | Instrumented tests (emulator/device connected) | `./gradlew connectedDebugAndroidTest` |
 | DB migration tests only | `./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=org.qosp.notes.data.DatabaseMigrationTest` |
 | Install on a connected phone | `./gradlew installDebug` |
+| UI screenshots (emulator/device running) | `./gradlew assembleDebug -PTESTLAB_BUILD=true && scripts/capture-ui.sh` → `ui-shots/` (CI: workflow "UI preview") |
 | Release APK (signed) | see "Release signing" |
 
 CI (`.github/workflows/build.yml`) runs: `testDebugUnitTest`, `lintDebug` (report only), `assembleDebug`.

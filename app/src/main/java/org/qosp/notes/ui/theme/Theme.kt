@@ -1,16 +1,18 @@
 package org.qosp.notes.ui.theme
 
-import android.os.Build
+import android.content.Context
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import com.google.android.material.color.MaterialColors
+import org.qosp.notes.R
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -252,22 +254,18 @@ val unspecified_scheme = ColorFamily(
     Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified
 )
 
+/**
+ * Compose theme built from the current View theme (Material 3 palette chosen in settings, or dynamic colors
+ * when the activity applied them), so Compose and View screens always match.
+ */
 @Composable
 fun QuillpadTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable() () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> darkScheme
-        else -> lightScheme
-    }
+    val context = LocalContext.current
+    val fallback = if (darkTheme) darkScheme else lightScheme
+    val colorScheme = colorSchemeFromViewTheme(context, fallback)
 
     MaterialTheme(
         colorScheme = colorScheme,
@@ -276,3 +274,42 @@ fun QuillpadTheme(
     )
 }
 
+private fun colorSchemeFromViewTheme(context: Context, f: ColorScheme): ColorScheme {
+    fun c(attr: Int, default: Color) = Color(MaterialColors.getColor(context, attr, default.toArgb()))
+    return f.copy(
+        primary = c(R.attr.colorPrimary, f.primary),
+        onPrimary = c(R.attr.colorOnPrimary, f.onPrimary),
+        primaryContainer = c(R.attr.colorPrimaryContainer, f.primaryContainer),
+        onPrimaryContainer = c(R.attr.colorOnPrimaryContainer, f.onPrimaryContainer),
+        inversePrimary = c(R.attr.colorPrimaryInverse, f.inversePrimary),
+        secondary = c(R.attr.colorSecondary, f.secondary),
+        onSecondary = c(R.attr.colorOnSecondary, f.onSecondary),
+        secondaryContainer = c(R.attr.colorSecondaryContainer, f.secondaryContainer),
+        onSecondaryContainer = c(R.attr.colorOnSecondaryContainer, f.onSecondaryContainer),
+        tertiary = c(R.attr.colorTertiary, f.tertiary),
+        onTertiary = c(R.attr.colorOnTertiary, f.onTertiary),
+        tertiaryContainer = c(R.attr.colorTertiaryContainer, f.tertiaryContainer),
+        onTertiaryContainer = c(R.attr.colorOnTertiaryContainer, f.onTertiaryContainer),
+        error = c(R.attr.colorError, f.error),
+        onError = c(R.attr.colorOnError, f.onError),
+        errorContainer = c(R.attr.colorErrorContainer, f.errorContainer),
+        onErrorContainer = c(R.attr.colorOnErrorContainer, f.onErrorContainer),
+        background = c(android.R.attr.colorBackground, f.background),
+        onBackground = c(R.attr.colorOnBackground, f.onBackground),
+        surface = c(R.attr.colorSurface, f.surface),
+        onSurface = c(R.attr.colorOnSurface, f.onSurface),
+        surfaceVariant = c(R.attr.colorSurfaceVariant, f.surfaceVariant),
+        onSurfaceVariant = c(R.attr.colorOnSurfaceVariant, f.onSurfaceVariant),
+        inverseSurface = c(R.attr.colorSurfaceInverse, f.inverseSurface),
+        inverseOnSurface = c(R.attr.colorOnSurfaceInverse, f.inverseOnSurface),
+        outline = c(R.attr.colorOutline, f.outline),
+        outlineVariant = c(R.attr.colorOutlineVariant, f.outlineVariant),
+        surfaceDim = c(R.attr.colorSurfaceDim, f.surfaceDim),
+        surfaceBright = c(R.attr.colorSurfaceBright, f.surfaceBright),
+        surfaceContainerLowest = c(R.attr.colorSurfaceContainerLowest, f.surfaceContainerLowest),
+        surfaceContainerLow = c(R.attr.colorSurfaceContainerLow, f.surfaceContainerLow),
+        surfaceContainer = c(R.attr.colorSurfaceContainer, f.surfaceContainer),
+        surfaceContainerHigh = c(R.attr.colorSurfaceContainerHigh, f.surfaceContainerHigh),
+        surfaceContainerHighest = c(R.attr.colorSurfaceContainerHighest, f.surfaceContainerHighest),
+    )
+}

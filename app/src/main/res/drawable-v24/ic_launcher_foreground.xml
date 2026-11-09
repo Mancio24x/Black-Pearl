@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Black Pearl launcher foreground: owner-provided artwork (graphics/black-pearl/icon-source.png),
-     cropped to the dark square and inset into the 72dp visible area of the 108dp adaptive canvas. -->
+     cropped to the dark square and inset to 58dp so it fits circular masks and the splash screen of the 108dp adaptive canvas. -->
 <inset xmlns:android="http://schemas.android.com/apk/res/android"
     android:drawable="@mipmap/ic_launcher_art"
-    android:inset="18dp" />
+    android:inset="25dp" />

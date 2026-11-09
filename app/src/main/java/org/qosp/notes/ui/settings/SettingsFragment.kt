@@ -4,17 +4,22 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.qosp.notes.R
 import org.qosp.notes.databinding.FragmentSettingsBinding
 import org.qosp.notes.preferences.AppPreferences
 import org.qosp.notes.preferences.CloudService
+import org.qosp.notes.preferences.ColorScheme
 import org.qosp.notes.preferences.DarkThemeMode
 import org.qosp.notes.preferences.DateFormat
 import org.qosp.notes.preferences.LayoutMode
+import org.qosp.notes.preferences.PreferenceRepository
 import org.qosp.notes.preferences.ThemeMode
 import org.qosp.notes.preferences.TimeFormat
 import org.qosp.notes.ui.MainActivity
@@ -31,6 +36,7 @@ import java.time.format.DateTimeFormatter
 class SettingsFragment : BaseFragment(resId = R.layout.fragment_settings) {
     private val binding by viewBinding(FragmentSettingsBinding::bind)
     private val model: SettingsViewModel by viewModel()
+    private val preferenceRepository: PreferenceRepository by inject()
 
     private var appPreferences = AppPreferences()
 
@@ -120,6 +126,8 @@ class SettingsFragment : BaseFragment(resId = R.layout.fragment_settings) {
                 binding.settingThemeMode.subText = getString(themeMode.nameResource)
                 binding.settingDarkThemeMode.subText = getString(darkThemeMode.nameResource)
                 binding.settingColorScheme.subText = getString(colorScheme.nameResource)
+                binding.settingCardShape.subText = getString(cardShape.nameResource)
+                binding.settingNoteFont.subText = getString(noteFont.nameResource)
                 binding.settingLayoutMode.subText = getString(layoutMode.nameResource)
 
             }
@@ -130,10 +138,48 @@ class SettingsFragment : BaseFragment(resId = R.layout.fragment_settings) {
         findNavController().navigateSafely(SettingsFragmentDirections.actionMainSettingsToSync())
     }
 
-    private fun setupColorSchemeListener() = binding.settingColorScheme.setOnClickListener {
-        showPreferenceDialog(R.string.preferences_color_scheme, appPreferences.colorScheme) { selected ->
+    private fun setupColorSchemeListener() {
+        binding.settingColorScheme.setOnClickListener {
             lifecycleScope.launch {
-                model.setPreferenceSuspending(selected)
+                val seed = preferenceRepository.getCustomSeedColor().first()
+                showColorSchemeDialog(appPreferences.colorScheme, seed) { selected ->
+                    if (selected == ColorScheme.CUSTOM) {
+                        openCustomColorDialog()
+                        return@showColorSchemeDialog
+                    }
+                    lifecycleScope.launch {
+                        model.setPreferenceSuspending(selected)
+                        activity?.recreate()
+                    }
+                }
+            }
+        }
+        binding.settingCustomColor.isVisible = ColorScheme.CUSTOM.isSupported()
+        binding.settingCustomColor.setOnClickListener { openCustomColorDialog() }
+        binding.settingCardShape.setOnClickListener {
+            showPreferenceDialog(R.string.preferences_card_shape, appPreferences.cardShape) { selected ->
+                lifecycleScope.launch {
+                    model.setPreferenceSuspending(selected)
+                    activity?.recreate()
+                }
+            }
+        }
+        binding.settingNoteFont.setOnClickListener {
+            showPreferenceDialog(R.string.preferences_note_font, appPreferences.noteFont) { selected ->
+                lifecycleScope.launch {
+                    model.setPreferenceSuspending(selected)
+                    activity?.recreate()
+                }
+            }
+        }
+    }
+
+    private fun openCustomColorDialog() = lifecycleScope.launch {
+        val seed = preferenceRepository.getCustomSeedColor().first()
+        showCustomColorDialog(seed) { color ->
+            lifecycleScope.launch {
+                preferenceRepository.setCustomSeedColor(color)
+                model.setPreferenceSuspending(ColorScheme.CUSTOM)
                 activity?.recreate()
             }
         }

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_color_scheme_black_pearl">Black Pearl</string>
+    <string name="preferences_color_scheme_rose">Rosa petalo</string>
+    <string name="preferences_color_scheme_lavender">Lavanda</string>
+    <string name="preferences_color_scheme_sage">Salvia</string>
+    <string name="preferences_color_scheme_dusty_blue">Blu polvere</string>
+    <string name="preferences_color_scheme_sand">Sabbia</string>
+    <string name="preferences_color_scheme_night_violet">Notte viola</string>
+    <string name="preferences_color_scheme_graphite">Grafite</string>
+    <string name="preferences_color_scheme_monochrome">Monocromatico</string>
+    <string name="preferences_color_scheme_custom">Il mio colore</string>
+    <string name="preferences_custom_color">Il mio colore</string>
+    <string name="preferences_custom_color_summary">Scegli un colore o scrivi il codice esadecimale: tutto il tema Material 3 viene generato da lì (Android 12+).</string>
+    <string name="preferences_custom_color_hex">Colore esadecimale</string>
+    <string name="preferences_custom_color_invalid">Usa 6 cifre esadecimali, es. 1B4F72</string>
+    <string name="preferences_custom_color_apply">Applica</string>
+    <string name="preferences_card_shape">Forma degli angoli</string>
+    <string name="preferences_card_shape_square">Squadrata</string>
+    <string name="preferences_card_shape_rounded">Arrotondata</string>
+    <string name="preferences_card_shape_extra_rounded">Molto arrotondata</string>
+    <string name="preferences_note_font">Carattere delle note</string>
+    <string name="preferences_note_font_inter">Inter</string>
+    <string name="preferences_note_font_system">Di sistema</string>
+    <string name="preferences_note_font_serif">Con grazie (serif)</string>
+    <string name="preferences_note_font_mono">Monospaziato</string>
+</resources>

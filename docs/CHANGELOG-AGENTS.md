@@ -11,3 +11,12 @@ Append one short entry per significant task: files, decisions, tests (with resul
   (package io.github.mancio24x.blackpearl, label "Black Pearl"); CI Build on main green. Instrumented tests not run.
 - Release signing key generated and stored outside the repo (owner's Mac); GitHub secrets set.
 - Open: fastlane metadata and notification icon still Quillpad's; Dependabot PRs #1–#10 to review.
+
+## 2026-11-08 — Material 3 UI + customization (branch feature/material3-ui, PR #11)
+- Files: `values*/themes.xml`, generated `values*/palettes.xml`, `styles.xml`, `styles_blackpearl.xml`, `attrs_blackpearl.xml`,
+  `strings_blackpearl.xml` (en, it), layouts (M3 text appearances, outline variant, note card shape), `PreferenceEnums.kt`,
+  `AppPreferences.kt`, `PreferenceRepository.kt`, `BaseActivity.kt`, `ui/theme/Theme.kt`, `ui/settings/*`, `tools/palette-gen/*`,
+  `scripts/capture-ui.sh`, `.github/workflows/ui-preview.yml`.
+- Fix: `showPreferenceDialog` mapped clicks to the unfiltered enum list (wrong choice when an option is unsupported).
+- Tests: `assembleDebug` OK; `testDebugUnitTest` 78 tests, 0 failures (new `AppearancePreferencesTest`). Not yet checked on a device.
+- Open: review UI preview screenshots; manual check on phone; note colors (feature 2) still use the old fixed tints.

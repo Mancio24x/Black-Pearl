@@ -2,7 +2,9 @@ package org.qosp.notes.preferences
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.intPreferencesKey
 import com.tfcporciuncula.flow.FlowSharedPreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -35,6 +37,8 @@ class PreferenceRepository(
                     themeMode = prefs.getEnum(),
                     darkThemeMode = prefs.getEnum(),
                     colorScheme = prefs.getEnum(),
+                    cardShape = prefs.getEnum(),
+                    noteFont = prefs.getEnum(),
                     sortMethod = prefs.getEnum(),
                     sortTagsMethod = prefs.getEnum(),
                     sortNavdrawerNotebooksMethod = prefs.getEnum(),
@@ -68,10 +72,21 @@ class PreferenceRepository(
 
     suspend fun <T> set(preference: T) where T : Enum<T>, T : EnumPreference = dataStore.setEnum(preference)
 
+    /** Seed color (ARGB) of the personal theme, used when ColorScheme.CUSTOM is selected. */
+    fun getCustomSeedColor(): Flow<Int> = dataStore.data
+        .catch { if (it is IOException) emit(emptyPreferences()) else throw it }
+        .map { it[CUSTOM_SEED_COLOR] ?: DEFAULT_CUSTOM_SEED_COLOR }
+
+    suspend fun setCustomSeedColor(color: Int) {
+        dataStore.edit { it[CUSTOM_SEED_COLOR] = color }
+    }
+
     companion object {
         const val NEXTCLOUD_INSTANCE_URL = "NEXTCLOUD_INSTANCE_URL"
         const val NEXTCLOUD_USERNAME = "NEXTCLOUD_USERNAME"
         const val NEXTCLOUD_PASSWORD = "NEXTCLOUD_PASSWORD"
         const val STORAGE_LOCATION = "STORAGE_LOCATION"
+        val CUSTOM_SEED_COLOR = intPreferencesKey("custom_seed_color")
+        const val DEFAULT_CUSTOM_SEED_COLOR = 0xFF1B4F72.toInt()
     }
 }
