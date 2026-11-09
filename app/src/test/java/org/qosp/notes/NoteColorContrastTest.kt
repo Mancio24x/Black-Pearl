@@ -25,11 +25,16 @@ class NoteColorContrastTest {
         return (hi + 0.05) / (lo + 0.05)
     }
 
-    private fun check(themes: String, palettes: String) {
+    private fun check(themes: String, palettes: String, light: Boolean) {
         val noteColors = Regex("""name="colorNote(Red|Orange|Yellow|Green|Teal|Cyan|Blue|Purple|Pink|Brown|Gray)">(#[0-9A-Fa-f]+)<""")
             .findAll(File(res, themes).readText()).map { it.groupValues[1] to it.groupValues[2] }.toList()
-        val onSurface = Regex("""name="colorOnSurface">(#[0-9A-Fa-f]+)<""")
-            .findAll(File(res, palettes).readText()).map { it.groupValues[1] }.toList()
+        // Always-dark themes force night mode (BaseActivity), so only their dark note colors are ever used.
+        val styles = Regex("""<!--([^>]*)-->\s*<style name="[^"]+"(.*?)</style>""", RegexOption.DOT_MATCHES_ALL)
+            .findAll(File(res, palettes).readText()).toList()
+        val onSurface = styles
+            .filterNot { light && it.groupValues[1].contains("always dark") }
+            .mapNotNull { Regex("""name="colorOnSurface">(#[0-9A-Fa-f]+)<""").find(it.groupValues[2])?.groupValues?.get(1) }
+        assertTrue(styles.size >= 20)
         assertTrue(noteColors.size == 11 && onSurface.isNotEmpty())
         for ((name, color) in noteColors) for (text in onSurface) {
             val c = contrast(color, text)
@@ -38,8 +43,8 @@ class NoteColorContrastTest {
     }
 
     @Test
-    fun lightNoteColorsAreReadable() = check("values/themes.xml", "values/palettes.xml")
+    fun lightNoteColorsAreReadable() = check("values/themes.xml", "values/palettes.xml", light = true)
 
     @Test
-    fun darkNoteColorsAreReadable() = check("values-night/themes.xml", "values-night/palettes.xml")
+    fun darkNoteColorsAreReadable() = check("values-night/themes.xml", "values-night/palettes.xml", light = false)
 }

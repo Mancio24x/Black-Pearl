@@ -51,3 +51,12 @@ Append one short entry per significant task: files, decisions, tests (with resul
   commits were rebased onto main (content unchanged, verified by diff) and opened as one PR with version 0.2.0
   (versionCode 4). Local: 103 unit tests OK, assembleDebug + assembleRelease OK.
 - Lesson: with squash merges, do not stack PRs; branch each feature from main after the previous one is merged.
+
+## 2026-11-09 — Themes at Atlante level (branch feature/themes-atlante)
+- Design reference: Claude Design canvas "Black Pearl — Redesign" (screens 3–5).
+- Files: `ui/theme/ThemeRoles.java`, `CustomTheme.kt`, generated `CustomThemeResources.kt`, `colors_custom_theme.xml`,
+  `palettes.xml`; `tools/palette-gen/*`; `ui/appearance/*`; `fragment_appearance.xml`, nav graph, `MainActivity`;
+  `PreferenceEnums.kt` (ThemeGroup, new themes, Pill, FabSize), `PreferenceRepository.kt`, `BaseActivity.kt`,
+  `SettingsFragment.kt` + layout (one "Appearance" entry), `MainFragment.kt` (FAB size); removed `AppearanceDialogs.kt`.
+- Tests: 107 unit tests OK (new `ThemeRolesTest`; contrast test aware of always-dark themes); `assembleDebug` OK.
+- Open: device check of runtime "My theme"; notes list redesign (1A/1B) waiting for owner's choice.

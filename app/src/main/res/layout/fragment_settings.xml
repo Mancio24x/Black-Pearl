@@ -40,46 +40,18 @@
                     android:layout_height="wrap_content"/>
 
                 <org.qosp.notes.ui.utils.views.PreferenceView
-                    android:id="@+id/setting_theme_mode"
+                    android:id="@+id/setting_appearance"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:text="@string/preferences_theme_mode"
-                    app:iconSrc="@drawable/ic_dark_mode"/>
-
-                <org.qosp.notes.ui.utils.views.PreferenceView
-                    android:id="@+id/setting_dark_theme_mode"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:text="@string/preferences_dark_theme_mode"
-                    app:iconSrc="@drawable/ic_dark_mode_variant"/>
-
-                <org.qosp.notes.ui.utils.views.PreferenceView
-                    android:id="@+id/setting_color_scheme"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:text="@string/preferences_color_scheme"
+                    app:text="@string/appearance_title"
+                    app:subText="@string/appearance_subtitle"
                     app:iconSrc="@drawable/ic_color"/>
 
-                <org.qosp.notes.ui.utils.views.PreferenceView
-                    android:id="@+id/setting_custom_color"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:text="@string/preferences_custom_color"
-                    app:iconSrc="@drawable/ic_highlight"/>
 
-                <org.qosp.notes.ui.utils.views.PreferenceView
-                    android:id="@+id/setting_card_shape"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:text="@string/preferences_card_shape"
-                    app:iconSrc="@drawable/ic_box"/>
 
-                <org.qosp.notes.ui.utils.views.PreferenceView
-                    android:id="@+id/setting_note_font"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:text="@string/preferences_note_font"
-                    app:iconSrc="@drawable/ic_header"/>
+
+
+
 
                 <View
                     android:layout_width="match_parent"

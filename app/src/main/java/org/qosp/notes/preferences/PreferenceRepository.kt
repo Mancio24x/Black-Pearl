@@ -14,6 +14,13 @@ import me.msoul.datastore.getEnum
 import me.msoul.datastore.setEnum
 import java.io.IOException
 
+/** The three colors of "My theme". Defaults match tools/palette-gen (CUSTOM_DEFAULT). */
+data class CustomThemeColors(val paper: Int, val surface: Int, val accent: Int) {
+    companion object {
+        val DEFAULT = CustomThemeColors(0xFFF4ECDD.toInt(), 0xFFFFFBF3.toInt(), 0xFF8E2F25.toInt())
+    }
+}
+
 class PreferenceRepository(
     val dataStore: DataStore<Preferences>,
     private val sharedPreferences: FlowSharedPreferences
@@ -39,6 +46,7 @@ class PreferenceRepository(
                     colorScheme = prefs.getEnum(),
                     cardShape = prefs.getEnum(),
                     noteFont = prefs.getEnum(),
+                    fabSize = prefs.getEnum(),
                     sortMethod = prefs.getEnum(),
                     sortTagsMethod = prefs.getEnum(),
                     sortNavdrawerNotebooksMethod = prefs.getEnum(),
@@ -72,13 +80,23 @@ class PreferenceRepository(
 
     suspend fun <T> set(preference: T) where T : Enum<T>, T : EnumPreference = dataStore.setEnum(preference)
 
-    /** Seed color (ARGB) of the personal theme, used when ColorScheme.CUSTOM is selected. */
-    fun getCustomSeedColor(): Flow<Int> = dataStore.data
+    /** "My theme" colors (ARGB): background ("paper"), cards ("surface") and accent. Used by ColorScheme.CUSTOM. */
+    fun getCustomTheme(): Flow<CustomThemeColors> = dataStore.data
         .catch { if (it is IOException) emit(emptyPreferences()) else throw it }
-        .map { it[CUSTOM_SEED_COLOR] ?: DEFAULT_CUSTOM_SEED_COLOR }
+        .map {
+            CustomThemeColors(
+                paper = it[CUSTOM_PAPER_COLOR] ?: CustomThemeColors.DEFAULT.paper,
+                surface = it[CUSTOM_SURFACE_COLOR] ?: CustomThemeColors.DEFAULT.surface,
+                accent = it[CUSTOM_SEED_COLOR] ?: CustomThemeColors.DEFAULT.accent,
+            )
+        }
 
-    suspend fun setCustomSeedColor(color: Int) {
-        dataStore.edit { it[CUSTOM_SEED_COLOR] = color }
+    suspend fun setCustomTheme(colors: CustomThemeColors) {
+        dataStore.edit {
+            it[CUSTOM_PAPER_COLOR] = colors.paper
+            it[CUSTOM_SURFACE_COLOR] = colors.surface
+            it[CUSTOM_SEED_COLOR] = colors.accent
+        }
     }
 
     companion object {
@@ -86,7 +104,8 @@ class PreferenceRepository(
         const val NEXTCLOUD_USERNAME = "NEXTCLOUD_USERNAME"
         const val NEXTCLOUD_PASSWORD = "NEXTCLOUD_PASSWORD"
         const val STORAGE_LOCATION = "STORAGE_LOCATION"
-        val CUSTOM_SEED_COLOR = intPreferencesKey("custom_seed_color")
-        const val DEFAULT_CUSTOM_SEED_COLOR = 0xFF1B4F72.toInt()
+        val CUSTOM_SEED_COLOR = intPreferencesKey("custom_seed_color") // accent (name kept from 0.2.0)
+        val CUSTOM_PAPER_COLOR = intPreferencesKey("custom_paper_color")
+        val CUSTOM_SURFACE_COLOR = intPreferencesKey("custom_surface_color")
     }
 }

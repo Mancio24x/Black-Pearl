@@ -9,6 +9,7 @@ data class AppPreferences(
     val colorScheme: ColorScheme = defaultOf(),
     val cardShape: CardShape = defaultOf(),
     val noteFont: NoteFont = defaultOf(),
+    val fabSize: FabSize = defaultOf(),
     val sortMethod: SortMethod = defaultOf(),
     val sortTagsMethod: SortTagsMethod = defaultOf(),
     val sortNavdrawerNotebooksMethod: SortNavdrawerNotebooksMethod = defaultOf(),

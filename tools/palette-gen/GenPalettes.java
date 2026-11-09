@@ -1,9 +1,12 @@
-// Generates the Material 3 color palettes used by Black Pearl.
-// Uses the official Material color utilities bundled in com.google.android.material:material.
-// Run: tools/palette-gen/run.sh   (writes app/src/main/res/values{,-night}/palettes.xml)
-// Edit the PALETTES table below, re-run, commit the generated XML.
+// Generates the Material 3 palettes of Black Pearl from tools/palette-gen (run.sh):
+//   app/src/main/res/values{,-night}/palettes.xml   static themes (+ Palette.Custom, bound to color resources)
+//   app/src/main/res/values/colors_custom_theme.xml default "My theme" colors (overridden at runtime)
+//   app/src/main/java/org/qosp/notes/ui/theme/CustomThemeResources.kt  attribute -> color resource map
+// Role math lives in app/src/main/java/org/qosp/notes/ui/theme/ThemeRoles.java (shared with the app).
+// Edit the PALETTES table, re-run, commit the generated files.
 
-import com.google.android.material.color.utilities.*;
+import org.qosp.notes.ui.theme.ThemeRoles;
+import org.qosp.notes.ui.theme.ThemeRoles.Kind;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -11,98 +14,103 @@ import java.util.*;
 
 public class GenPalettes {
 
-    record P(String style, int seed, Variant variant, Integer tertiarySeed) {}
+    /** paper, surface, ink, muted, accent, line */
+    record D(int paper, int surface, int ink, int muted, int accent, int line) {}
 
-    // style name suffix -> seed color. Keep names stable: they are referenced by ColorScheme in PreferenceEnums.kt.
+    /**
+     * style: suffix of Palette.<style> (referenced by ColorScheme in PreferenceEnums.kt: keep names stable).
+     * light: designed light colors (null = generated from seed). alwaysDark: designed dark theme used in both modes.
+     */
+    record P(String style, int seed, Kind kind, Integer tertiary, D light, D alwaysDark) {}
+
+    static D d(int... c) { return new D(c[0] | 0xFF000000, c[1] | 0xFF000000, c[2] | 0xFF000000, c[3] | 0xFF000000, c[4] | 0xFF000000, c[5] | 0xFF000000); }
+
     static final List<P> PALETTES = List.of(
-            new P("BlackPearl", 0xFF1B4F72, Variant.TONAL_SPOT, 0xFFC9A227),
-            new P("Blue", 0xFF2196F3, Variant.TONAL_SPOT, null),
-            new P("Red", 0xFFEB4132, Variant.TONAL_SPOT, null),
-            new P("Yellow", 0xFFFFBA00, Variant.TONAL_SPOT, null),
-            new P("Green", 0xFF7CB342, Variant.TONAL_SPOT, null),
-            new P("Pink", 0xFFC2185B, Variant.TONAL_SPOT, null),
-            new P("Orange", 0xFFFF8800, Variant.TONAL_SPOT, null),
-            new P("Purple", 0xFF8249E8, Variant.TONAL_SPOT, null),
-            new P("Teal", 0xFF00897B, Variant.TONAL_SPOT, null),
-            new P("Rose", 0xFFE8A0B4, Variant.TONAL_SPOT, null),
-            new P("Lavender", 0xFF9C8CD4, Variant.TONAL_SPOT, null),
-            new P("Sage", 0xFF7D9A7E, Variant.TONAL_SPOT, null),
-            new P("DustyBlue", 0xFF6F8FAF, Variant.TONAL_SPOT, null),
-            new P("Sand", 0xFFC2A878, Variant.TONAL_SPOT, null),
-            new P("NightViolet", 0xFF4B3B7A, Variant.VIBRANT, null),
-            new P("Graphite", 0xFF5F6368, Variant.NEUTRAL, null),
-            new P("Monochrome", 0xFF000000, Variant.MONOCHROME, null)
+            // Designed (Atlante-style) light themes; dark mode is generated from the accent.
+            new P("BlackPearl", 0xFF1B4F72, Kind.TONAL_SPOT, 0xFFC9A227, d(0xF6F3EC, 0xFFFDF8, 0x16212B, 0x5B6670, 0x1B4F72, 0xE3DED3), null),
+            new P("Parchment", 0xFF8E2F25, Kind.TONAL_SPOT, null, d(0xF4ECDD, 0xFFFBF3, 0x2E2418, 0x6E5E48, 0x8E2F25, 0xE5D9C3), null),
+            new P("OpenSea", 0xFF006A8E, Kind.TONAL_SPOT, null, d(0xEAF3F7, 0xFBFEFF, 0x12303F, 0x55707D, 0x006A8E, 0xD2E3EA), null),
+            new P("Sage", 0xFF416D53, Kind.TONAL_SPOT, null, d(0xEFF5EF, 0xFBFEFA, 0x2B4439, 0x5B7065, 0x416D53, 0xD7E4D9), null),
+            new P("Rose", 0xFF99496C, Kind.TONAL_SPOT, null, d(0xFFF3F5, 0xFFFCFD, 0x4C2939, 0x775662, 0x99496C, 0xF0D9E2), null),
+            new P("Lavender", 0xFF76539C, Kind.TONAL_SPOT, null, d(0xF5F1FC, 0xFDFCFF, 0x362C50, 0x6F6182, 0x76539C, 0xE4DCEF), null),
+            new P("Coral", 0xFFB5472C, Kind.TONAL_SPOT, null, d(0xFFF1EC, 0xFFFBF9, 0x4A2418, 0x7B5649, 0xB5472C, 0xF3D8CE), null),
+            new P("Sand", 0xFF8A5035, Kind.TONAL_SPOT, null, d(0xF8F0E5, 0xFFFCF6, 0x4B382A, 0x786451, 0x8A5035, 0xE8DBCA), null),
+            new P("DustyBlue", 0xFF365F8C, Kind.TONAL_SPOT, null, d(0xEDF3F9, 0xFBFDFF, 0x24394F, 0x5D6E80, 0x365F8C, 0xD5E1EE), null),
+            // Always-dark designed themes.
+            new P("Abyss", 0xFFE6C068, Kind.TONAL_SPOT, null, null, d(0x0E1720, 0x18232E, 0xE8EEF3, 0xA9B6C2, 0xE6C068, 0x2B3946)),
+            new P("Graphite", 0xFFADCFFF, Kind.TONAL_SPOT, null, null, d(0x171C24, 0x232C38, 0xEDF3FA, 0xB0BFD0, 0xADCFFF, 0x3A485A)),
+            new P("NightViolet", 0xFFD3B6FF, Kind.TONAL_SPOT, null, null, d(0x191724, 0x282337, 0xF3ECFF, 0xBFB1D2, 0xD3B6FF, 0x493D5B)),
+            // Vivid themes, fully generated by Material from a seed.
+            new P("Blue", 0xFF2196F3, Kind.TONAL_SPOT, null, null, null),
+            new P("Red", 0xFFEB4132, Kind.TONAL_SPOT, null, null, null),
+            new P("Yellow", 0xFFFFBA00, Kind.TONAL_SPOT, null, null, null),
+            new P("Green", 0xFF7CB342, Kind.TONAL_SPOT, null, null, null),
+            new P("Pink", 0xFFC2185B, Kind.TONAL_SPOT, null, null, null),
+            new P("Orange", 0xFFFF8800, Kind.TONAL_SPOT, null, null, null),
+            new P("Purple", 0xFF8249E8, Kind.TONAL_SPOT, null, null, null),
+            new P("Teal", 0xFF00897B, Kind.TONAL_SPOT, null, null, null),
+            new P("Monochrome", 0xFF000000, Kind.MONOCHROME, null, null, null)
     );
 
-    static DynamicScheme scheme(P p, boolean dark) {
-        Hct src = Hct.fromInt(p.seed);
-        DynamicScheme base = switch (p.variant) {
-            case VIBRANT -> new SchemeVibrant(src, dark, 0.0);
-            case NEUTRAL -> new SchemeNeutral(src, dark, 0.0);
-            case MONOCHROME -> new SchemeMonochrome(src, dark, 0.0);
-            default -> new SchemeTonalSpot(src, dark, 0.0);
-        };
-        if (p.tertiarySeed == null) return base;
-        Hct t = Hct.fromInt(p.tertiarySeed);
-        return new DynamicScheme(src, p.variant, dark, 0.0, base.primaryPalette, base.secondaryPalette,
-                TonalPalette.fromHueAndChroma(t.getHue(), Math.max(t.getChroma(), 40.0)),
-                base.neutralPalette, base.neutralVariantPalette);
+    /** Default "My theme" (paper, surface, accent) until the user picks colors. */
+    static final int[] CUSTOM_DEFAULT = {0xFFF4ECDD, 0xFFFFFBF3, 0xFF8E2F25};
+
+    static LinkedHashMap<String, Integer> roles(P p, boolean night) {
+        if (p.alwaysDark != null) return designed(p.alwaysDark, true);
+        if (!night && p.light != null) return designed(p.light, false);
+        return ThemeRoles.fromSeed(p.seed, p.kind, p.tertiary, night);
     }
 
-    static String roles(DynamicScheme s, String indent) {
-        MaterialDynamicColors m = new MaterialDynamicColors();
-        LinkedHashMap<String, DynamicColor> r = new LinkedHashMap<>();
-        r.put("colorPrimary", m.primary()); r.put("colorOnPrimary", m.onPrimary());
-        r.put("colorPrimaryContainer", m.primaryContainer()); r.put("colorOnPrimaryContainer", m.onPrimaryContainer());
-        r.put("colorPrimaryInverse", m.inversePrimary());
-        r.put("colorPrimaryFixed", m.primaryFixed()); r.put("colorPrimaryFixedDim", m.primaryFixedDim());
-        r.put("colorOnPrimaryFixed", m.onPrimaryFixed()); r.put("colorOnPrimaryFixedVariant", m.onPrimaryFixedVariant());
-        r.put("colorSecondary", m.secondary()); r.put("colorOnSecondary", m.onSecondary());
-        r.put("colorSecondaryContainer", m.secondaryContainer()); r.put("colorOnSecondaryContainer", m.onSecondaryContainer());
-        r.put("colorSecondaryFixed", m.secondaryFixed()); r.put("colorSecondaryFixedDim", m.secondaryFixedDim());
-        r.put("colorOnSecondaryFixed", m.onSecondaryFixed()); r.put("colorOnSecondaryFixedVariant", m.onSecondaryFixedVariant());
-        r.put("colorTertiary", m.tertiary()); r.put("colorOnTertiary", m.onTertiary());
-        r.put("colorTertiaryContainer", m.tertiaryContainer()); r.put("colorOnTertiaryContainer", m.onTertiaryContainer());
-        r.put("colorTertiaryFixed", m.tertiaryFixed()); r.put("colorTertiaryFixedDim", m.tertiaryFixedDim());
-        r.put("colorOnTertiaryFixed", m.onTertiaryFixed()); r.put("colorOnTertiaryFixedVariant", m.onTertiaryFixedVariant());
-        r.put("colorError", m.error()); r.put("colorOnError", m.onError());
-        r.put("colorErrorContainer", m.errorContainer()); r.put("colorOnErrorContainer", m.onErrorContainer());
-        r.put("android:colorBackground", m.background()); r.put("colorOnBackground", m.onBackground());
-        r.put("colorSurface", m.surface()); r.put("colorOnSurface", m.onSurface());
-        r.put("colorSurfaceVariant", m.surfaceVariant()); r.put("colorOnSurfaceVariant", m.onSurfaceVariant());
-        r.put("colorSurfaceInverse", m.inverseSurface()); r.put("colorOnSurfaceInverse", m.inverseOnSurface());
-        r.put("colorSurfaceDim", m.surfaceDim()); r.put("colorSurfaceBright", m.surfaceBright());
-        r.put("colorSurfaceContainerLowest", m.surfaceContainerLowest());
-        r.put("colorSurfaceContainerLow", m.surfaceContainerLow());
-        r.put("colorSurfaceContainer", m.surfaceContainer());
-        r.put("colorSurfaceContainerHigh", m.surfaceContainerHigh());
-        r.put("colorSurfaceContainerHighest", m.surfaceContainerHighest());
-        r.put("colorOutline", m.outline()); r.put("colorOutlineVariant", m.outlineVariant());
+    static LinkedHashMap<String, Integer> designed(D d, boolean dark) {
+        return ThemeRoles.designed(d.paper, d.surface, d.ink, d.muted, d.accent, d.line, dark);
+    }
+
+    static String items(Map<String, Integer> roles, String indent) {
         StringBuilder b = new StringBuilder();
-        r.forEach((k, v) -> b.append(indent).append(String.format("<item name=\"%s\">#%06X</item>%n", k, v.getArgb(s) & 0xFFFFFF)));
+        roles.forEach((k, v) -> b.append(indent).append(String.format("<item name=\"%s\">#%06X</item>%n", k, v & 0xFFFFFF)));
         return b.toString();
     }
 
-    static String file(boolean dark) {
-        StringBuilder b = new StringBuilder();
-        b.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
-                .append("<!-- GENERATED by tools/palette-gen/GenPalettes.java - do not edit by hand. -->\n")
-                .append("<resources>\n");
-        // Default palette = first entry, used as parent of the app theme.
+    static String resName(String attr) { return "bp_custom_" + attr.replace("android:", ""); }
+
+    static String palettes(boolean night) {
+        StringBuilder b = new StringBuilder("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
+                .append("<!-- GENERATED by tools/palette-gen - do not edit by hand. -->\n<resources>\n");
         b.append("    <style name=\"Palette.Default\" parent=\"Theme.Material3.DayNight.NoActionBar\">\n")
-                .append(roles(scheme(PALETTES.get(0), dark), "        ")).append("    </style>\n\n");
+                .append(items(roles(PALETTES.get(0), night), "        ")).append("    </style>\n\n");
         for (P p : PALETTES) {
-            b.append("    <!-- seed #").append(String.format("%06X", p.seed & 0xFFFFFF)).append(" ").append(p.variant).append(" -->\n");
+            String what = p.alwaysDark != null ? "designed, always dark" : p.light != null ? "designed light, generated dark" : p.kind + " from seed";
+            b.append(String.format("    <!-- seed #%06X, %s -->%n", p.seed & 0xFFFFFF, what));
             b.append("    <style name=\"Palette.").append(p.style).append("\" parent=\"\">\n")
-                    .append(roles(scheme(p, dark), "        ")).append("    </style>\n\n");
+                    .append(items(roles(p, night), "        ")).append("    </style>\n\n");
         }
+        // "My theme": every role points to a color resource that the app overrides at runtime (Android 11+).
+        b.append("    <style name=\"Palette.Custom\" parent=\"\">\n");
+        for (String attr : ThemeRoles.custom(CUSTOM_DEFAULT[0], CUSTOM_DEFAULT[1], CUSTOM_DEFAULT[2]).keySet())
+            b.append(String.format("        <item name=\"%s\">@color/%s</item>%n", attr, resName(attr)));
+        b.append("    </style>\n");
         return b.append("</resources>\n").toString();
     }
 
     public static void main(String[] args) throws IOException {
-        Path res = Paths.get(args.length > 0 ? args[0] : "app/src/main/res");
-        Files.writeString(res.resolve("values/palettes.xml"), file(false));
-        Files.writeString(res.resolve("values-night/palettes.xml"), file(true));
-        System.out.println("Wrote " + PALETTES.size() + " palettes");
+        Path root = Paths.get(args.length > 0 ? args[0] : ".");
+        Path res = root.resolve("app/src/main/res");
+        Files.writeString(res.resolve("values/palettes.xml"), palettes(false));
+        Files.writeString(res.resolve("values-night/palettes.xml"), palettes(true));
+
+        LinkedHashMap<String, Integer> custom = ThemeRoles.custom(CUSTOM_DEFAULT[0], CUSTOM_DEFAULT[1], CUSTOM_DEFAULT[2]);
+        StringBuilder colors = new StringBuilder("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
+                .append("<!-- GENERATED by tools/palette-gen. Default \"My theme\"; replaced at runtime by CustomTheme. -->\n<resources>\n");
+        custom.forEach((k, v) -> colors.append(String.format("    <color name=\"%s\">#%06X</color>%n", resName(k), v & 0xFFFFFF)));
+        Files.writeString(res.resolve("values/colors_custom_theme.xml"), colors.append("</resources>\n").toString());
+
+        StringBuilder kt = new StringBuilder("// GENERATED by tools/palette-gen - do not edit by hand.\n")
+                .append("package org.qosp.notes.ui.theme\n\nimport org.qosp.notes.R\n\n")
+                .append("/** Theme attribute name (as in ThemeRoles) -> color resource used by Palette.Custom. */\n")
+                .append("object CustomThemeResources {\n    val byAttribute: Map<String, Int> = mapOf(\n");
+        custom.keySet().forEach(k -> kt.append(String.format("        \"%s\" to R.color.%s,%n", k, resName(k))));
+        kt.append("    )\n}\n");
+        Files.writeString(root.resolve("app/src/main/java/org/qosp/notes/ui/theme/CustomThemeResources.kt"), kt.toString());
+        System.out.println("Wrote " + PALETTES.size() + " palettes + custom theme resources");
     }
 }

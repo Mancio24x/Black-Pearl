@@ -33,7 +33,14 @@ for mode in no yes; do
   adb shell input tap $(( W * 7 / 100 )) $(( H * 9 / 100 )); shot "drawer-night_$mode"
   if tap_text "Settings"; then
     shot "settings-night_$mode"
-    tap_text "Color scheme" && shot "palettes-night_$mode"
+    if tap_text "Appearance"; then
+      shot "appearance-night_$mode"
+      adb shell input swipe 500 1600 500 500 400; shot "appearance-themes-night_$mode"
+      adb shell input swipe 500 1600 500 400 400; shot "appearance-shapes-night_$mode"
+      adb shell input swipe 500 500 500 1800 300; adb shell input swipe 500 500 500 1800 300
+      tap_text "My theme" && shot "my-theme-night_$mode"
+      adb shell input keyevent KEYCODE_BACK
+    fi
     adb shell input keyevent KEYCODE_BACK
   fi
 done
