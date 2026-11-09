@@ -5,6 +5,8 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +48,8 @@ class AppearanceFragment : BaseFragment(R.layout.fragment_appearance) {
 
         binding.composeView.setContent {
             QuillpadTheme {
+              // Surface sets the content (text) color for the whole screen
+              Surface(color = MaterialTheme.colorScheme.background) {
                 val prefs by model.appPreferences.collectAsState(initial = AppPreferences())
                 val custom by preferenceRepository.getCustomTheme().collectAsState(initial = CustomThemeColors.DEFAULT)
                 backFromEditor.isEnabled = editingCustom
@@ -64,6 +68,7 @@ class AppearanceFragment : BaseFragment(R.layout.fragment_appearance) {
                         onFab = { save(it) },
                     )
                 }
+              }
             }
         }
     }
