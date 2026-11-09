@@ -138,6 +138,7 @@ class BottomSheet : BottomSheetDialogFragment() {
             showPlaceHolderText: Boolean = true,
             itemBuilder: (Builder.() -> Unit)?
         ) {
+            if (fragmentManager.isStateSaved) return
             create(header, showPlaceHolderText, itemBuilder).show(fragmentManager, null)
         }
 

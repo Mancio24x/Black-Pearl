@@ -26,10 +26,6 @@
     <string name="image_align_left">Allinea a sinistra</string>
     <string name="image_align_center">Centra</string>
     <string name="image_align_right">Allinea a destra</string>
-    <string name="image_size_small">Piccola (25%)</string>
-    <string name="image_size_medium">Media (50%)</string>
-    <string name="image_size_large">Grande (75%)</string>
-    <string name="image_size_full">Larghezza piena</string>
     <string name="image_remove_from_note">Rimuovi dalla nota (l\'allegato resta)</string>
     <string name="note_color_none">Nessun colore</string>
     <string name="ocr_scan_text">Scansiona testo</string>

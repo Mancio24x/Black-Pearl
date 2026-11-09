@@ -115,3 +115,13 @@ Append one short entry per significant task: files, decisions, tests (with resul
 - Fix: actions kept in memory, only the header in the arguments; a sheet recreated by Android closes itself.
 - Tests: `BottomSheetStateTest` (Robolectric; reproduced the crash before the fix), 128 unit tests OK; the screenshot
   run now goes through Export → Save PDF and → Share PDF.
+
+## 2026-11-10 — "+" button for note options, review fixes (branch feature/editor-plus-button)
+- Editor: round "+" FAB bottom-left (`fab_note_options`) opens `NoteOptionsSheet`, mirror of the edit FAB; the "⋮"
+  toolbar item stays only for notes in the bin. Scroll area got 88dp bottom padding so the last lines and tags can be
+  scrolled above the two buttons; edit FAB has a content description.
+- Review (lint + reading): `BlackPearlColorResources.override` marked `@RequiresApi(30)` with an explicit SDK check;
+  picture sheet "100 %" now stores 100 like the corner handle (was "natural size"); sheets are not shown when the
+  screen state is already saved (`isStateSaved`); 4 unused size strings removed.
+- Lint errors left: upstream only (MissingTranslation in `values/strings.xml`, MissingQuantity cs/ro,
+  FragmentLiveDataObserve false positive).

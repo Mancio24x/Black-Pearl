@@ -105,6 +105,7 @@ class OptionsSheet : BottomSheetDialogFragment() {
     companion object {
         /** [content] gets a function that closes the sheet. */
         fun show(fragmentManager: FragmentManager, content: @Composable (close: () -> Unit) -> Unit) {
+            if (fragmentManager.isStateSaved) return
             val sheet = OptionsSheet()
             sheet.content = { content { sheet.dismissAllowingStateLoss() } }
             sheet.show(fragmentManager, "options")

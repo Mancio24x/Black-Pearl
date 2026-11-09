@@ -379,6 +379,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
             updateEditMode(!model.inEditMode)
             if (model.inEditMode) requestFocusForFields(true) else view.hideKeyboard()
         }
+        binding.fabNoteOptions.setOnClickListener { showNoteOptions() }
     }
 
     @Deprecated("Deprecated in Java")
@@ -961,6 +962,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
     private fun setupMenuItems(note: Note, hasReminders: Boolean) = mainMenu?.run {
         findItem(R.id.action_restore_note)?.isVisible = note.isDeleted
+        findItem(R.id.action_note_options)?.isVisible = note.isDeleted
 
         findItem(R.id.action_change_mode)?.apply {
             // if view/edit mode FAB isn't displayed (user pref) show it in the top menu
@@ -1444,6 +1446,10 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         }
 
         fabChangeMode.setImageResource(if (model.inEditMode) R.drawable.ic_show else R.drawable.ic_pencil)
+        // "+" (note options) at the bottom left; a note in the bin uses the toolbar instead
+        if (fabNoteOptions.isVisible == isNoteDeleted) {
+            if (isNoteDeleted) fabNoteOptions.hide() else fabNoteOptions.show()
+        }
         setMarkdownToolbarVisibility(note)
     }
 
