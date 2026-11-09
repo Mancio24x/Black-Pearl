@@ -13,11 +13,25 @@
         <item name="android:ellipsize">end</item>
     </style>
 
+    <!-- Round FAB like Quillpad, in the palette's primary color -->
     <style name="Widget.Custom.FloatingActionButton" parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="backgroundTint">?attr/colorPrimary</item>
+        <item name="tint">?attr/colorOnPrimary</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Custom.Round</item>
+    </style>
+
+    <style name="ShapeAppearance.Custom.Round" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
     </style>
 
     <style name="Widget.Custom.BottomAppBar" parent="Widget.Material3.BottomAppBar">
         <item name="backgroundTint">?attr/colorBottomAppBarBackground</item>
+        <!-- M3 default "embed" hid the FAB: keep Quillpad's cradle (FAB sits in a notch above the bar) -->
+        <item name="fabAnchorMode">cradle</item>
+        <item name="fabCradleMargin">6dp</item>
+        <item name="fabCradleRoundedCornerRadius">10dp</item>
+        <item name="fabCradleVerticalOffset">0dp</item>
     </style>
 
     <style name="TextAppearance.Custom.DrawerItem" parent="android:Widget.TextView">

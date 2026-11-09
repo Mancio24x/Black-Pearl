@@ -1,4 +1,13 @@
 updates:
+  - id: 8
+    title: Welcome to Black Pearl 0.2
+    items:
+      - Material 3 design with 17 color palettes, "My color", corner shapes and note fonts.
+      - Place images inside your notes, then move, align and resize them.
+      - Color picker with preview; color several notes at once.
+      - Scan text from a photo, fully offline (Italian + English).
+      - Export any note as PDF.
+
   - id: 7
     title: New Color Scheme Options
     items:

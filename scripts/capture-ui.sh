@@ -19,6 +19,8 @@ for mode in no yes; do
   adb shell cmd uimode night $mode; adb shell am force-stop $PKG
   # explicit component: the debug build also has a LeakCanary launcher icon
   adb shell am start -W -n $PKG/org.qosp.notes.ui.launcher.LauncherActivity >/dev/null; sleep 3
+  shot "whatsnew-night_$mode"
+  tap_text "Continue" && sleep 3
   shot "main-night_$mode"
   adb shell am start -W -n $MAIN -a android.intent.action.VIEW -d "blackpearl://notes/editor_create?newNoteIsList=false" >/dev/null
   sleep 2; adb shell input text "Black%sPearl%stest"; adb shell input keyevent KEYCODE_ENTER

@@ -59,14 +59,6 @@
             android:layout_height="match_parent"
             android:animateLayoutChanges="true">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_create_note"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_add"
-                app:layout_anchor="@id/bottom_app_bar"
-                style="@style/Widget.Custom.FloatingActionButton"/>
-
         <com.google.android.material.bottomappbar.BottomAppBar
                 android:id="@+id/bottom_app_bar"
                 android:layout_gravity="bottom"
@@ -75,6 +67,18 @@
                 style="@style/Widget.Custom.BottomAppBar"
                 app:menu="@menu/main_bottom"
                 app:fabAlignmentMode="end"/>
+
+        <!-- Declared after the bar so it is always drawn above it -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_create_note"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_add"
+                android:contentDescription="@string/action_new_note_fab"
+                app:fabCustomSize="64dp"
+                app:maxImageSize="32dp"
+                app:layout_anchor="@id/bottom_app_bar"
+                style="@style/Widget.Custom.FloatingActionButton"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
