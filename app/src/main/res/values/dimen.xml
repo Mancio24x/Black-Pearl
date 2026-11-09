@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="recycler_padding">8dp</dimen>
-    <dimen name="card_note_padding">12dp</dimen>
+    <dimen name="recycler_padding">12dp</dimen>
+    <dimen name="card_note_padding">16dp</dimen>
     <dimen name="card_note_icon_size">16dp</dimen>
     <dimen name="icon_indicator_empty_size">96dp</dimen>
     <dimen name="app_bar_elevation">8dp</dimen>
+    <dimen name="list_toolbar_height">64dp</dimen>
+    <!-- Room below the last note for the floating quick-action bar and the "+" button -->
+    <dimen name="list_bottom_space">104dp</dimen>
 
 </resources>

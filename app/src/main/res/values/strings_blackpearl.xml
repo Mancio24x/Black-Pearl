@@ -99,6 +99,8 @@
     <string name="custom_theme_sample_note">History — Renaissance</string>
     <string name="custom_theme_sample_body">Florence, the Medici and perspective.</string>
     <string name="appearance_subtitle">Themes, my theme, mode, shapes and fonts</string>
+    <string name="list_search_notes">Search notes</string>
+    <string name="list_filter_all">All</string>
     <string name="nav_import_export">Import and export</string>
     <string name="import_from_other_apps">Import notes from other apps</string>
     <string name="import_export_backup">Export a Black Pearl backup</string>

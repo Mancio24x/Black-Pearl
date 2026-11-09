@@ -19,7 +19,7 @@ class AppearancePreferencesTest {
     @Test
     fun defaults() {
         assertEquals(ColorScheme.BLACK_PEARL, defaultOf<ColorScheme>())
-        assertEquals(CardShape.ROUNDED, defaultOf<CardShape>())
+        assertEquals(CardShape.EXTRA_ROUNDED, defaultOf<CardShape>())
         assertEquals(NoteFont.INTER, defaultOf<NoteFont>())
     }
 

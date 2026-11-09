@@ -6,12 +6,14 @@ import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
+import org.junit.Before
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.qosp.notes.App
 import org.qosp.notes.components.backup.AttachmentHandler
 import org.qosp.notes.components.backup.BackupManager
 import org.qosp.notes.components.importer.OtherAppsImport
@@ -36,11 +38,21 @@ class ImportOtherAppsTest : KoinComponent {
         "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==", Base64.DEFAULT
     )
 
+    private val mediaDir = File(context.filesDir, App.MEDIA_FOLDER)
+    private var mediaBefore = emptySet<String>()
+
+    @Before
+    fun rememberMedia() {
+        mediaBefore = mediaDir.list().orEmpty().toSet()
+    }
+
     @After
     fun cleanUp() = runBlocking {
         notes.deleteNotes(*notes.getAll().first().toTypedArray(), sync = false)
         notebooks.delete(*notebooks.getAll().first().toTypedArray())
         tags.delete(*tags.getAll().first().toTypedArray(), shouldSync = false)
+        // other tests count the files in the media folder: remove the pictures this test imported
+        mediaDir.listFiles().orEmpty().filter { it.name !in mediaBefore }.forEach { it.delete() }
     }
 
     private fun zip(name: String, vararg files: Pair<String, ByteArray>): Uri {
@@ -57,6 +69,7 @@ class ImportOtherAppsTest : KoinComponent {
 
     @Test
     fun notesFromAnotherAppAreAddedWithPicturesNotebooksAndTags() = runBlocking {
+        val before = notes.getAll().first().size
         val existing = notes.insertNote(Note(title = "Già qui", content = "non toccare"), sync = false)
         val export = zip(
             "vault.zip",
@@ -69,7 +82,7 @@ class ImportOtherAppsTest : KoinComponent {
 
         assertEquals(2, outcome.notes)
         val all = notes.getAll().first()
-        assertEquals(3, all.size)
+        assertEquals(before + 3, all.size)
         assertEquals("non toccare", all.single { it.id == existing }.content)
 
         val history = all.single { it.title == "Storia" }
@@ -101,9 +114,10 @@ class ImportOtherAppsTest : KoinComponent {
 
     @Test
     fun filesWithoutNotesImportNothing() = runBlocking {
+        val before = notes.getAll().first().size
         val photo = File(context.cacheDir, "foto.png").apply { writeBytes(png) }
         val outcome = OtherAppsImport(context, backupManager).import(listOf(Uri.fromFile(photo)))
         assertEquals(0, outcome.notes)
-        assertTrue(notes.getAll().first().isEmpty())
+        assertEquals(before, notes.getAll().first().size)
     }
 }

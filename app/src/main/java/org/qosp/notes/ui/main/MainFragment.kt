@@ -10,22 +10,29 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
+import androidx.appcompat.widget.TooltipCompat
+import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.clearFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavDirections
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.chip.Chip
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.qosp.notes.R
 import org.qosp.notes.data.model.Attachment
+import org.qosp.notes.data.model.Notebook
 import org.qosp.notes.databinding.FragmentMainBinding
 import org.qosp.notes.databinding.LayoutNoteBinding
 import org.qosp.notes.preferences.LayoutMode
@@ -37,6 +44,7 @@ import org.qosp.notes.ui.recorder.RECORD_CODE
 import org.qosp.notes.ui.recorder.RecordAudioDialog
 import org.qosp.notes.ui.utils.ChooseFilesContract
 import org.qosp.notes.ui.utils.TakePictureContract
+import org.qosp.notes.ui.utils.collect
 import org.qosp.notes.ui.utils.navigateSafely
 import org.qosp.notes.ui.utils.viewBinding
 
@@ -100,7 +108,8 @@ open class MainFragment : AbstractNotesFragment(R.layout.fragment_main) {
         model.initialize(notebookId)
 
         setupFab()
-        setupBottomAppBar()
+        setupQuickActions()
+        setupHeader()
         setFragmentResultListener(RECORD_CODE) { s, bundle ->
             val attachment = bundle.getParcelable<Attachment>(RECORDED_ATTACHMENT) ?: return@setFragmentResultListener
             goToEditor(
@@ -114,6 +123,7 @@ open class MainFragment : AbstractNotesFragment(R.layout.fragment_main) {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.main_top, menu)
+        menu.findItem(R.id.action_search)?.isVisible = false // the search bar under the title replaces it
         mainMenu = menu
         setHiddenNotesItemActionText()
         setLayoutChangeActionIcon()
@@ -165,7 +175,7 @@ open class MainFragment : AbstractNotesFragment(R.layout.fragment_main) {
         super.onSelectionChanged(selectedIds)
 
         val inSelectionMode = selectedIds.isNotEmpty()
-        binding.bottomAppBar.isVisible = !inSelectionMode
+        binding.barQuickActions.isVisible = !inSelectionMode
         binding.fabCreateNote.isVisible = !inSelectionMode
     }
 
@@ -217,6 +227,13 @@ open class MainFragment : AbstractNotesFragment(R.layout.fragment_main) {
                 val density = resources.displayMetrics.density
                 binding.fabCreateNote.customSize = (size.sizeDp * density).toInt()
                 binding.fabCreateNote.setMaxImageSize((size.iconDp * density).toInt())
+                // Keep the "+" centred on the quick-action bar (64dp high, 24dp from the bottom) and beside it
+                binding.fabCreateNote.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                    bottomMargin = ((24 + (64 - size.sizeDp) / 2f) * density).toInt()
+                }
+                binding.barQuickActions.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                    marginEnd = ((size.sizeDp + 40) * density).toInt()
+                }
             }
         }
     }
@@ -241,35 +258,64 @@ open class MainFragment : AbstractNotesFragment(R.layout.fragment_main) {
         )?.isChecked = true
     }
 
-    private fun setupBottomAppBar() {
-        binding.bottomAppBar.setOnMenuItemClickListener { it ->
-            when (it.itemId) {
-                R.id.action_create_list -> {
-                    goToEditor(
-                        isList = true,
-                        sharedElement = binding.fabCreateNote
-                    )
-                    true
-                }
-                R.id.action_record_audio -> {
-                    clearFragmentResult(RECORD_CODE)
-                    RecordAudioDialog().show(parentFragmentManager, null)
-                    true
-                }
-                R.id.action_attach_file -> {
-                    chooseFileLauncher.launch(null)
-                    true
-                }
-                R.id.action_take_photo -> {
-                    lifecycleScope.launch {
-                        runCatching {
-                            takePhotoLauncher.launch(activityModel.createImageFile())
-                        }.getOrElse { Log.e(TAG, "Cannot launch camera app", it) }
-                    }
-                    true
-                }
-                else -> false
+    // Black Pearl (design 1A): quick actions live in a floating pill next to the "+" button
+    private fun setupQuickActions() = with(binding) {
+        actionCreateList.setOnClickListener { goToEditor(isList = true, sharedElement = fabCreateNote) }
+        actionRecordAudio.setOnClickListener {
+            clearFragmentResult(RECORD_CODE)
+            RecordAudioDialog().show(parentFragmentManager, null)
+        }
+        actionAttachFile.setOnClickListener { chooseFileLauncher.launch(null) }
+        actionTakePhoto.setOnClickListener {
+            lifecycleScope.launch {
+                runCatching {
+                    takePhotoLauncher.launch(activityModel.createImageFile())
+                }.getOrElse { Log.e(TAG, "Cannot launch camera app", it) }
             }
         }
+        listOf(actionCreateList, actionAttachFile, actionTakePhoto, actionRecordAudio)
+            .forEach { TooltipCompat.setTooltipText(it, it.contentDescription) }
+    }
+
+    // Black Pearl (design 1A): search bar under the title and notebook shortcuts (the drawer keeps everything)
+    private fun setupHeader() {
+        binding.layoutAppBar.searchBar.setOnClickListener { findNavController().navigateSafely(actionToSearch()) }
+        activityModel.notebooks.collect(viewLifecycleOwner) { (showDefaultNotebook, notebooks) ->
+            showNotebookChips(showDefaultNotebook, notebooks)
+        }
+    }
+
+    private fun showNotebookChips(showDefaultNotebook: Boolean, notebooks: List<Notebook>) {
+        val group = binding.layoutAppBar.chipsNotebooks
+        val entries = buildList<Pair<Long?, String>> {
+            add(null to getString(R.string.list_filter_all))
+            notebooks.sortedBy { it.name.lowercase() }.forEach { add(it.id to it.name) }
+            if (showDefaultNotebook) add(R.id.nav_default_notebook.toLong() to getString(R.string.default_notebook))
+        }
+        binding.layoutAppBar.scrollNotebookChips.isVisible = entries.size > 1
+        group.removeAllViews()
+        entries.forEach { (id, name) ->
+            val chip = layoutInflater.inflate(R.layout.chip_notebook_filter, group, false) as Chip
+            chip.text = name
+            chip.isChecked = id == notebookId
+            chip.setOnClickListener {
+                chip.isChecked = id == notebookId // the list changes by navigating, not by toggling
+                if (id != notebookId) openNotebook(id, name)
+            }
+            group.addView(chip)
+        }
+    }
+
+    private fun openNotebook(id: Long?, name: String) {
+        val navController = findNavController()
+        if (id == null) {
+            if (!navController.popBackStack(R.id.fragment_main, false)) navController.navigateSafely(R.id.fragment_main)
+            return
+        }
+        navController.navigateSafely(
+            R.id.fragment_notebook,
+            bundleOf("notebookId" to id, "notebookName" to name),
+            NavOptions.Builder().setPopUpTo(R.id.fragment_main, false).build(),
+        )
     }
 }

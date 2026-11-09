@@ -97,6 +97,8 @@
     <string name="custom_theme_sample_note">Storia — Rinascimento</string>
     <string name="custom_theme_sample_body">Firenze, i Medici e la prospettiva.</string>
     <string name="appearance_subtitle">Temi, il mio tema, modalità, forme e caratteri</string>
+    <string name="list_search_notes">Cerca nelle note</string>
+    <string name="list_filter_all">Tutte</string>
     <string name="nav_import_export">Importa ed esporta</string>
     <string name="import_from_other_apps">Importa note da altre app</string>
     <string name="import_export_backup">Esporta un backup di Black Pearl</string>

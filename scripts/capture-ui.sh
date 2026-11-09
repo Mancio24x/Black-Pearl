@@ -15,6 +15,28 @@ tap_text() { # tap the first node whose text or content-desc equals $1
   set -- $b; adb shell input tap $(( ($1+$3)/2 )) $(( ($2+$4)/2 ))
 }
 MAIN=$PKG/org.qosp.notes.ui.MainActivity
+adb logcat -c
+new_note() { # $1 = "true" for a checklist, then title and body lines (use %s for spaces)
+  local list=$1; shift
+  adb shell am start -W -n $MAIN -a android.intent.action.VIEW -d "blackpearl://notes/editor_create?newNoteIsList=$list" >/dev/null
+  sleep 3
+  tap_text "Title"; adb shell input text "$1"; shift
+  tap_text "Take a note!" || tap_text "Task"
+  for line in "$@"; do adb shell input text "$line"; adb shell input keyevent KEYCODE_ENTER; done
+  adb shell input keyevent KEYCODE_BACK; sleep 1; adb shell input keyevent KEYCODE_BACK; sleep 2
+}
+# Sample notes and a notebook, so the list screenshots show real cards and notebook chips
+adb shell am start -W -n $PKG/org.qosp.notes.ui.launcher.LauncherActivity >/dev/null; sleep 3
+tap_text "Continue" && sleep 2
+new_note false "Storia%sRinascimento" "Firenze,%si%sMedici%se%sla%snascita%sdella%sprospettiva."
+new_note true "Spesa" "Latte" "Pane" "Caffe"
+new_note false "Viaggio%sin%sSardegna" "Cala%sGoloritze%sall%salba,%spoi%sOrosei."
+new_note false "Idee%sracconto" "Una%smappa,%suna%sX,%sun%staccuino%sche%snessuno%ssa%sleggere."
+adb shell am force-stop $PKG
+adb shell am start -W -n $MAIN >/dev/null; sleep 3
+tap_text "Open navigation drawer" && tap_text "Your Notebooks" && sleep 2 && tap_text "Create a notebook" \
+  && sleep 1 && adb shell input text "Scuola" && tap_text "Save"
+sleep 1; adb shell input keyevent KEYCODE_BACK
 for mode in no yes; do
   adb shell cmd uimode night $mode; adb shell am force-stop $PKG
   # explicit component: the debug build also has a LeakCanary launcher icon
@@ -34,7 +56,7 @@ for mode in no yes; do
       if tap_text "My theme"; then
         shot "my-theme-night_$mode"
         # pick the dark "Abyss"-like background, then apply: the whole app must recolor at runtime
-        tap_text "Background" && tap_text "#0E1720"
+        tap_text "Background" && adb shell input swipe 500 1500 500 900 400 && tap_text "#0E1720"
         tap_text "Apply my theme" && sleep 3 && shot "my-theme-applied-night_$mode"
       fi
     fi
@@ -45,3 +67,5 @@ for mode in no yes; do
   sleep 3; adb shell input text "Black%sPearl%stest"; adb shell input keyevent KEYCODE_ENTER
   adb shell input text "Material%s3%snote"; shot "editor-night_$mode"
 done
+# Theme / crash messages of this run, for diagnosis
+adb logcat -d -v time BlackPearlTheme:V ColorResLoaderCreator:V ColorResourcesTableCreator:V AndroidRuntime:E '*:S' > "$OUT/logcat.txt"

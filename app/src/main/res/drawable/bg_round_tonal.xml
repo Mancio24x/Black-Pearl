@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Round tonal background of the menu button in the note list header (design 1A): a 48dp circle centred in the
+     button, whatever height the toolbar gives it -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android" android:color="?attr/colorControlHighlight">
+    <item android:id="@android:id/mask" android:width="48dp" android:height="48dp" android:gravity="center">
+        <shape android:shape="oval">
+            <solid android:color="@android:color/white"/>
+        </shape>
+    </item>
+    <item android:width="48dp" android:height="48dp" android:gravity="center">
+        <shape android:shape="oval">
+            <solid android:color="?attr/colorSurfaceContainerHigh"/>
+        </shape>
+    </item>
+</ripple>
