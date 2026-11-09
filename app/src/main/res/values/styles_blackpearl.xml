@@ -25,6 +25,15 @@
         <item name="shapeAppearanceCornerLarge">@style/ShapeBP.28</item>
         <item name="shapeAppearanceCornerExtraLarge">@style/ShapeBP.32</item>
     </style>
+    <style name="Shape.Pill" parent="">
+        <item name="noteCardCornerRadius">32dp</item>
+        <item name="dialogCornerSize">36dp</item>
+        <item name="shapeAppearanceCornerExtraSmall">@style/ShapeBP.12</item>
+        <item name="shapeAppearanceCornerSmall">@style/ShapeBP.Full</item>
+        <item name="shapeAppearanceCornerMedium">@style/ShapeBP.28</item>
+        <item name="shapeAppearanceCornerLarge">@style/ShapeBP.32</item>
+        <item name="shapeAppearanceCornerExtraLarge">@style/ShapeBP.36</item>
+    </style>
     <style name="ShapeBP" parent=""><item name="cornerFamily">rounded</item></style>
     <style name="ShapeBP.2"><item name="cornerSize">2dp</item></style>
     <style name="ShapeBP.4"><item name="cornerSize">4dp</item></style>
@@ -33,6 +42,9 @@
     <style name="ShapeBP.24"><item name="cornerSize">24dp</item></style>
     <style name="ShapeBP.28"><item name="cornerSize">28dp</item></style>
     <style name="ShapeBP.32"><item name="cornerSize">32dp</item></style>
+    <style name="ShapeBP.12"><item name="cornerSize">12dp</item></style>
+    <style name="ShapeBP.36"><item name="cornerSize">36dp</item></style>
+    <style name="ShapeBP.Full"><item name="cornerSize">50%</item></style>
 
     <!-- Note text font: NoteFont preference -->
     <style name="NoteFont.Inter" parent=""><item name="noteFontFamily">@font/inter_font_family</item></style>

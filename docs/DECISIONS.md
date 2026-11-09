@@ -54,3 +54,8 @@ Newest last. Format: date — decision — why.
     location, no storage permission); share via cache file + FileProvider + Sharesheet. Tables render as plain text.
 17. **2026-11-09 — Release version from the git tag** (`-PreleaseVersion`, versionCode = X*10000+Y*100+Z, e.g. 0.2.1 → 201).
     Avoids a PR just to bump numbers on the protected `main`. Codes stay above the earlier manual ones (1–4).
+18. **2026-11-09 — Themes at Atlante level.** Designed themes keep exact paper/cards/text/accent colors (other roles
+    from Material's scheme of the accent); 3 always-dark themes force night mode. "My theme" = 3 user colors → full M3
+    roles (`ThemeRoles.custom`) applied at runtime via Material's `ColorResourcesOverride` (public API, Android 11+;
+    older devices fall back to Black Pearl). Dark/light of "My theme" is derived from its background. Old "My color"
+    (seed, Android 12+) replaced; its stored accent key is reused. Appearance settings moved to one Compose screen.

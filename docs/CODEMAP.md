@@ -34,8 +34,10 @@ Tests: `app/src/test/java/org/qosp/notes/` (unit, JVM/Robolectric) and `app/src/
 | Sync: local folder (SAF, .md/.txt files) | `J/data/sync/fs/StorageBackend.kt`, `StorageConfig.kt` |
 | Settings / preferences | `J/ui/settings/*`, `J/preferences/*` |
 | Theme (Material 3, light/dark/AMOLED) | `R/values*/themes.xml` (app attrs → M3 roles), `J/ui/BaseActivity.kt` (applies overlays), `J/ui/theme/Theme.kt` (Compose reads View theme) |
-| Color palettes (17 + dynamic + personal seed) | generated `R/values*/palettes.xml` ← `tools/palette-gen/` (edit table, run `run.sh`); enum `ColorScheme` in `J/preferences/PreferenceEnums.kt` |
-| Appearance customization (corners, note font, my color) | `R/values/styles_blackpearl.xml`, `attrs_blackpearl.xml`, enums `CardShape`/`NoteFont`, `J/ui/settings/AppearanceDialogs.kt`, `SettingsFragment.kt`, seed in `PreferenceRepository.getCustomSeedColor()` |
+| Themes (21 palettes, groups, descriptions) | generated `R/values*/palettes.xml` ← `tools/palette-gen/GenPalettes.java` (table) + `J/ui/theme/ThemeRoles.java` (role math, shared with the app); enum `ColorScheme`/`ThemeGroup` in `J/preferences/PreferenceEnums.kt` |
+| "My theme" (3 colors, Android 11+) | `J/ui/theme/CustomTheme.kt` (ColorResourcesOverride), generated `CustomThemeResources.kt` + `R/values/colors_custom_theme.xml`, `Palette.Custom`; colors in `PreferenceRepository.getCustomTheme()`; tests `ThemeRolesTest` |
+| Settings > Appearance (Compose) | `J/ui/appearance/AppearanceFragment.kt`, `AppearanceScreen.kt` (gallery, mode, shapes, fonts, FAB size), `ThemeEditorScreen.kt` (HSV picker, contrast, preview) |
+| Shapes / note font / FAB size | `R/values/styles_blackpearl.xml`, `attrs_blackpearl.xml`, enums `CardShape`/`NoteFont`/`FabSize`; FAB size applied in `J/ui/main/MainFragment.kt` |
 | Black Pearl strings | `R/values/strings_blackpearl.xml`, `R/values-it/strings_blackpearl.xml` (keep new strings here, not in upstream `strings.xml`) |
 | Home-screen widget | `J/ui/widget/*`, `R/xml/notes_widget_info.xml` |
 | DI modules (Koin) | `J/di/*` |

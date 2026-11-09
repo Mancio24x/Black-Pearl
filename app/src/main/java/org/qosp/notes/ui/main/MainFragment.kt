@@ -1,5 +1,8 @@
 package org.qosp.notes.ui.main
 
+import org.qosp.notes.preferences.PreferenceRepository
+import org.qosp.notes.preferences.FabSize
+import org.koin.android.ext.android.inject
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -38,6 +41,7 @@ import org.qosp.notes.ui.utils.navigateSafely
 import org.qosp.notes.ui.utils.viewBinding
 
 open class MainFragment : AbstractNotesFragment(R.layout.fragment_main) {
+    private val preferenceRepository: PreferenceRepository by inject()
     private val binding by viewBinding(FragmentMainBinding::bind)
 
     override val currentDestinationId: Int = R.id.fragment_main
@@ -207,6 +211,14 @@ open class MainFragment : AbstractNotesFragment(R.layout.fragment_main) {
     private fun setupFab() {
         ViewCompat.setTransitionName(binding.fabCreateNote, "editor_create")
         binding.fabCreateNote.setOnClickListener { goToEditor(sharedElement = binding.fabCreateNote) }
+        // Black Pearl: size of the "+" button (Settings > Appearance)
+        viewLifecycleOwner.lifecycleScope.launch {
+            preferenceRepository.get<FabSize>().collect { size ->
+                val density = resources.displayMetrics.density
+                binding.fabCreateNote.customSize = (size.sizeDp * density).toInt()
+                binding.fabCreateNote.setMaxImageSize((size.iconDp * density).toInt())
+            }
+        }
     }
 
     private fun setLayoutChangeActionIcon() {

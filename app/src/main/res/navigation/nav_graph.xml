@@ -127,7 +127,13 @@
             android:name="org.qosp.notes.ui.settings.SettingsFragment"
             android:layout="@layout/fragment_settings">
         <action android:id="@+id/action_main_settings_to_sync" app:destination="@id/fragment_sync_settings"/>
+        <action android:id="@+id/action_settings_to_appearance" app:destination="@id/fragment_appearance"/>
     </fragment>
+
+    <fragment
+        android:id="@+id/fragment_appearance"
+        android:name="org.qosp.notes.ui.appearance.AppearanceFragment"
+        android:layout="@layout/fragment_appearance"/>
 
     <fragment
             android:id="@+id/fragment_search"
