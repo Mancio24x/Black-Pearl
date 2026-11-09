@@ -98,4 +98,11 @@ class ImageBlocksTest {
         assertFalse(ImageBlocks.isAttachmentPath("content://x/y.jpg"))
         assertFalse(ImageBlocks.isAttachmentPath("https://example.org/a.png"))
     }
+
+    @Test
+    fun bracketsInCaptionDoNotBreakTheImage() {
+        val out = ImageBlocks.insert("", 0, "img_2.jpg", "foto [1]\nbis").first
+        assertEquals("![foto  1  bis](img_2.jpg)\n", out)
+        assertEquals("img_2.jpg", ImageBlocks.blocks(out).single().destination)
+    }
 }

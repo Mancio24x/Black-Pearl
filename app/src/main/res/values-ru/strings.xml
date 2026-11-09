@@ -12,18 +12,15 @@
     <string name="nav_your_notebooks">Ваши блокноты</string>
     <!-- Preferences -->
     <string name="preferences_header_general">Общее</string>
-    <string name="preferences_theme_mode">Тема</string>
     <string name="preferences_theme_mode_dark">Тёмная</string>
     <string name="preferences_theme_mode_light">Светлая</string>
     <string name="preferences_theme_mode_system">Системная</string>
-    <string name="preferences_dark_theme_mode">Тёмная тема</string>
     <string name="preferences_theme_dark_mode_standard">Стандарт</string>
     <string name="preferences_theme_dark_mode_black">Чёрный</string>
     <string name="preferences_header_view">Вид</string>
     <string name="preferences_layout_mode">Режим компоновки</string>
     <string name="preferences_layout_mode_grid">Сетка</string>
     <string name="preferences_layout_mode_list">Список</string>
-    <string name="preferences_color_scheme">Цветовая схема</string>
     <string name="preferences_color_scheme_blue">Синий</string>
     <string name="preferences_color_scheme_pink">Розовый</string>
     <string name="preferences_color_scheme_green">Зелёный</string>
@@ -131,7 +128,6 @@
     <string name="indicator_recorded_clip">Записанный клип</string>
     <!-- Notebooks -->
     <string name="default_notebook">Другой</string>
-    <string name="notebooks_new_notebook">Новый блокнот</string>
     <string name="notebooks_hint_name">Имя блокнота</string>
     <string name="notebooks_unassigned">Нет блокнотов</string>
     <string name="indicator_notebook_empty">У вас нет блокнотов.</string>
@@ -190,8 +186,6 @@
     <string name="action_insert_code">Добавить как код</string>
     <string name="action_remove_all_checked_tasks">Удалить все отмеченные задачи</string>
     <string name="indicator_note_date">Создано %1$s\nПоследняя правка %2$s</string>
-    <string name="indicator_restored_notes">Восстановленные заметки</string>
-    <string name="indicator_restored_note">Восстановленная заметка</string>
     <string name="indicator_archived_notes">Архивированные заметки</string>
     <string name="indicator_archive_note">Архивированная заметка</string>
     <string name="indicator_moved_notes_to_bin">Заметки в корзине</string>
@@ -223,16 +217,12 @@
     <!-- Syncing -->
     <string name="message_not_valid_https">Недопустимый HTTPS адрес.</string>
     <string name="indicator_nextcloud_currently_logged_in_as">Вы зашли под <b>%s</b>.</string>
-    <string name="indicator_nextcloud_currently_not_logged_in">Вы не вошли.</string>
-    <string name="action_nextcloud_authenticate">Авторизация</string>
-    <string name="indicator_offline_account">Оффлайн уч.запись</string>
     <string name="indicator_connecting">Подключение…</string>
     <string name="message_something_went_wrong">Что-то пошло не так.</string>
     <string name="message_server_connection_failed">Не удалось подключиться к серверу. Проверьте адрес сервера и подключение к сети.</string>
     <string name="message_invalid_credentials">Авторизация не удалась - проверьте введённые данные.</string>
     <string name="message_logged_in_successfully">Успешная авторизация!</string>
     <string name="message_server_not_compatible">Версия приложения не совместима с приложением.</string>
-    <string name="message_internet_not_available">Отсутствует соединение с сетью.</string>
     <string name="message_credentials_cannot_be_blank">Поля не могут быть пусты.</string>
     <string name="preference_nextcloud_clear_credentials">Очистить поля и адрес сервера</string>
     <string name="notification_media_play_pause">Включить / Пауза</string>
@@ -300,9 +290,6 @@
     <string name="about_send_logs_subtext">Отправь журналы приложения разработчику для изучения</string>
     <string name="message_notes_not_installed">Приложение Notes не установлено в вашем Nextcloud.</string>
     <string name="widget_description">Показывать последние заметки на главном экране</string>
-    <string name="action_new_note">Новая заметка</string>
-    <string name="note_untitled">Безымянная</string>
-    <string name="tasks">задачи</string>
     <string name="widget_no_pinned_notes">Пока нет прикреплённых заметок. Прикрепите одну чтобы увидеть её здесь.</string>
     <string name="preferences_color_scheme_teal">Бирюзовый</string>
     <string name="preferences_color_scheme_cyan">Голубой</string>

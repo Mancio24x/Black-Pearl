@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Strings added by Black Pearl (kept apart from upstream strings.xml to ease upstream merges). -->
-<resources>
+<!-- Translated in English (default) and Italian; other languages fall back to English. -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="preferences_color_scheme_black_pearl">Black Pearl</string>
     <string name="preferences_color_scheme_rose">Rose petal</string>
     <string name="preferences_color_scheme_lavender">Lavender</string>
@@ -11,11 +12,6 @@
     <string name="preferences_color_scheme_graphite">Graphite</string>
     <string name="preferences_color_scheme_monochrome">Monochrome</string>
     <string name="preferences_color_scheme_custom">My theme</string>
-    <string name="preferences_custom_color">My color</string>
-    <string name="preferences_custom_color_summary">Pick a color or type its hex code: the whole Material 3 theme is generated from it (Android 12+).</string>
-    <string name="preferences_custom_color_hex">Hex color</string>
-    <string name="preferences_custom_color_invalid">Use 6 hex digits, e.g. 1B4F72</string>
-    <string name="preferences_custom_color_apply">Apply</string>
     <string name="preferences_card_shape">Corner shape</string>
     <string name="preferences_card_shape_square">Square</string>
     <string name="preferences_card_shape_rounded">Rounded</string>
@@ -88,9 +84,7 @@
     <string name="appearance_title">Appearance</string>
     <string name="appearance_mode">Mode</string>
     <string name="appearance_always_dark">This theme is always dark</string>
-    <string name="appearance_ready_themes">Ready-made themes</string>
     <string name="appearance_shape_font">Shape and font</string>
-    <string name="appearance_in_use">In use</string>
     <string name="appearance_open_custom">In use · tap to change colors</string>
     <string name="custom_theme_background">Background</string>
     <string name="custom_theme_cards">Cards</string>

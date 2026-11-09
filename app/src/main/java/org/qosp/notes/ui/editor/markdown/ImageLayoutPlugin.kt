@@ -13,6 +13,7 @@ import io.noties.markwon.image.AsyncDrawableSpan
 import io.noties.markwon.image.ImageSize
 import org.commonmark.node.Image
 import org.commonmark.node.Link
+import org.commonmark.node.Paragraph
 import org.qosp.notes.R
 import org.qosp.notes.ui.attachments.getAttachmentUri
 
@@ -48,6 +49,9 @@ class ImageLayoutPlugin(private val context: Context) : AbstractMarkwonPlugin() 
             if (start == visitor.length()) visitor.builder().append('￼')
 
             val raw = image.destination
+            // Only an image alone in its paragraph is a movable block (same rule as ImageBlocks.blocks)
+            val parent = image.parent
+            val standalone = parent is Paragraph && parent.firstChild === image && parent.lastChild === image
             val occurrence = visitor.builder().getSpans(0, start)
                 .count { (it.what as? ImageClickSpan)?.ref?.destination == raw }
             val resolved = if (ImageBlocks.isAttachmentPath(raw)) {
@@ -61,8 +65,8 @@ class ImageLayoutPlugin(private val context: Context) : AbstractMarkwonPlugin() 
             val drawable = AsyncDrawable(resolved, configuration.asyncDrawableLoader(), configuration.imageSizeResolver(), size)
             val spans = mutableListOf<Any>(
                 AsyncDrawableSpan(configuration.theme(), drawable, AsyncDrawableSpan.ALIGN_BOTTOM, image.parent is Link),
-                ImageClickSpan(ImageBlocks.Ref(raw, occurrence)),
             )
+            if (standalone) spans += ImageClickSpan(ImageBlocks.Ref(raw, occurrence))
             when (layout.align) {
                 ImageBlocks.Align.CENTER -> spans += AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER)
                 ImageBlocks.Align.RIGHT -> spans += AlignmentSpan.Standard(Layout.Alignment.ALIGN_OPPOSITE)

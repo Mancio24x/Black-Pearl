@@ -1,6 +1,6 @@
 name: UI preview
 
-# Also runs device tests that need a real Android runtime (OCR engine, PDF rendering).
+# Also runs ALL device tests (androidTest): OCR engine, PDF, My theme, note life cycle, DB migrations, reminders…
 
 # Screenshots of the main screens (light + dark) on an emulator. Run manually or on PRs touching UI files.
 on:
@@ -43,7 +43,7 @@ jobs:
           profile: pixel_6
           disable-animations: true
           script: |
-            ./gradlew --no-configuration-cache connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=org.qosp.notes.tests.OcrEngineTest,org.qosp.notes.tests.NotePdfExporterTest,org.qosp.notes.tests.CustomThemeTest || echo DEVICE_TESTS_FAILED > device-tests-failed
+            ./gradlew --no-configuration-cache connectedDebugAndroidTest || echo DEVICE_TESTS_FAILED > device-tests-failed
             scripts/capture-ui.sh
             test ! -f device-tests-failed
       - uses: actions/upload-artifact@v4

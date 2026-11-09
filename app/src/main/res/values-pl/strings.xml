@@ -12,7 +12,6 @@
     <string name="nav_your_notebooks">Twoje Notatniki</string>
     <!-- Preferences -->
     <string name="preferences_header_general">Ogólne</string>
-    <string name="preferences_theme_mode">Motyw</string>
     <string name="preferences_theme_mode_dark">Ciemny</string>
     <string name="preferences_theme_mode_light">Jasny</string>
     <string name="preferences_theme_mode_system">Zgodny z systemem</string>
@@ -21,7 +20,6 @@
     <string name="preferences_layout_mode">Układ</string>
     <string name="preferences_layout_mode_grid">Siatka</string>
     <string name="preferences_layout_mode_list">Lista</string>
-    <string name="preferences_color_scheme">Schemat kolorystyczny</string>
     <string name="preferences_color_scheme_blue">Niebieski</string>
     <string name="preferences_color_scheme_pink">Różowy</string>
     <string name="preferences_color_scheme_green">Zielona</string>
@@ -77,7 +75,6 @@
     <string name="preferences_background_sync_enabled">Włączona</string>
     <string name="preferences_background_sync_disabled">Wyłączona</string>
     <string name="preferences_new_notes_synchronizable">Włącz synchronizację dla nowych notatek</string>
-    <string name="preferences_dark_theme_mode">Tryb ciemnego motywu</string>
     <string name="preferences_theme_dark_mode_standard">Standardowy</string>
     <string name="preferences_theme_dark_mode_black">Czarny</string>
     <!-- About -->
@@ -131,7 +128,6 @@
     <string name="indicator_recorded_clip">Nagranie</string>
     <!-- Notebooks -->
     <string name="default_notebook">Inne</string>
-    <string name="notebooks_new_notebook">Nowy notatnik</string>
     <string name="notebooks_hint_name">Nazwa notatnika</string>
     <string name="notebooks_unassigned">Brak Notatnika</string>
     <string name="indicator_notebook_empty">Nie masz notatników.</string>
@@ -190,8 +186,6 @@
     <string name="action_insert_code">Wstaw kod</string>
     <string name="action_remove_all_checked_tasks">Fjern alle avmerkede oppgaver</string>
     <string name="indicator_note_date">Utworzono %1$s\nZmodyfikowano %2$s</string>
-    <string name="indicator_restored_notes">Przywrócono notatki</string>
-    <string name="indicator_restored_note">Przywrócono notatkę</string>
     <string name="indicator_archived_notes">Zarchiwizowano notatki</string>
     <string name="indicator_archive_note">Zarchiwizowano notatkę</string>
     <string name="indicator_moved_notes_to_bin">Przeniesiono notatki do kosza</string>
@@ -223,16 +217,12 @@
     <!-- Syncing -->
     <string name="message_not_valid_https">To nie jest poprawny adres HTTPS.</string>
     <string name="indicator_nextcloud_currently_logged_in_as">Jesteś zalogowany jako <b>%s</b>.</string>
-    <string name="indicator_nextcloud_currently_not_logged_in">Nie jesteś zalogowany.</string>
-    <string name="action_nextcloud_authenticate">Autoryzuj</string>
-    <string name="indicator_offline_account">Konto lokalne</string>
     <string name="indicator_connecting">Łączenie…</string>
     <string name="message_something_went_wrong">Coś poszło nie tak.</string>
     <string name="message_server_connection_failed">Nie można połączyć się z serwerem. Sprawdź adres serwera i połączenie sieciowe.</string>
     <string name="message_invalid_credentials">Niepoprawne dane logowania.</string>
     <string name="message_logged_in_successfully">Zalogowano pomyślnie!</string>
     <string name="message_server_not_compatible">Wersja serwera nie jest kompatybilna z tą aplikacją.</string>
-    <string name="message_internet_not_available">Połączenie internetowe nie jest dostępne.</string>
     <string name="message_credentials_cannot_be_blank">Dane nie mogą być puste.</string>
     <string name="preference_nextcloud_clear_credentials">Wyczyść dane logowania i adres serwera</string>
     <string name="notification_media_play_pause">Play / Pauza</string>
@@ -302,8 +292,5 @@
     <string name="message_certificates_invalid">Błąd certyfikatu. Aby kontynuować proszę włączyć \"ufaj certyfikatowi samopodpisanemu\"..</string>
     <string name="message_notes_not_installed">Aplikacja Notes nie jest zainstalowana w Twoim Nextcloud.</string>
     <string name="widget_description">Pokaż Twoje ostatnie notatki na ekranie głównym</string>
-    <string name="action_new_note">Nowa notatka</string>
-    <string name="note_untitled">Bez tytułu</string>
-    <string name="tasks">zadania</string>
     <string name="widget_no_pinned_notes">Brak przypiętych notatek. Przypnij notatkę, aby zobaczyć ją w tym miejscu.</string>
 </resources>

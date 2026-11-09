@@ -13,14 +13,11 @@
     <!-- Preferences -->
     <!-- Preferences / General -->
     <string name="preferences_header_general">Genel</string>
-    <string name="preferences_theme_mode">Tema modu</string>
     <string name="preferences_theme_mode_dark">Koyu</string>
     <string name="preferences_theme_mode_light">Açık</string>
     <string name="preferences_theme_mode_system">Sistemi takip et</string>
-    <string name="preferences_dark_theme_mode">Koyu tema modu</string>
     <string name="preferences_theme_dark_mode_standard">Standart</string>
     <string name="preferences_theme_dark_mode_black">Siyah</string>
-    <string name="preferences_color_scheme">Renk şeması</string>
     <string name="preferences_color_scheme_blue">Mavi</string>
     <string name="preferences_color_scheme_pink">Pembe</string>
     <string name="preferences_color_scheme_green">Yeşil</string>
@@ -160,7 +157,6 @@
     <string name="indicator_recorded_clip">Kaydedilen Klip</string>
     <!-- Notebooks -->
     <string name="default_notebook">Diğer</string>
-    <string name="notebooks_new_notebook">Yeni defter</string>
     <string name="notebooks_hint_name">Defter adı</string>
     <string name="notebooks_unassigned">Defter Yok</string>
     <string name="indicator_notebook_empty">Hiç defteriniz yok.</string>
@@ -222,8 +218,6 @@
     <string name="action_uncheck_all_tasks">Tüm öğelerin işaretini kaldır</string>
     <string name="action_remove_all_checked_tasks">Tüm işaretli görevleri kaldır</string>
     <string name="indicator_note_date">%1$s tarihinde oluşturuldu\nSon değiştirilme: %2$s</string>
-    <string name="indicator_restored_notes">Notlar geri yüklendi</string>
-    <string name="indicator_restored_note">Not geri yüklendi</string>
     <string name="indicator_archived_notes">Notlar arşivlendi</string>
     <string name="indicator_archive_note">Not arşivlendi</string>
     <string name="indicator_moved_notes_to_bin">Notlar çöp kutusuna taşındı</string>
@@ -255,16 +249,12 @@
     <!-- Syncing -->
     <string name="message_not_valid_https">Bu geçerli bir HTTPS URL’si değil.</string>
     <string name="indicator_nextcloud_currently_logged_in_as">Şu anda <b>%s</b> olarak giriş yaptınız.</string>
-    <string name="indicator_nextcloud_currently_not_logged_in">Şu anda giriş yapmadınız.</string>
-    <string name="action_nextcloud_authenticate">Kimlik doğrula</string>
-    <string name="indicator_offline_account">Çevrimdışı hesap</string>
     <string name="indicator_connecting">Bağlanıyor…</string>
     <string name="message_something_went_wrong">Bir şeyler ters gitti.</string>
     <string name="message_server_connection_failed">Sunucuya bağlanılamadı. Lütfen sunucu adresini ve ağ bağlantınızı kontrol edin.</string>
     <string name="message_invalid_credentials">Geçersiz kimlik bilgileri nedeniyle sunucuyla kimlik doğrulaması yapılamadı.</string>
     <string name="message_logged_in_successfully">Başarıyla giriş yapıldı!</string>
     <string name="message_server_not_compatible">Sunucu sürümü bu uygulamayla uyumlu değil.</string>
-    <string name="message_internet_not_available">İnternet bağlantısı mevcut değil.</string>
     <string name="message_credentials_cannot_be_blank">Kimlik bilgileri boş olamaz.</string>
     <string name="preference_nextcloud_clear_credentials">Kimlik bilgilerini ve sunucu URL’sini temizle</string>
     <string name="notification_media_play_pause">Oynat / Duraklat</string>
@@ -306,9 +296,6 @@
     <string name="about_send_logs_subtext">Soruşturulması için uygulama günlüklerini geliştiriciye gönder</string>
     <string name="message_certificates_invalid">Sertifika hatası. Devam etmek için lütfen \"Kendinden imzalı sertifikalara güven\" seçeneğini etkinleştirin.</string>
     <string name="message_notes_not_installed">Notlar uygulaması Nextcloud\'unuzda yüklü değil.</string>
-    <string name="action_new_note">Yeni Not</string>
-    <string name="note_untitled">Adsız</string>
-    <string name="tasks">görevler</string>
     <string name="widget_no_pinned_notes">Henüz sabitlenmiş not yok. Burada görebilmek için bir notu sabitleyin.</string>
     <string name="preferences_default_editor_mode">Varsayılan düzenleyici modu</string>
     <string name="preferences_default_editor_mode_view">Görüntüleme modu</string>

@@ -13,14 +13,11 @@
     <!-- Preferences -->
     <!-- Preferences / General -->
     <string name="preferences_header_general">عام</string>
-    <string name="preferences_theme_mode">وضع المظهر</string>
     <string name="preferences_theme_mode_dark">داكن</string>
     <string name="preferences_theme_mode_light">فاتح</string>
     <string name="preferences_theme_mode_system">اتبع النظام</string>
-    <string name="preferences_dark_theme_mode">وضع المظهر الداكن</string>
     <string name="preferences_theme_dark_mode_standard">قياسي</string>
     <string name="preferences_theme_dark_mode_black">أسود</string>
-    <string name="preferences_color_scheme">نظام الألوان</string>
     <string name="preferences_color_scheme_blue">أزرق</string>
     <string name="preferences_color_scheme_pink">وردي</string>
     <string name="preferences_color_scheme_green">أخضر</string>
@@ -161,7 +158,6 @@
     <string name="indicator_recorded_clip">مقطع مسجل</string>
     <!-- Notebooks -->
     <string name="default_notebook">أخرى</string>
-    <string name="notebooks_new_notebook">دفتر جديد</string>
     <string name="notebooks_hint_name">اسم الدفتر</string>
     <string name="notebooks_unassigned">بدون دفتر</string>
     <string name="indicator_notebook_empty">ليس لديك أي دفاتر ملاحظات.</string>
@@ -223,8 +219,6 @@
     <string name="action_uncheck_all_tasks">إلغاء تحديد جميع العناصر</string>
     <string name="action_remove_all_checked_tasks">إزالة جميع المهام المحددة</string>
     <string name="indicator_note_date">أُنشئت في %1$s\nآخر تعديل في %2$s</string>
-    <string name="indicator_restored_notes">الملاحظات المستعادة</string>
-    <string name="indicator_restored_note">الملاحظة المستعادة</string>
     <string name="indicator_archived_notes">الملاحظات المؤرشفة</string>
     <string name="indicator_archive_note">الملاحظة المؤرشفة</string>
     <string name="indicator_moved_notes_to_bin">تم نقل الملاحظات إلى السلة</string>
@@ -256,15 +250,11 @@
     <!-- Syncing -->
     <string name="message_not_valid_https">هذا ليس رابط HTTPS صالح.</string>
     <string name="indicator_nextcloud_currently_logged_in_as">أنت مسجل حالياً باسم <b>%s</b>.</string>
-    <string name="indicator_nextcloud_currently_not_logged_in">أنت غير مسجل حالياً.</string>
-    <string name="action_nextcloud_authenticate">المصادقة</string>
-    <string name="indicator_offline_account">حساب غير متصل</string>
     <string name="indicator_connecting">جاري الاتصال…</string>
     <string name="message_something_went_wrong">حدث خطأ ما.</string>
     <string name="message_invalid_credentials">تعذر المصادقة مع الخادم بسبب بيانات اعتماد غير صالحة.</string>
     <string name="message_logged_in_successfully">تم تسجيل الدخول بنجاح!</string>
     <string name="message_server_not_compatible">إصدار الخادم غير متوافق مع هذا التطبيق.</string>
-    <string name="message_internet_not_available">اتصال الإنترنت غير متوفر.</string>
     <string name="message_credentials_cannot_be_blank">لا يمكن أن تكون بيانات الاعتماد فارغة.</string>
     <string name="preference_nextcloud_clear_credentials">مسح بيانات الاعتماد ورابط الخادم</string>
     <string name="notification_media_play_pause">تشغيل / إيقاف مؤقت</string>

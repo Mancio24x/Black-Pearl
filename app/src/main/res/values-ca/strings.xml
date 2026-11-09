@@ -12,11 +12,9 @@
     <string name="nav_your_notebooks">Els teus blocs de notes</string>
     <!-- Preferences -->
     <string name="preferences_header_general">General</string>
-    <string name="preferences_theme_mode">Mode del tema</string>
     <string name="preferences_theme_mode_dark">Fosc</string>
     <string name="preferences_theme_mode_light">Clar</string>
     <string name="preferences_theme_mode_system">Segueix el sistema</string>
-    <string name="preferences_dark_theme_mode">Mode del tema fosc</string>
     <string name="preferences_theme_dark_mode_standard">Estàndard</string>
     <string name="preferences_theme_dark_mode_black">Negre</string>
     <string name="preferences_color_scheme_system">"seguir el sistema "</string>
@@ -24,7 +22,6 @@
     <string name="preferences_layout_mode">Mode de disseny</string>
     <string name="preferences_layout_mode_grid">Graella</string>
     <string name="preferences_layout_mode_list">Llista</string>
-    <string name="preferences_color_scheme">Esquema de color</string>
     <string name="preferences_color_scheme_blue">Blau</string>
     <string name="preferences_color_scheme_pink">Rosa</string>
     <string name="preferences_color_scheme_green">Verd</string>
@@ -136,7 +133,6 @@
     <string name="indicator_recorded_clip">Clip gravat</string>
     <!-- Notebooks -->
     <string name="default_notebook">Altres</string>
-    <string name="notebooks_new_notebook">Bloc de notes nou</string>
     <string name="notebooks_hint_name">Nom del bloc de notes</string>
     <string name="notebooks_unassigned">Sense bloc de notes</string>
     <string name="indicator_notebook_empty">No teniu cap bloc de notes.</string>
@@ -195,8 +191,6 @@
     <string name="action_insert_code">Insereix codi (Markdown)</string>
     <string name="action_remove_all_checked_tasks">Elimina totes les tasques marcades</string>
     <string name="indicator_note_date">Creada el %1$s\nModificada per última vegada el %2$s</string>
-    <string name="indicator_restored_notes">Notes restaurades</string>
-    <string name="indicator_restored_note">Nota restaurada</string>
     <string name="indicator_archived_notes">Notes arxivades</string>
     <string name="indicator_archive_note">Nota arxivada</string>
     <string name="indicator_moved_notes_to_bin">Notes mogudes a la paperera</string>
@@ -228,16 +222,12 @@
     <!-- Syncing -->
     <string name="message_not_valid_https">Això no és una adreça URL HTTPS vàlida.</string>
     <string name="indicator_nextcloud_currently_logged_in_as">Heu iniciat sessió com a <b>%s</b>.</string>
-    <string name="indicator_nextcloud_currently_not_logged_in">No heu iniciat sessió.</string>
-    <string name="action_nextcloud_authenticate">Autentica</string>
-    <string name="indicator_offline_account">Compte fora de línia</string>
     <string name="indicator_connecting">Connectant…</string>
     <string name="message_something_went_wrong">Alguna cosa ha anat malament.</string>
     <string name="message_server_connection_failed">No s\'ha pogut connectar amb el servidor. Comproveu l\'adreça del servidor i la connexió de xarxa.</string>
     <string name="message_invalid_credentials">No s\'ha pogut autenticar amb el servidor a causa de credencials no vàlides.</string>
     <string name="message_logged_in_successfully">Sessió iniciada correctament.</string>
     <string name="message_server_not_compatible">La versió del servidor no és compatible amb aquesta aplicació.</string>
-    <string name="message_internet_not_available">No hi ha connexió a internet.</string>
     <string name="message_credentials_cannot_be_blank">Les credencials no poden estar buides.</string>
     <string name="preference_nextcloud_clear_credentials">Esborra les credencials i l\'URL del servidor</string>
     <string name="notification_media_play_pause">Reprodueix/Pausa</string>

@@ -13,14 +13,11 @@
     <!-- Preferences 偏好 -->
     <!-- Preferences / General 偏好 / 一般-->
     <string name="preferences_header_general">一般</string>
-    <string name="preferences_theme_mode">主題模式</string>
     <string name="preferences_theme_mode_dark">深色</string>
     <string name="preferences_theme_mode_light">淺色</string>
     <string name="preferences_theme_mode_system">跟隨系統</string>
-    <string name="preferences_dark_theme_mode">深色主題模式</string>
     <string name="preferences_theme_dark_mode_standard">標準</string>
     <string name="preferences_theme_dark_mode_black">黑</string>
-    <string name="preferences_color_scheme">配色方案</string>
     <string name="preferences_color_scheme_blue">藍色</string>
     <string name="preferences_color_scheme_pink">粉色</string>
     <string name="preferences_color_scheme_green">綠色</string>
@@ -148,7 +145,6 @@
     <string name="indicator_recorded_clip">已錄製的聲音片段</string>
     <!-- Notebooks筆記本 -->
     <string name="default_notebook">其他</string>
-    <string name="notebooks_new_notebook">新筆記本</string>
     <string name="notebooks_hint_name">筆記本名稱</string>
     <string name="notebooks_unassigned">無筆記本</string>
     <string name="indicator_notebook_empty">沒有筆記本。</string>
@@ -207,8 +203,6 @@
     <string name="action_insert_code">插入Markdown代碼</string>
     <string name="action_remove_all_checked_tasks">移除所有勾選的任務</string>
     <string name="indicator_note_date">製作於 %1$s\n上次修改時間 %2$s</string>
-    <string name="indicator_restored_notes">還原的筆記</string>
-    <string name="indicator_restored_note">還原的筆記</string>
     <string name="indicator_archived_notes">已歸檔的筆記</string>
     <string name="indicator_archive_note">已歸檔的筆記</string>
     <string name="indicator_moved_notes_to_bin">把筆記移至垃圾桶</string>
@@ -240,16 +234,12 @@
     <!-- Syncing同步 -->
     <string name="message_not_valid_https">這不是有效的 HTTPS 網址。</string>
     <string name="indicator_nextcloud_currently_logged_in_as">您目前以 <b>%s</b> 身份登錄。</string>
-    <string name="indicator_nextcloud_currently_not_logged_in">您目前尚未登錄。</string>
-    <string name="action_nextcloud_authenticate">身份驗證</string>
-    <string name="indicator_offline_account">離線帳戶</string>
     <string name="indicator_connecting">連接中…</string>
     <string name="message_something_went_wrong">出了點問題。</string>
     <string name="message_server_connection_failed">無法連線到伺服器。請檢查伺服器位址和網路連線。</string>
     <string name="message_invalid_credentials">由於認證無效，無法在服務器進行身份驗證。</string>
     <string name="message_logged_in_successfully">登錄成功!</string>
     <string name="message_server_not_compatible">伺服器版本與此應用程式不相容。</string>
-    <string name="message_internet_not_available">無網際網路連線</string>
     <string name="message_credentials_cannot_be_blank">認證不能為空</string>
     <string name="preference_nextcloud_clear_credentials">清除認證和伺服器的網址</string>
     <string name="notification_media_play_pause">播放 / 暫停</string>

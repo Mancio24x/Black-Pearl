@@ -12,7 +12,6 @@
     <string name="nav_your_notebooks">Vos carnets</string>
     <!-- Preferences -->
     <string name="preferences_header_general">Général</string>
-    <string name="preferences_theme_mode">Thème</string>
     <string name="preferences_theme_mode_dark">Sombre</string>
     <string name="preferences_theme_mode_light">Clair</string>
     <string name="preferences_theme_mode_system">Thème du système</string>
@@ -20,7 +19,6 @@
     <string name="preferences_layout_mode">Mise en page</string>
     <string name="preferences_layout_mode_grid">Grille</string>
     <string name="preferences_layout_mode_list">Liste</string>
-    <string name="preferences_color_scheme">Palette de couleurs</string>
     <string name="preferences_color_scheme_blue">Bleu</string>
     <string name="preferences_color_scheme_pink">Rose</string>
     <string name="preferences_color_scheme_green">Vert</string>
@@ -80,7 +78,6 @@
     <string name="preferences_background_sync_enabled">Activé</string>
     <string name="preferences_background_sync_disabled">Désactivé</string>
     <string name="preferences_new_notes_synchronizable">Synchroniser les nouvelles notes</string>
-    <string name="preferences_dark_theme_mode">Mode thème sombre</string>
     <string name="preferences_theme_dark_mode_standard">Standard</string>
     <string name="preferences_theme_dark_mode_black">Noire</string>
     <!-- About -->
@@ -136,7 +133,6 @@
     <string name="indicator_recorded_clip">Son enregistré</string>
     <!-- Notebooks -->
     <string name="default_notebook">Autre</string>
-    <string name="notebooks_new_notebook">Nouveau carnet</string>
     <string name="notebooks_hint_name">Nom du carnet</string>
     <string name="notebooks_unassigned">Pas de carnet</string>
     <string name="indicator_notebook_empty">Vous n\'avez pas de carnets.</string>
@@ -195,8 +191,6 @@
     <string name="action_insert_code">Insérer le markdown de formatage de code</string>
     <string name="action_remove_all_checked_tasks">Supprimer toutes les tâches cochées</string>
     <string name="indicator_note_date">Création: %1$s\nDernière modification: %2$s</string>
-    <string name="indicator_restored_notes">Notes restaurées</string>
-    <string name="indicator_restored_note">Note restaurée</string>
     <string name="indicator_archived_notes">Notes archivées</string>
     <string name="indicator_archive_note">Note archivée</string>
     <string name="indicator_moved_notes_to_bin">Notes déplacées dans la corbeille</string>
@@ -228,16 +222,12 @@
     <!-- Syncing -->
     <string name="message_not_valid_https">Ceci n\'est pas une URL HTTPS valide.</string>
     <string name="indicator_nextcloud_currently_logged_in_as">Connecté en tant que <b>%s</b>.</string>
-    <string name="indicator_nextcloud_currently_not_logged_in">Vous n\'êtes pas connecté.</string>
-    <string name="action_nextcloud_authenticate">S\'authentifier</string>
-    <string name="indicator_offline_account">Compte hors ligne</string>
     <string name="indicator_connecting">Connexion…</string>
     <string name="message_something_went_wrong">Il y a eu un problème.</string>
     <string name="message_server_connection_failed">Impossible de se connecter au serveur. Veuillez vérifier l\'adresse du serveur et votre connexion réseau.</string>
     <string name="message_invalid_credentials">Impossible de s\'authentifier : les identifiants sont invalides.</string>
     <string name="message_logged_in_successfully">Connexion réussie !</string>
     <string name="message_server_not_compatible">La version du serveur n\'est pas compatible avec cette application.</string>
-    <string name="message_internet_not_available">Aucune connexion internet disponible.</string>
     <string name="message_credentials_cannot_be_blank">Les identifiants ne peuvent pas être vides.</string>
     <string name="preference_nextcloud_clear_credentials">Effacer les identifiants et l\'adresse</string>
     <string name="notification_media_play_pause">Lecture / Pause</string>

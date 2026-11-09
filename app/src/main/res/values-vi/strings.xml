@@ -13,14 +13,11 @@
     <!-- Preferences -->
     <!-- Preferences / General -->
     <string name="preferences_header_general">Tổng quan</string>
-    <string name="preferences_theme_mode">Chế độ chủ đề</string>
     <string name="preferences_theme_mode_dark">Tối</string>
     <string name="preferences_theme_mode_light">Sáng</string>
     <string name="preferences_theme_mode_system">Theo hệ thống</string>
-    <string name="preferences_dark_theme_mode">Chế độ chủ đề tối</string>
     <string name="preferences_theme_dark_mode_standard">Tiêu chuẩn</string>
     <string name="preferences_theme_dark_mode_black">Đen</string>
-    <string name="preferences_color_scheme">Bảng màu</string>
     <string name="preferences_color_scheme_blue">Lam</string>
     <string name="preferences_color_scheme_pink">Hồng</string>
     <string name="preferences_color_scheme_green">Lục</string>
@@ -149,7 +146,6 @@
     <string name="indicator_recorded_clip">Clip đã ghi</string>
     <!-- Notebooks -->
     <string name="default_notebook">Khác</string>
-    <string name="notebooks_new_notebook">Sổ tay mới</string>
     <string name="notebooks_hint_name">Tên sổ tay</string>
     <string name="notebooks_unassigned">Không có sổ tay</string>
     <string name="indicator_notebook_empty">Bạn không có sổ tay.</string>
@@ -210,8 +206,6 @@
     <string name="action_insert_code">Chèn markdown mã</string>
     <string name="action_remove_all_checked_tasks">Xóa tất cả các tác vụ đã đánh dấu</string>
     <string name="indicator_note_date">Được tạo lúc %1$s\nSửa đổi lần cuối lúc %2$s</string>
-    <string name="indicator_restored_notes">Đã khôi phục các ghi chú</string>
-    <string name="indicator_restored_note">Đã khôi phục ghi chú</string>
     <string name="indicator_archived_notes">Đã lưu trữ các ghi chú</string>
     <string name="indicator_archive_note">Đã lưu trữ ghi chú</string>
     <string name="indicator_moved_notes_to_bin">Đã chuyển các ghi chú vào thùng rác</string>
@@ -243,15 +237,11 @@
     <!-- Syncing -->
     <string name="message_not_valid_https">Đây không phải là url HTTPS hợp lệ.</string>
     <string name="indicator_nextcloud_currently_logged_in_as">Bạn hiện đang đăng nhập với tên <b>%s</b>.</string>
-    <string name="indicator_nextcloud_currently_not_logged_in">Bạn hiện chưa đăng nhập.</string>
-    <string name="action_nextcloud_authenticate">Xác thực</string>
-    <string name="indicator_offline_account">Tài khoản ngoại tuyến</string>
     <string name="indicator_connecting">Đang kết nối…</string>
     <string name="message_something_went_wrong">Đã xảy ra lỗi.</string>
     <string name="message_invalid_credentials">Không thể xác thực với máy chủ do thông tin xác thực không hợp lệ.</string>
     <string name="message_logged_in_successfully">Đăng nhập thành công!</string>
     <string name="message_server_not_compatible">Phiên bản máy chủ không tương thích với ứng dụng này.</string>
-    <string name="message_internet_not_available">Kết nối Internet không khả dụng.</string>
     <string name="message_credentials_cannot_be_blank">Thông tin xác thực không được để trống.</string>
     <string name="preference_nextcloud_clear_credentials">Xóa thông tin đăng nhập và URL máy chủ</string>
     <string name="notification_media_play_pause">Phát / Tạm dừng</string>

@@ -60,3 +60,13 @@ Append one short entry per significant task: files, decisions, tests (with resul
   `SettingsFragment.kt` + layout (one "Appearance" entry), `MainFragment.kt` (FAB size); removed `AppearanceDialogs.kt`.
 - Tests: 107 unit tests OK (new `ThemeRolesTest`; contrast test aware of always-dark themes); `assembleDebug` OK.
 - Open: device check of runtime "My theme"; notes list redesign (1A/1B) waiting for owner's choice.
+
+## 2026-11-09 — QA pass (branch qa/test-and-cleanup)
+- Bugs fixed: editor content source when the user emptied the text (could resurrect deleted text on image/OCR insert);
+  image menu could target a non-standalone copy of the same image; "]" in image captions broke Markdown; OCR progress
+  dialog leaked if the screen closed; fa/ro/sv translations were stripped from the APK and ar/fa/ro/sv missing from
+  the per-app language list; Appearance previews read Configuration via LocalContext.
+- Cleanup: 250 unused strings (all locales), 8 unused drawables, unused colors.xml; Black Pearl strings marked
+  English+Italian only (MissingTranslation).
+- Tests: new device test `NoteLifecycleTest`; CI now runs ALL device tests. Unit tests 108 OK.
+- Lint: FragmentLiveDataObserve in ExtendedListAdapter is a false positive (observes viewLifecycleOwnerLiveData).

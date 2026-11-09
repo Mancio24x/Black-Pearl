@@ -13,16 +13,13 @@
     <!-- Preferences -->
     <!-- Preferences / General -->
     <string name="preferences_header_general">General</string>
-    <string name="preferences_theme_mode">Theme mode</string>
     <string name="preferences_theme_mode_dark">Dark</string>
     <string name="preferences_theme_mode_light">Light</string>
     <string name="preferences_theme_mode_system">Follow system</string>
 
-    <string name="preferences_dark_theme_mode">Dark theme mode</string>
     <string name="preferences_theme_dark_mode_standard">Standard</string>
     <string name="preferences_theme_dark_mode_black">Black</string>
 
-    <string name="preferences_color_scheme">Color scheme</string>
     <string name="preferences_color_scheme_blue">Blue</string>
     <string name="preferences_color_scheme_pink">Pink</string>
     <string name="preferences_color_scheme_green">Green</string>
@@ -196,7 +193,6 @@
 
     <!-- Notebooks -->
     <string name="default_notebook">Other</string>
-    <string name="notebooks_new_notebook">New notebook</string>
     <string name="notebooks_hint_name">Notebook name</string>
     <string name="notebooks_unassigned">No Notebook</string>
     <string name="indicator_notebook_empty">You have no notebooks.</string>
@@ -270,8 +266,6 @@
     <string name="action_uncheck_all_tasks">Uncheck all items</string>
     <string name="action_remove_all_checked_tasks">Remove all checked tasks</string>
     <string name="indicator_note_date">Created at %1$s\nLast modified at %2$s</string>
-    <string name="indicator_restored_notes">Restored notes</string>
-    <string name="indicator_restored_note">Restored note</string>
     <string name="indicator_archived_notes">Archived notes</string>
     <string name="indicator_archive_note">Archived note</string>
     <string name="indicator_moved_notes_to_bin">Moved notes to bin</string>
@@ -307,9 +301,6 @@
     <!-- Syncing -->
     <string name="message_not_valid_https">This is not a valid HTTPS url.</string>
     <string name="indicator_nextcloud_currently_logged_in_as">You are currently logged in as <b>%s</b>.</string>
-    <string name="indicator_nextcloud_currently_not_logged_in">You are currently not logged in.</string>
-    <string name="action_nextcloud_authenticate">Authenticate</string>
-    <string name="indicator_offline_account">Offline account</string>
     <string name="indicator_connecting">Connecting…</string>
     <string name="message_something_went_wrong">Something went wrong.</string>
     <string name="message_server_connection_failed">Could not connect to the server. Please check the server address and your network connection.</string>
@@ -320,7 +311,6 @@
     <string name="message_logged_in_successfully">Logged in successfully!</string>
     <string name="message_notes_not_installed">Notes app is not installed in your Nextcloud.</string>
     <string name="message_server_not_compatible">Server version is not compatible with this app.</string>
-    <string name="message_internet_not_available">Internet connection is not available.</string>
     <string name="message_credentials_cannot_be_blank">Credentials cannot be blank.</string>
     <string name="preference_nextcloud_clear_credentials">Clear credentials and server URL</string>
     <string name="notification_media_play_pause">Play / Pause</string>
@@ -359,8 +349,5 @@
     <string name="error_report_email" translatable="false">sixface@msn.com</string>
     <!-- Widget Strings -->
     <string name="widget_description">Show your recent notes on home screen</string>
-    <string name="action_new_note">New Note</string>
-    <string name="note_untitled">Untitled</string>
-    <string name="tasks">tasks</string>
     <string name="widget_no_pinned_notes">No pinned notes yet. Pin a note to see it here.</string>
 </resources>

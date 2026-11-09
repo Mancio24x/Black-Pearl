@@ -15,13 +15,13 @@ Create `local.properties` with `sdk.dir=/path/to/Android/sdk` (never commit it).
 | Instrumented tests (emulator/device connected) | `./gradlew connectedDebugAndroidTest` |
 | DB migration tests only | `./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=org.qosp.notes.data.DatabaseMigrationTest` |
 | Install on a connected phone | `./gradlew installDebug` |
-| OCR device test (emulator/device) | `./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=org.qosp.notes.tests.OcrEngineTest,org.qosp.notes.tests.NotePdfExporterTest` (CI: "UI preview") |
+| All device tests (emulator/device) | `./gradlew connectedDebugAndroidTest` (CI: "UI preview" runs them all) |
 | UI screenshots (emulator/device running) | `./gradlew assembleDebug -PTESTLAB_BUILD=true && scripts/capture-ui.sh` → `ui-shots/` (CI: workflow "UI preview") |
 | Release APK (signed) | see "Release signing" |
 
 CI (`.github/workflows/build.yml`) runs: `testDebugUnitTest`, `lintDebug` (report only), `assembleDebug`.
-Instrumented tests are **not** run in CI yet (no emulator job): run them locally before merging changes to
-database, backup, reminders or media storage.
+All instrumented tests run on an API 35 emulator in the "UI preview" workflow (PRs touching app code), together with
+the screenshots. Run them locally too before merging changes to database, backup, reminders or media storage.
 
 ## Diagnosing failures
 
@@ -52,7 +52,7 @@ database, backup, reminders or media storage.
 | Sync | `test/.../data/sync/**` | Existing |
 | Attachments | `test/.../ui/attachments/AttachmentUtilsTest.kt`, `androidTest/.../MediaStorageManagerTest.kt` | Existing |
 | Reminders | `androidTest/.../tests/reminders/*` | Existing (device) |
-| Note create/edit/delete, checklists, autosave | — | To add (with feature work) |
+| Note create/edit/delete, checklists, bin, empty-note discard, backup/restore | `androidTest/.../tests/NoteLifecycleTest.kt` | Device |
 | Colors persistence | — | To add (feature 2) |
 | Image positioning | — | To add (feature 1) |
 | OCR | — | To add (feature 3) |

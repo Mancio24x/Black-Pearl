@@ -13,14 +13,11 @@
     <!-- Preferences -->
     <!-- Preferences / General -->
     <string name="preferences_header_general">Algemeen</string>
-    <string name="preferences_theme_mode">Thema</string>
     <string name="preferences_theme_mode_dark">Donker</string>
     <string name="preferences_theme_mode_light">Licht</string>
     <string name="preferences_theme_mode_system">Volg systeemstandaard</string>
-    <string name="preferences_dark_theme_mode">Donker thema</string>
     <string name="preferences_theme_dark_mode_standard">Standaard</string>
     <string name="preferences_theme_dark_mode_black">Zwart</string>
-    <string name="preferences_color_scheme">Kleurenschema</string>
     <string name="preferences_color_scheme_blue">Blauw</string>
     <string name="preferences_color_scheme_pink">Roze</string>
     <string name="preferences_color_scheme_green">Groen</string>
@@ -152,7 +149,6 @@
     <string name="indicator_recorded_clip">Opgenomen clip</string>
     <!-- Notebooks -->
     <string name="default_notebook">Overig</string>
-    <string name="notebooks_new_notebook">Nieuw notitieblok</string>
     <string name="notebooks_hint_name">Naam van notitieblok</string>
     <string name="notebooks_unassigned">Geen notitieblok</string>
     <string name="indicator_notebook_empty">Je hebt geen notitieblokken.</string>
@@ -213,8 +209,6 @@
     <string name="action_insert_code">Markdown code invoegen</string>
     <string name="action_remove_all_checked_tasks">Alle aangevinkte taken verwijderen</string>
     <string name="indicator_note_date">Aangemaakt op %1$s\nLaatst gewijzigd op %2$s</string>
-    <string name="indicator_restored_notes">Herstelde notities</string>
-    <string name="indicator_restored_note">Herstelde notitie</string>
     <string name="indicator_archived_notes">Gearchiveerde notities</string>
     <string name="indicator_archive_note">Gearchiveerde notitie</string>
     <string name="indicator_moved_notes_to_bin">Notities verplaatst naar prullenbak</string>
@@ -246,16 +240,12 @@
     <!-- Syncing -->
     <string name="message_not_valid_https">Dit is geen geldige HTTPS url.</string>
     <string name="indicator_nextcloud_currently_logged_in_as">Je bent aangemeld als <b>%s</b>.</string>
-    <string name="indicator_nextcloud_currently_not_logged_in">Je bent momenteel niet aangemeld.</string>
-    <string name="action_nextcloud_authenticate">Authenticatie</string>
-    <string name="indicator_offline_account">Offline account</string>
     <string name="indicator_connecting">Verbinding maken…</string>
     <string name="message_something_went_wrong">Er ging iets mis.</string>
     <string name="message_server_connection_failed">Kan geen verbinding maken met de server. Controleer het serveradres en je netwerkverbinding.</string>
     <string name="message_invalid_credentials">Authenticatie met de server mislukt vanwege ongeldige inloggegevens.</string>
     <string name="message_logged_in_successfully">Aanmelden gelukt!</string>
     <string name="message_server_not_compatible">De serverversie is niet compatibel met deze app.</string>
-    <string name="message_internet_not_available">Internetconnectie is niet beschikbaar.</string>
     <string name="message_credentials_cannot_be_blank">Inloggegevens mogen niet leeg zijn.</string>
     <string name="preference_nextcloud_clear_credentials">Wis de inloggegevens en de server-URL</string>
     <string name="notification_media_play_pause">Afspelen / Pauzeren</string>

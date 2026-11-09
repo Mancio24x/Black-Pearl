@@ -12,7 +12,6 @@
     <string name="nav_your_notebooks">Tus libretas</string>
     <!-- Preferences -->
     <string name="preferences_header_general">General</string>
-    <string name="preferences_theme_mode">Tema</string>
     <string name="preferences_theme_mode_dark">Oscuro</string>
     <string name="preferences_theme_mode_light">Claro</string>
     <string name="preferences_theme_mode_system">Del sistema</string>
@@ -20,7 +19,6 @@
     <string name="preferences_layout_mode">Disposición</string>
     <string name="preferences_layout_mode_grid">Cuadrícula</string>
     <string name="preferences_layout_mode_list">Lista</string>
-    <string name="preferences_color_scheme">Esquema de colores</string>
     <string name="preferences_color_scheme_blue">Azul</string>
     <string name="preferences_color_scheme_pink">Rosa</string>
     <string name="preferences_color_scheme_green">Verde</string>
@@ -76,7 +74,6 @@
     <string name="preferences_background_sync_enabled">Habilitada</string>
     <string name="preferences_background_sync_disabled">Deshabilitada</string>
     <string name="preferences_new_notes_synchronizable">Sincronizar notas nuevas</string>
-    <string name="preferences_dark_theme_mode">Modo de tema oscuro</string>
     <string name="preferences_theme_dark_mode_standard">Estándar</string>
     <string name="preferences_theme_dark_mode_black">Negro</string>
     <!-- About -->
@@ -130,7 +127,6 @@
     <string name="indicator_recorded_clip">Grabación de audio</string>
     <!-- Notebooks -->
     <string name="default_notebook">Otro</string>
-    <string name="notebooks_new_notebook">Nueva libreta</string>
     <string name="notebooks_hint_name">Nombre de libreta</string>
     <string name="notebooks_unassigned">No hay libretas</string>
     <string name="indicator_notebook_empty">No hay libretas.</string>
@@ -189,8 +185,6 @@
     <string name="action_insert_code">Insertar formato de código</string>
     <string name="action_remove_all_checked_tasks">Eliminar todas las tareas marcadas</string>
     <string name="indicator_note_date">Creada el %1$s\nModificadas el %2$s</string>
-    <string name="indicator_restored_notes">Notas restauradas</string>
-    <string name="indicator_restored_note">Nota restaurada</string>
     <string name="indicator_archived_notes">Notas archivadas</string>
     <string name="indicator_archive_note">Nota archivada</string>
     <string name="indicator_moved_notes_to_bin">Las notas se han trasladado a la papelera</string>
@@ -222,16 +216,12 @@
     <!-- Syncing -->
     <string name="message_not_valid_https">Está no es una URL HTTPS válida.</string>
     <string name="indicator_nextcloud_currently_logged_in_as">Sesión iniciada como <b>%s</b>.</string>
-    <string name="indicator_nextcloud_currently_not_logged_in">No hay iniciado sesión.</string>
-    <string name="action_nextcloud_authenticate">Autenticar</string>
-    <string name="indicator_offline_account">Cuenta sin conexión</string>
     <string name="indicator_connecting">Conectando…</string>
     <string name="message_something_went_wrong">Algo fue mal.</string>
     <string name="message_server_connection_failed">No se pudo conectar con el servidor. Comprueba la dirección del servidor y tu conexión de red.</string>
     <string name="message_invalid_credentials">Autenticación con el servidor fallida por credenciales incorrectas.</string>
     <string name="message_logged_in_successfully">¡Inicio de sesión correcto!</string>
     <string name="message_server_not_compatible">La versión del servidor no es compatible con esta aplicación.</string>
-    <string name="message_internet_not_available">No hay conexión a Internet.</string>
     <string name="message_credentials_cannot_be_blank">No dejes en blanco las credenciales.</string>
     <string name="preference_nextcloud_clear_credentials">Limpiar credenciales y URL del servidor</string>
     <string name="notification_media_play_pause">Reproducir / Pausar</string>
@@ -279,9 +269,6 @@
     <string name="about_send_logs_subtext">Enviar logs al desarrollador de la app para investigación</string>
     <string name="action_enable_screen_always_on">Habilitar Pantalla siempre activa</string>
     <string name="action_disable_screen_always_on">Deshabilitar pantalla siempre activa</string>
-    <string name="action_new_note">Nueva nota</string>
-    <string name="note_untitled">Sin Título</string>
-    <string name="tasks">tareas</string>
     <string name="preferences_header_view_notebook">Libreta</string>
     <string name="preferences_top_bar">Barra superior</string>
     <string name="preferences_default_editor_mode_edit">Modo de edición</string>

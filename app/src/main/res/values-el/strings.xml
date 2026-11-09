@@ -10,7 +10,6 @@
     <string name="nav_notebooks">Τετράδια</string>
     <string name="nav_your_notebooks">Τα τετράδια σας</string>
     <string name="preferences_header_general">Γενικά</string>
-    <string name="preferences_theme_mode">Λειτουργία θέματος</string>
     <string name="preferences_theme_mode_dark">Σκοτεινό</string>
     <string name="preferences_theme_mode_light">Φωτεινό</string>
     <string name="preferences_theme_mode_system">Ρύθμιση συστήματος</string>
@@ -18,7 +17,6 @@
     <string name="preferences_layout_mode">Διάταξη</string>
     <string name="preferences_layout_mode_grid">Πλέγμα</string>
     <string name="preferences_layout_mode_list">Λίστα</string>
-    <string name="preferences_color_scheme">Χρώμα</string>
     <string name="preferences_color_scheme_blue">Μπλε</string>
     <string name="preferences_color_scheme_pink">Ροζ</string>
     <string name="preferences_color_scheme_green">Πράσινο</string>
@@ -118,7 +116,6 @@
     <string name="action_take_photo">Τραβήξτε φωτογραφία</string>
     <string name="indicator_recorded_clip">Ηχογραφημένο κλιπ</string>
     <string name="default_notebook">Άλλες σημειώσεις</string>
-    <string name="notebooks_new_notebook">Νέο τετράδιο</string>
     <string name="notebooks_hint_name">Όνομα τετραδίου</string>
     <string name="notebooks_unassigned">Χωρίς Τετράδιο</string>
     <string name="indicator_notebook_empty">Δεν έχετε τετράδια.</string>
@@ -171,8 +168,6 @@
     <string name="action_insert_code">Εισαγωγή markdown κώδικα</string>
     <string name="action_remove_all_checked_tasks">Καταργήστε όλες τις επιλεγμένες εργασίες</string>
     <string name="indicator_note_date">Δημιουργήθηκε στις %1$s\nΤροποποιήθηκε στις %2$s</string>
-    <string name="indicator_restored_notes">Ανακτήθηκαν σημειώσεις</string>
-    <string name="indicator_restored_note">Ανακτήθηκε σημείωση</string>
     <string name="indicator_archived_notes">Αρχειοθετήθηκαν σημειώσεις</string>
     <string name="indicator_archive_note">Αρχειοθετήθηκε σημείωση</string>
     <string name="indicator_moved_notes_to_bin">Διαγράφηκαν σημειώσεις</string>
@@ -189,15 +184,11 @@
     <string name="notifications_channel_playback">Αναπαραγωγή πολυμέσων</string>
     <string name="message_not_valid_https">Δεν είναι ένα έγκυρο HTTPS url.</string>
     <string name="indicator_nextcloud_currently_logged_in_as">Είστε συνδεδεμένοι ως <b>%s</b>.</string>
-    <string name="indicator_nextcloud_currently_not_logged_in">Δεν είστε συνδεδεμένοι.</string>
-    <string name="action_nextcloud_authenticate">Σύνδεση</string>
-    <string name="indicator_offline_account">Λογαριασμός εκτός σύνδεσης</string>
     <string name="indicator_connecting">Γίνεται σύνδεση…</string>
     <string name="message_something_went_wrong">Κάτι πήγε λάθος.</string>
     <string name="message_invalid_credentials">Δεν μπορεί να γίνει σύνδεση λόγω λανθασμένων στοιχείων.</string>
     <string name="message_logged_in_successfully">Συνδεθήκατε με επιτυχία!</string>
     <string name="message_server_not_compatible">Η έκδοση του διακομιστή δεν είναι συμβατή με την εφαρμογή.</string>
-    <string name="message_internet_not_available">Δεν υπάρχει διαθέσιμη σύνδεση internet.</string>
     <string name="message_credentials_cannot_be_blank">Τα στοιχεία δεν πρέπει να είναι κενά.</string>
     <string name="preference_nextcloud_clear_credentials">Διαγραφή στοιχείων και URL</string>
     <string name="notification_media_play_pause">Αναπαραγωγή / Πάυση</string>
@@ -217,7 +208,6 @@
     <string name="hint_number_columns">Αριθμός στηλών</string>
     <string name="hint_number_rows">Αριθμός σειρών</string>
     <string name="message_cannot_preview_table">Δεν είναι δυνατή η προεπισκόπηση του πίνακα.</string>
-    <string name="preferences_dark_theme_mode">Απόχρωση σκούρου θέματος</string>
     <string name="preferences_theme_dark_mode_standard">Κανονική</string>
     <string name="preferences_theme_dark_mode_black">Μάυρη</string>
     <string name="never">Ποτέ</string>

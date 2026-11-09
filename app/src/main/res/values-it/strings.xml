@@ -12,7 +12,6 @@
     <string name="nav_your_notebooks">I tuoi taccuini</string>
     <!-- Preferences -->
     <string name="preferences_header_general">Generali</string>
-    <string name="preferences_theme_mode">Tema</string>
     <string name="preferences_theme_mode_dark">Scuro</string>
     <string name="preferences_theme_mode_light">Chiaro</string>
     <string name="preferences_theme_mode_system">Segui il sistema</string>
@@ -20,7 +19,6 @@
     <string name="preferences_layout_mode">Disposizione</string>
     <string name="preferences_layout_mode_grid">Griglia</string>
     <string name="preferences_layout_mode_list">Elenco</string>
-    <string name="preferences_color_scheme">Schema colore</string>
     <string name="preferences_color_scheme_blue">Blu</string>
     <string name="preferences_color_scheme_pink">Rosa</string>
     <string name="preferences_color_scheme_green">Verde</string>
@@ -76,7 +74,6 @@
     <string name="preferences_background_sync_enabled">Abilitata</string>
     <string name="preferences_background_sync_disabled">Disabilitata</string>
     <string name="preferences_new_notes_synchronizable">Nuove note sincronizzabili</string>
-    <string name="preferences_dark_theme_mode">Modalità tema scuro</string>
     <string name="preferences_theme_dark_mode_standard">Standard</string>
     <string name="preferences_theme_dark_mode_black">Nero</string>
     <!-- About -->
@@ -130,7 +127,6 @@
     <string name="indicator_recorded_clip">Filmato registrato</string>
     <!-- Notebooks -->
     <string name="default_notebook">Altro</string>
-    <string name="notebooks_new_notebook">Nuovo taccuino</string>
     <string name="notebooks_hint_name">Nome taccuino</string>
     <string name="notebooks_unassigned">Nessun taccuino</string>
     <string name="indicator_notebook_empty">Non ci sono taccuini.</string>
@@ -189,8 +185,6 @@
     <string name="action_insert_code">Inserisci codice Markdown</string>
     <string name="action_remove_all_checked_tasks">Rimuovi tutte le attività selezionate</string>
     <string name="indicator_note_date">Creazione %1$s\nUltima modifica %2$s</string>
-    <string name="indicator_restored_notes">Note rispristinate</string>
-    <string name="indicator_restored_note">Nota ripristinata</string>
     <string name="indicator_archived_notes">Note archiviate</string>
     <string name="indicator_archive_note">Nota archiviata</string>
     <string name="indicator_moved_notes_to_bin">Note spostate nel cestino</string>
@@ -222,16 +216,12 @@
     <!-- Syncing -->
     <string name="message_not_valid_https">Questo non è un URL HTTPS valido.</string>
     <string name="indicator_nextcloud_currently_logged_in_as">Accesso eseguito come <b>%s</b>.</string>
-    <string name="indicator_nextcloud_currently_not_logged_in">Accesso non eseguito.</string>
-    <string name="action_nextcloud_authenticate">Autenticazione</string>
-    <string name="indicator_offline_account">Account non in linea</string>
     <string name="indicator_connecting">Connessione in corso…</string>
     <string name="message_something_went_wrong">Qualcosa non ha funzionato.</string>
     <string name="message_server_connection_failed">Impossibile connettersi al server. Controlla l\'indirizzo del server e la connessione di rete.</string>
     <string name="message_invalid_credentials">Impossibile autenticarsi sul server a causa delle credenziali non valide.</string>
     <string name="message_logged_in_successfully">Accesso effettuato con successo.</string>
     <string name="message_server_not_compatible">La versione del server non è compatibile con questa app.</string>
-    <string name="message_internet_not_available">Connessione internet non disponibile.</string>
     <string name="message_credentials_cannot_be_blank">Le credenziali non possono essere vuote.</string>
     <string name="preference_nextcloud_clear_credentials">Pulisci credenziali e URL del server</string>
     <string name="notification_media_play_pause">Riproduci / Pausa</string>
@@ -293,9 +283,6 @@
     <string name="about_send_logs_subtext">Invia allo sviluppatore i log dell\'applicazione per l\'analisi</string>
     <string name="message_notes_not_installed">L\'applicazione Note non è installata nel proprio Nextcloud.</string>
     <string name="widget_description">Mostra le note recenti sulla schermata home</string>
-    <string name="action_new_note">Nuova nota</string>
-    <string name="note_untitled">Senza titolo</string>
-    <string name="tasks">attività</string>
     <string name="widget_no_pinned_notes">Ancora nessuna nota fissata. Fissa una nota per visualizzarla qui.</string>
     <string name="preferences_default_editor_mode">Modalità predefinita dell\'editor</string>
     <string name="preferences_color_scheme_teal">Verde acqua</string>
