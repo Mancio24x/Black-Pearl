@@ -28,9 +28,7 @@ for mode in no yes; do
   # back to the list: relaunch (BACK from a deep-linked editor may leave the app)
   adb shell am start -W -n $PKG/org.qosp.notes.ui.launcher.LauncherActivity >/dev/null; sleep 3
   shot "list-night_$mode"
-  # navigation button = top-left of the toolbar
-  read -r W H < <(adb shell wm size | grep -o '[0-9]*x[0-9]*' | tail -1 | tr x ' ')
-  adb shell input tap $(( W * 7 / 100 )) $(( H * 9 / 100 )); shot "drawer-night_$mode"
+  tap_text "Open navigation drawer"; shot "drawer-night_$mode"
   if tap_text "Settings"; then
     shot "settings-night_$mode"
     if tap_text "Appearance"; then
