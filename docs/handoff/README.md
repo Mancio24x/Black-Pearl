@@ -14,20 +14,23 @@ Files: this README (state + next steps), `APP_LOCK_PLAN.md` (next feature, desig
 
 ## Where things are (2026-11-10)
 
-- `main` = **v0.5.0** (published, latest, versionCode 500): notes list "Soft" (1A), import from other apps,
-  My theme fixes, simpler M3 menus/sheets, move/resize pictures by hand.
+- Latest release: **v0.5.0** (versionCode 500): notes list "Soft" (1A), import from other apps, My theme fixes,
+  simpler M3 menus/sheets, move/resize pictures by hand. `main` is one commit ahead (#25, Save PDF crash fix).
+- The owner reported on 0.5.0: "Esporta / Condividi PDF crasha" → #25 + #27.
 - Unit tests: 128 (`./gradlew testDebugUnitTest`). Device tests: 36 (run in CI, see `ENVIRONMENT.md`).
 
 ## Open pull requests
 
 | PR | What | State | Next step |
 |---|---|---|---|
-| **#25** `fix/pdf-export-crash` | Crash on "Save PDF" / "Share PDF" (and any old `BottomSheet` open when the app goes to the background) | Fix done; `BottomSheetStateTest` reproduced the crash and passes now; 128 unit tests OK. CI (build + emulator) was **queued** when this was written | Check `gh pr checks 25 --repo Mancio24x/Black-Pearl`, look at the `pdf-save*` / `pdf-share*` screenshots and `logcat.txt` in the `ui-screenshots` artifact (no `FATAL`). Then ask the owner to merge, and offer release **0.5.1** |
+| #25 `fix/pdf-export-crash` | Crash on "Save PDF" (old `BottomSheet` saved its actions when the app went to the background) | **Merged** into `main` (not released yet). Emulator log confirmed Save PDF no longer crashes | — |
+| **#27** `fix/pdf-share-crash` | "Share PDF" still crashed for a second reason (`requireContext()` inside the sheet action = the closed sheet: "Fragment BottomSheet not attached to a context"); also makes the UI preview job fail on any `FATAL EXCEPTION` | Fix pushed, unit tests OK; CI emulator run was in progress | Check `gh pr checks 27 --repo Mancio24x/Black-Pearl` (the job itself now fails on a crash) and the `pdf-share*` screenshots. Then ask the owner to merge and offer release **0.5.1** (contains #25 + #27) |
+| #26 `docs/handoff` | This folder | Open, docs only | Owner merges when he wants |
 | #1–#10 | Dependabot updates | Untouched | Not requested. Careful with **#8 (Material 1.12 → 1.14)**: `com/google/android/material/color/BlackPearlColorResources.kt` calls Material's package-private `ResourcesLoaderUtils`; check it still exists, run the device tests (`CustomThemeTest`, `CustomThemeActivityTest`) and `tools/palette-gen` (pinned to 1.12) |
 
 ## Next work, in order
 
-1. **Finish #25** (above).
+1. **Finish #27** (above), then release 0.5.1 if the owner asks.
 2. **App lock** — requested by the owner: lock the app with biometrics or a 4–6 digit PIN. Fully designed in
    `APP_LOCK_PLAN.md`; nothing written yet (no branch). Start a branch `feature/app-lock` from updated `main`.
 3. Release after each merged feature when the owner asks ("pubblica").

@@ -18,7 +18,7 @@
 - `build.yml`: unit tests, lint (report only), debug APK artifact `black-pearl-debug-apk`.
 - `ui-preview.yml`: Android 15 emulator; runs **all device tests** (`connectedDebugAndroidTest`, fails the job if any
   fail) then `scripts/capture-ui.sh` (screenshots + `logcat.txt` with theme logs and `AndroidRuntime` errors; the
-  script itself never fails, so read the screenshots and the log). Runs on PRs touching UI / androidTest / the script,
+  script itself never fails, so read the screenshots; after #27 the job fails if the log has a `FATAL EXCEPTION`). Runs on PRs touching UI / androidTest / the script,
   or by hand: `gh workflow run ui-preview.yml --repo Mancio24x/Black-Pearl --ref <branch>`.
   Artifacts: `device-test-reports` (HTML; counts in `connected/debug/index.html`) and `ui-screenshots`.
   Download: `gh run download <id> --repo Mancio24x/Black-Pearl -D <dir>`.
@@ -40,6 +40,9 @@
 - `ColorResourcesOverride.applyIfPossible` adds Material You's overlay; My theme uses `BlackPearlColorResources`.
 - Night mode must be set in `BaseActivity.attachBaseContext` (setting it in onCreate makes AppCompat re-apply the
   manifest theme and lose the palette).
+- Inside a `BottomSheet.show { action { … } }` lambda the implicit receiver is the **sheet**: `requireContext()`,
+  `startActivity()`, `getString()` are the sheet's and fail once it is closed (anything asynchronous). Call a function
+  of the screen instead (see `EditorFragment.sharePdf()`).
 - Never put lambdas or other non-saveable objects in fragment arguments (crash when the app goes to the background).
   Use `OptionsSheet` (Compose) or the fixed `BottomSheet`, which keep actions in memory.
 - Robolectric tests cannot load app resources here (turning on `isIncludeAndroidResources` breaks other tests:
