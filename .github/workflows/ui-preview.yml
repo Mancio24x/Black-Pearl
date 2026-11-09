@@ -1,6 +1,6 @@
 name: UI preview
 
-# Also runs device tests that need a real Android runtime (OCR engine).
+# Also runs device tests that need a real Android runtime (OCR engine, PDF rendering).
 
 # Screenshots of the main screens (light + dark) on an emulator. Run manually or on PRs touching UI files.
 on:
@@ -11,6 +11,7 @@ on:
       - 'app/src/main/java/org/qosp/notes/ui/**'
       - 'scripts/capture-ui.sh'
       - 'app/src/main/java/org/qosp/notes/ui/ocr/**'
+      - 'app/src/main/java/org/qosp/notes/ui/pdf/**'
       - 'app/src/androidTest/**'
 
 permissions:
@@ -42,7 +43,7 @@ jobs:
           profile: pixel_6
           disable-animations: true
           script: |
-            ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=org.qosp.notes.tests.OcrEngineTest
+            ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=org.qosp.notes.tests.OcrEngineTest,org.qosp.notes.tests.NotePdfExporterTest
             scripts/capture-ui.sh
       - uses: actions/upload-artifact@v4
         if: always()

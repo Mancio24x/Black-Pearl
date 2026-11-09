@@ -48,3 +48,7 @@ Newest last. Format: date — decision — why.
     camera app (no CAMERA permission); gallery via GetContent (no storage permission); temp photo deleted after OCR.
     Limits: printed text only (handwriting poor), needs sharp well-lit photos, no automatic page deskew/crop,
     multi-column layouts may interleave.
+16. **2026-11-09 — PDF with Android `PdfDocument` + `StaticLayout`** (no library). Text is rendered with the app's Markwon
+    instance (same formatting as the preview), paginated line by line; images drawn from local files only (no network),
+    scaled to their layout width; non-placed image attachments appended. Save via SAF `CreateDocument` (user chooses
+    location, no storage permission); share via cache file + FileProvider + Sharesheet. Tables render as plain text.

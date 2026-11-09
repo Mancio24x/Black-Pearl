@@ -40,3 +40,8 @@ Append one short entry per significant task: files, decisions, tests (with resul
   strings, tests `OcrTextTest` (JVM), `OcrEngineTest` (device, CI emulator job).
 - Tests: `testDebugUnitTest` 99 tests, 0 failures; `assembleDebug` + `assembleRelease` OK (release 25 MB, Tesseract names kept by R8).
 - Open: OcrEngineTest result in CI; phone check.
+
+## 2026-11-09 — Feature 4: PDF export (branch feature/pdf-export)
+- Files: `ui/pdf/*`, `EditorFragment.kt`, `menu/editor_top.xml`, `xml/file_provider_paths.xml` (cache pdf/), strings,
+  tests `PdfLayoutTest` (JVM), `NotePdfExporterTest` (device), `ui-preview.yml` runs device tests.
+- Tests: `testDebugUnitTest` 103 tests, 0 failures; `assembleDebug` OK. Device tests: see CI.

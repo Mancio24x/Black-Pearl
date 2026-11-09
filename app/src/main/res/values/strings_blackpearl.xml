@@ -50,4 +50,9 @@
     <string name="ocr_result_hint">Check and fix the text</string>
     <string name="ocr_insert_here">Insert in this note</string>
     <string name="ocr_new_note">New note</string>
+    <string name="pdf_export">Export PDF</string>
+    <string name="pdf_save">Save PDF…</string>
+    <string name="pdf_share">Share PDF</string>
+    <string name="pdf_saved">PDF saved</string>
+    <string name="pdf_error">Could not create the PDF</string>
 </resources>

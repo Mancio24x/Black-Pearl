@@ -9,4 +9,8 @@
     <cache-path
             name="ocr_scans"
             path="ocr/"/>
+    <!-- PDFs created for sharing (Black Pearl), overwritten on each export -->
+    <cache-path
+            name="pdf_exports"
+            path="pdf/"/>
 </paths>
