@@ -26,9 +26,9 @@ open class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
 
+        // Theme first, BEFORE super.onCreate (like Material's DynamicColors): palette, shapes, fonts,
+        // "My theme" color resources and night mode must be in place before AppCompat sets up the activity.
         runBlocking {
             val (prefs, custom) = withContext(Dispatchers.IO) {
                 preferenceRepository.getAll().first() to preferenceRepository.getCustomTheme().first()
@@ -68,6 +68,9 @@ open class BaseActivity : AppCompatActivity() {
                 prefs.darkThemeMode.styleResource?.let { theme.applyStyle(it, true) }
             }
         }
+
+        super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         // Observe toast messages with lifecycle awareness
         toaster.messages.collect(this) { (message, duration) ->
