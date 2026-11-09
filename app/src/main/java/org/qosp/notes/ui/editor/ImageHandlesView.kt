@@ -184,13 +184,18 @@ class ImageHandlesView @JvmOverloads constructor(context: Context, attrs: Attrib
         toolbar.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
         val barW = toolbar.measuredWidth.toFloat()
         val barH = toolbar.measuredHeight.toFloat()
-        toolbar.translationX = (image.centerX() - barW / 2).coerceIn(0f, (width - barW).coerceAtLeast(0f))
-        // above the picture; below it if there is no room; else over its lower part (never cut off)
-        toolbar.translationY = when {
-            image.top - barH - dp(28) >= 0 -> image.top - barH - dp(28)
-            image.bottom + dp(24) + barH <= height -> image.bottom + dp(24)
-            else -> (image.bottom - barH - dp(28)).coerceAtLeast(image.top + dp(28))
+        // Above the picture, else below, else beside it, else over its lower part: never cut off
+        val centredX = (image.centerX() - barW / 2).coerceIn(0f, (width - barW).coerceAtLeast(0f))
+        val besideY = (image.centerY() - barH / 2).coerceIn(0f, (height - barH).coerceAtLeast(0f))
+        val (x, y) = when {
+            image.top - barH - dp(28) >= 0 -> centredX to image.top - barH - dp(28)
+            image.bottom + dp(24) + barH <= height -> centredX to image.bottom + dp(24)
+            image.right + dp(28) + barW <= width -> image.right + dp(28) to besideY
+            image.left - dp(28) - barW >= 0 -> image.left - dp(28) - barW to besideY
+            else -> centredX to (image.bottom - barH - dp(28)).coerceAtLeast(image.top + dp(28))
         }
+        toolbar.translationX = x
+        toolbar.translationY = y
         invalidate()
         return true
     }

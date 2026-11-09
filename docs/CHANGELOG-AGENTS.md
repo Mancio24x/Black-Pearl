@@ -98,3 +98,12 @@ Append one short entry per significant task: files, decisions, tests (with resul
   popup menus rounded (`Widget.BlackPearl.PopupMenu`). Strings only used by the old menus removed (all locales);
   Italian "Rispristina" typo fixed.
 - Tests: unit tests and all 36 device tests pass; screenshots of the sheets in the UI preview run.
+
+## 2026-11-10 — Move / resize pictures by hand (branch feature/photo-handles)
+- New `ImageHandlesView` (overlay in `fragment_editor.xml` next to the preview) + `ImageGestures` (pure: rendered
+  non-blank lines ↔ source lines for moves, `moveBy`, `snapPercent`); `EditorFragment.setupImageLayout` wires it.
+- `ImageLayoutPlugin`: a picture between line breaks is standalone (was: only alone in its paragraph), so pictures
+  inserted between two text lines can be tapped.
+- Tests: `ImageGesturesTest` (4); all unit tests and 36 device tests pass; screenshot script creates a note with a web
+  picture, selects it, resizes it with the corner handle and drags it below the last line.
+- Open: line↔unit mapping can be off around fenced code blocks and tables (moves still go the right way).
