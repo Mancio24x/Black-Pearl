@@ -105,6 +105,10 @@
             android:visible="false"
             app:showAsAction="never"/>
     <item
+            android:id="@+id/action_export_pdf"
+            android:title="@string/pdf_export"
+            app:showAsAction="never"/>
+    <item
             android:id="@+id/action_scan_text"
             android:title="@string/ocr_scan_text"
             app:showAsAction="never"/>

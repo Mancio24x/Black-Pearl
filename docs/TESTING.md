@@ -15,7 +15,7 @@ Create `local.properties` with `sdk.dir=/path/to/Android/sdk` (never commit it).
 | Instrumented tests (emulator/device connected) | `./gradlew connectedDebugAndroidTest` |
 | DB migration tests only | `./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=org.qosp.notes.data.DatabaseMigrationTest` |
 | Install on a connected phone | `./gradlew installDebug` |
-| OCR device test (emulator/device) | `./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=org.qosp.notes.tests.OcrEngineTest` (CI: "UI preview") |
+| OCR device test (emulator/device) | `./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=org.qosp.notes.tests.OcrEngineTest,org.qosp.notes.tests.NotePdfExporterTest` (CI: "UI preview") |
 | UI screenshots (emulator/device running) | `./gradlew assembleDebug -PTESTLAB_BUILD=true && scripts/capture-ui.sh` → `ui-shots/` (CI: workflow "UI preview") |
 | Release APK (signed) | see "Release signing" |
 

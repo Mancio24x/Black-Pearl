@@ -29,4 +29,4 @@ Status legend: **Existing** (inherited from Quillpad, untouched) · **To improve
 | 1 | Repositionable images in notes (insert from attachments/camera/gallery, move up/down, reorder, align, resize 25–100% keeping ratio, remove from note) | Completed — device check pending | `feature/image-layout` |
 | 2 | Colored notes: swatch picker with live preview, "No color", change from list multi-select, WCAG AA contrast in light/dark for all palettes | Completed — device check pending | `feature/note-colors` |
 | 3 | Offline OCR ("Scan text"): camera or gallery, Italian + English, editable preview, insert here or new note, fully offline | Completed — device test in CI, phone check pending | `feature/offline-ocr` |
-| 4 | PDF export | Planned | `feature/pdf-export` |
+| 4 | PDF export: A4, title, Markdown formatting, checklists, positioned images (+ image attachments), multipage with page numbers; save anywhere (SAF) or share (Sharesheet) | Completed — device test in CI, phone check pending | `feature/pdf-export` |

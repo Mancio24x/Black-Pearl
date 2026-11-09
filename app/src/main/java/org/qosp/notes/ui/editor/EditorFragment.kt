@@ -15,6 +15,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import org.qosp.notes.BuildConfig
 import org.qosp.notes.ui.ocr.OcrEngine
+import org.qosp.notes.ui.pdf.NotePdfExporter
 import org.qosp.notes.ui.ocr.OcrText
 import java.io.File
 import android.os.Build
@@ -67,6 +68,8 @@ import io.noties.markwon.editor.MarkwonEditor
 import io.noties.markwon.editor.MarkwonEditorTextWatcher
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
 import org.commonmark.node.Code
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -171,6 +174,11 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         }
 
         model.insertAttachments(*attachments.toTypedArray())
+    }
+
+    // --- Black Pearl: PDF export (feature 4) ---
+    private val pdfSaveLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("application/pdf")) { uri ->
+        if (uri != null) exportPdf { requireContext().contentResolver.openOutputStream(uri) }
     }
 
     // --- Black Pearl: offline OCR (feature 3) ---
@@ -465,6 +473,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                 }
 
                 R.id.action_scan_text -> showOcrSourceSheet()
+                R.id.action_export_pdf -> showPdfSheet()
 
                 R.id.action_record_audio -> {
                     clearFragmentResult(RECORD_CODE)
@@ -556,6 +565,45 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             adapter = tasksAdapter
             itemTouchHelper.attachToRecyclerView(this)
+        }
+    }
+
+    private fun pdfFileName() = (data.note?.title?.trim()?.ifEmpty { null } ?: getString(R.string.indicator_untitled))
+        .replace(Regex("[\\\\/:*?\"<>|\\n]"), "_").take(80) + ".pdf"
+
+    private fun showPdfSheet() {
+        BottomSheet.show(getString(R.string.pdf_export), parentFragmentManager) {
+            action(R.string.pdf_save, R.drawable.ic_export_note) { pdfSaveLauncher.launch(pdfFileName()) }
+            action(R.string.pdf_share, R.drawable.ic_share) {
+                val file = File(File(requireContext().cacheDir, "pdf").apply { mkdirs() }, pdfFileName())
+                exportPdf(onDone = {
+                    val uri = FileProvider.getUriForFile(requireContext(), "${BuildConfig.APPLICATION_ID}.provider", file)
+                    val send = Intent(Intent.ACTION_SEND).apply {
+                        type = "application/pdf"
+                        putExtra(Intent.EXTRA_STREAM, uri)
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                    startActivity(Intent.createChooser(send, getString(R.string.pdf_share)))
+                }) { file.outputStream() }
+            }
+        }
+    }
+
+    /** Renders the current note off the main thread; [open] gives the destination stream. */
+    private fun exportPdf(onDone: (() -> Unit)? = null, open: () -> java.io.OutputStream?) {
+        val note = data.note ?: return
+        val ctx = requireContext()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val ok = withContext(Dispatchers.IO) {
+                runCatching {
+                    open()?.use { NotePdfExporter(ctx.applicationContext, markwon).write(note, it) } != null
+                }.onFailure { Log.e(TAG, "PDF export failed", it) }.getOrDefault(false)
+            }
+            if (ok) {
+                if (onDone != null) onDone() else sendMessage(getString(R.string.pdf_saved))
+            } else {
+                sendMessage(getString(R.string.pdf_error))
+            }
         }
     }
 
