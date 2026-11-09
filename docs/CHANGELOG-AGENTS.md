@@ -33,3 +33,10 @@ Append one short entry per significant task: files, decisions, tests (with resul
   (multi-select), `ActivityViewModel.colorNotes`, `values-night/themes.xml` (Cyan), strings, tests `NoteColorContrastTest`,
   `NoteColorPersistenceTest`.
 - Tests: `testDebugUnitTest` 94 tests, 0 failures; `assembleDebug` OK. Not yet checked on a device.
+
+## 2026-11-09 — Feature 3: offline OCR (branch feature/offline-ocr)
+- Files: `ui/ocr/*`, `EditorFragment.kt`, `menu/editor_top.xml`, `xml/file_provider_paths.xml` (cache ocr/), `assets/tessdata/*`,
+  `gradle/libs.versions.toml`, `app/build.gradle.kts` (dep, noCompress, release ABIs, proguard file), `app/proguard-rules.pro`,
+  strings, tests `OcrTextTest` (JVM), `OcrEngineTest` (device, CI emulator job).
+- Tests: `testDebugUnitTest` 99 tests, 0 failures; `assembleDebug` + `assembleRelease` OK (release 25 MB, Tesseract names kept by R8).
+- Open: OcrEngineTest result in CI; phone check.

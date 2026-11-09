@@ -52,6 +52,11 @@ android {
         }
     }
 
+    androidResources {
+        // OCR models are read as-is (and their size checked) from assets
+        noCompress += "traineddata"
+    }
+
     dependenciesInfo {
         // Disables dependency metadata when building APKs.
         includeInApk = false
@@ -83,6 +88,11 @@ android {
         release {
             optimization {
                 enable = true
+            }
+            proguardFiles("proguard-rules.pro")
+            // Phones only: drops x86/x86_64 native libs (~15 MB, OCR engine). Debug keeps all ABIs for emulators.
+            ndk {
+                abiFilters += listOf("arm64-v8a", "armeabi-v7a")
             }
             isCrunchPngs = false
             if (project.hasProperty("keystore")) {
@@ -204,6 +214,8 @@ dependencies {
 
     // Markwon
     implementation(libs.bundles.markwon)
+    // Offline OCR (Black Pearl feature 3): Tesseract engine, models bundled in assets/tessdata
+    implementation(libs.tesseract4android)
 
     // Work Manager
     implementation(libs.workRuntimeKtx)

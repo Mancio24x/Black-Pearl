@@ -17,6 +17,7 @@ Tests: `app/src/test/java/org/qosp/notes/` (unit, JVM/Robolectric) and `app/src/
 | Checklists (tasks) | `J/data/model/NoteTask.kt`, `J/ui/tasks/*`, `R/layout/layout_task.xml` |
 | Note colors | `J/data/model/NoteColor.kt`, picker `J/ui/common/NoteColorDialog.kt` (editor menu + list multi-select `action_color_selected` → `ActivityViewModel.colorNotes`), tints `colorNote*` in `R/values*/themes.xml`, `J/ui/utils/ContextUtils.kt`, `NoteViewHolder.kt`; tests `NoteColorContrastTest`, `data/NoteColorPersistenceTest` |
 | Attachments (images, audio, video, files) | `J/data/model/Attachment.kt`, `J/ui/attachments/*`, `J/components/MediaStorageManager.kt`, `R/xml/file_provider_paths.xml` |
+| Offline OCR (feature 3) | `J/ui/ocr/OcrEngine.kt` (Tesseract, model install, EXIF decode), `OcrText.kt` (cleanup, insert), `EditorFragment` (`action_scan_text`, `runOcr`, `showOcrResult`), models `app/src/main/assets/tessdata/`, R8 rules `app/proguard-rules.pro`; tests `OcrTextTest`, device `androidTest/.../OcrEngineTest` |
 | Camera photo | `J/ui/utils/ActivityResultUtils.kt` (`TakePictureContract`), `EditorFragment.takePhotoLauncher` |
 | Media viewer / audio player / recorder | `J/ui/media/*`, `J/ui/recorder/*` |
 | Reminders | `J/data/model/Reminder.kt`, `J/ui/reminders/*` |

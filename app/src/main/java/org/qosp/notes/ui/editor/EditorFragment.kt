@@ -7,6 +7,16 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.net.Uri
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
+import androidx.core.os.bundleOf
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import org.qosp.notes.BuildConfig
+import org.qosp.notes.ui.ocr.OcrEngine
+import org.qosp.notes.ui.ocr.OcrText
+import java.io.File
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -161,6 +171,17 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         }
 
         model.insertAttachments(*attachments.toTypedArray())
+    }
+
+    // --- Black Pearl: offline OCR (feature 3) ---
+    private val ocrScanFile get() = File(File(requireContext().cacheDir, "ocr").apply { mkdirs() }, "scan.jpg")
+    private val ocrScanUri get() = FileProvider.getUriForFile(requireContext(), "${BuildConfig.APPLICATION_ID}.provider", ocrScanFile)
+
+    private val ocrCameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { saved ->
+        if (saved) runOcr(ocrScanUri)
+    }
+    private val ocrGalleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) runOcr(uri)
     }
 
     private val takePhotoLauncher = registerForActivityResult(TakePictureContract) { saved ->
@@ -443,6 +464,8 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                     }
                 }
 
+                R.id.action_scan_text -> showOcrSourceSheet()
+
                 R.id.action_record_audio -> {
                     clearFragmentResult(RECORD_CODE)
                     RecordAudioDialog().show(parentFragmentManager, null)
@@ -534,6 +557,85 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
             adapter = tasksAdapter
             itemTouchHelper.attachToRecyclerView(this)
         }
+    }
+
+    private fun showOcrSourceSheet() {
+        BottomSheet.show(getString(R.string.ocr_scan_text), parentFragmentManager) {
+            action(R.string.ocr_from_camera, R.drawable.ic_camera) {
+                runCatching { ocrCameraLauncher.launch(ocrScanUri) }
+                    .onFailure { this@EditorFragment.sendMessage(getString(R.string.ocr_no_camera)) }
+            }
+            action(R.string.ocr_from_gallery, R.drawable.ic_photo) { ocrGalleryLauncher.launch("image/*") }
+        }
+    }
+
+    private fun runOcr(uri: Uri) {
+        val ctx = requireContext()
+        val progress = MaterialAlertDialogBuilder(ctx)
+            .setMessage(R.string.ocr_in_progress)
+            .setCancelable(false)
+            .show()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val result = OcrEngine(ctx.applicationContext).recognize(uri)
+            progress.dismiss()
+            ocrScanFile.delete() // temporary photo is never kept
+            when (result) {
+                is OcrEngine.Result.Text -> showOcrResult(result.text)
+                OcrEngine.Result.Unreadable -> showOcrMessage(R.string.ocr_unreadable)
+                is OcrEngine.Result.Error -> {
+                    Log.e(TAG, "OCR failed", result.cause)
+                    showOcrMessage(R.string.ocr_error)
+                }
+            }
+        }
+    }
+
+    private fun showOcrMessage(message: Int) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.ocr_scan_text)
+            .setMessage(message)
+            .setPositiveButton(R.string.ocr_try_again) { _, _ -> showOcrSourceSheet() }
+            .setNegativeButton(R.string.action_cancel, null)
+            .show()
+    }
+
+    /** Editable preview: the user fixes mistakes, then inserts into this note or creates a new one. */
+    private fun showOcrResult(text: String) {
+        val ctx = requireContext()
+        val input = TextInputEditText(ctx).apply {
+            setText(text)
+            minLines = 4
+            maxLines = 14
+            isVerticalScrollBarEnabled = true
+        }
+        val box = TextInputLayout(ctx).apply {
+            hint = getString(R.string.ocr_result_hint)
+            addView(input)
+            val pad = (20 * resources.displayMetrics.density).toInt()
+            setPadding(pad, pad / 2, pad, 0)
+        }
+        val canInsert = data.note?.let { !it.isList && !it.isDeleted } == true
+        MaterialAlertDialogBuilder(ctx)
+            .setTitle(R.string.ocr_result_title)
+            .setView(box)
+            .apply {
+                if (canInsert) setPositiveButton(R.string.ocr_insert_here) { _, _ ->
+                    val cursor = model.selectedRange.second
+                    var newCursor = -1
+                    editContent { content ->
+                        OcrText.insertAsParagraph(content, cursor, input.text.toString().trim()).also { newCursor = it.second }.first
+                    }
+                    if (newCursor >= 0) model.selectedRange = newCursor to newCursor
+                }
+            }
+            .setNeutralButton(R.string.ocr_new_note) { _, _ ->
+                findNavController().navigate(
+                    R.id.fragment_editor,
+                    bundleOf("transitionName" to "editor_ocr_${System.currentTimeMillis()}", "newNoteContent" to input.text.toString().trim())
+                )
+            }
+            .setNegativeButton(R.string.action_cancel, null)
+            .show()
     }
 
     // --- Black Pearl: repositionable images (see ImageBlocks / ImageLayoutPlugin) ---
