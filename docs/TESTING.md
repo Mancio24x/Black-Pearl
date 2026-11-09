@@ -37,8 +37,8 @@ database, backup, reminders or media storage.
    `keytool -genkeypair -v -keystore black-pearl-release.jks -alias blackpearl -keyalg RSA -keysize 4096 -validity 10000`
 2. GitHub → repo → Settings → Secrets and variables → Actions → add:
    `KEYSTORE_BASE64` (`base64 -i black-pearl-release.jks | pbcopy`), `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`.
-3. Bump `versionCode` (+1, always increasing) and `versionName` in `app/build.gradle.kts`, commit, then
-   `git tag v0.1.0 && git push origin v0.1.0`. The Release workflow creates a **draft** release; publish it manually.
+3. Tag `main`: `git tag -a v0.2.1 -m "Black Pearl 0.2.1" && git push origin v0.2.1`. Version comes from the tag
+   (`versionCode = X*10000 + Y*100 + Z`), no file to edit. The Release workflow creates a **draft** release; publish it manually.
 
 **If the keystore is lost**, no future APK can update installed copies: users would have to uninstall
 (losing local notes unless they made a backup) and install a new app. Keep two offline copies of the keystore and passwords.
