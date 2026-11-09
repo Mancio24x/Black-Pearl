@@ -54,4 +54,5 @@
     <string name="pdf_share">Condividi PDF</string>
     <string name="pdf_saved">PDF salvato</string>
     <string name="pdf_error">Impossibile creare il PDF</string>
+    <string name="action_new_note_fab">Nuova nota</string>
 </resources>
