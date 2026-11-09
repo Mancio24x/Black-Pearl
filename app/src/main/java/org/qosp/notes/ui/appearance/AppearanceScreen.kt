@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -94,6 +95,7 @@ fun AppearanceScreen(
     onFab: (FabSize) -> Unit,
 ) {
     val context = LocalContext.current
+    val uiMode = LocalConfiguration.current.uiMode // previews follow light/dark changes
     val scheme = MaterialTheme.colorScheme
     val forcedMode = prefs.colorScheme.alwaysDark || (prefs.colorScheme == ColorScheme.CUSTOM && CustomTheme.isSupported)
     Column(
@@ -136,7 +138,7 @@ fun AppearanceScreen(
             items.chunked(2).forEach { row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     row.forEach { item ->
-                        val swatch = remember(item, context.resources.configuration.uiMode) { swatchOf(context, item, custom) }
+                        val swatch = remember(item, uiMode) { swatchOf(context, item, custom) }
                         ThemeCard(item, swatch, prefs.colorScheme == item, Modifier.weight(1f)) { onScheme(item) }
                     }
                     if (row.size == 1) Spacer(Modifier.weight(1f))

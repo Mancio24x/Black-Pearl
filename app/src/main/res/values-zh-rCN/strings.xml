@@ -13,14 +13,11 @@
     <!-- Preferences -->
     <!-- Preferences / General -->
     <string name="preferences_header_general">常规</string>
-    <string name="preferences_theme_mode">主题模式</string>
     <string name="preferences_theme_mode_dark">深色</string>
     <string name="preferences_theme_mode_light">浅色</string>
     <string name="preferences_theme_mode_system">跟随系统</string>
-    <string name="preferences_dark_theme_mode">深色主题模式</string>
     <string name="preferences_theme_dark_mode_standard">标准</string>
     <string name="preferences_theme_dark_mode_black">暗黑</string>
-    <string name="preferences_color_scheme">配色方案</string>
     <string name="preferences_color_scheme_blue">蓝色</string>
     <string name="preferences_color_scheme_pink">粉色</string>
     <string name="preferences_color_scheme_green">绿色</string>
@@ -143,7 +140,6 @@
     <string name="indicator_recorded_clip">录制的音频剪辑</string>
     <!-- Notebooks -->
     <string name="default_notebook">其他</string>
-    <string name="notebooks_new_notebook">新笔记本</string>
     <string name="notebooks_hint_name">笔记本名称</string>
     <string name="notebooks_unassigned">无笔记本</string>
     <string name="indicator_notebook_empty">您没有笔记本。</string>
@@ -202,8 +198,6 @@
     <string name="action_insert_code">插入 Markdown代码</string>
     <string name="action_remove_all_checked_tasks">删除所有选中的任务</string>
     <string name="indicator_note_date">创建于 %1$s\n上次修改时间 %2$s</string>
-    <string name="indicator_restored_notes">恢复的笔记</string>
-    <string name="indicator_restored_note">恢复的笔记</string>
     <string name="indicator_archived_notes">已存档的笔记</string>
     <string name="indicator_archive_note">已存档的笔记</string>
     <string name="indicator_moved_notes_to_bin">把笔记移至废纸篓</string>
@@ -235,16 +229,12 @@
     <!-- Syncing -->
     <string name="message_not_valid_https">这不是有效的 HTTPS 网址。</string>
     <string name="indicator_nextcloud_currently_logged_in_as">您当前以 <b>%s</b> 身份登录。</string>
-    <string name="indicator_nextcloud_currently_not_logged_in">您当前尚未登录。</string>
-    <string name="action_nextcloud_authenticate">身份验证</string>
-    <string name="indicator_offline_account">离线帐户</string>
     <string name="indicator_connecting">连接中…</string>
     <string name="message_something_went_wrong">出了点问题。</string>
     <string name="message_server_connection_failed">无法连接到服务器。请检查服务器地址和网络连接。</string>
     <string name="message_invalid_credentials">由于证书无效，无法向服务器进行身份验证。</string>
     <string name="message_logged_in_successfully">登录成功!</string>
     <string name="message_server_not_compatible">服务器版本与此应用程序不兼容。</string>
-    <string name="message_internet_not_available">互联网连接不可用。</string>
     <string name="message_credentials_cannot_be_blank">证书不能为空。</string>
     <string name="preference_nextcloud_clear_credentials">清除证书和服务器的URL网址</string>
     <string name="notification_media_play_pause">播放 / 暂停</string>
@@ -288,9 +278,6 @@
     <string name="about_send_logs_subtext">发送应用程序日志给开发人员进行分析</string>
     <string name="message_certificates_invalid">证书错误。请启用“信任自签名证书”后继续。</string>
     <string name="widget_description">在主页显示最近的笔记</string>
-    <string name="action_new_note">新笔记</string>
-    <string name="note_untitled">未命名</string>
-    <string name="tasks">任务</string>
     <string name="widget_no_pinned_notes">还没有置顶的笔记。置顶一条笔记即可在这里查看。</string>
     <string name="message_notes_not_installed">您的 Nextcloud 中未安装“笔记”应用。</string>
     <string name="preferences_color_scheme_teal">"蓝绿色 "</string>

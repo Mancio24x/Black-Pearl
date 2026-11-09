@@ -13,14 +13,11 @@
     <!-- Preferences -->
     <!-- Preferences / General -->
     <string name="preferences_header_general">Allgemein</string>
-    <string name="preferences_theme_mode">Darstellungsmodus</string>
     <string name="preferences_theme_mode_dark">Dunkel</string>
     <string name="preferences_theme_mode_light">Hell</string>
     <string name="preferences_theme_mode_system">Systemeinstellung</string>
-    <string name="preferences_dark_theme_mode">Dunkles Design</string>
     <string name="preferences_theme_dark_mode_standard">Standard</string>
     <string name="preferences_theme_dark_mode_black">Schwarz</string>
-    <string name="preferences_color_scheme">Farbschema</string>
     <string name="preferences_color_scheme_blue">Blau</string>
     <string name="preferences_color_scheme_pink">Rosa</string>
     <string name="preferences_color_scheme_green">Grün</string>
@@ -153,7 +150,6 @@
     <string name="indicator_recorded_clip">Audioaufnahme</string>
     <!-- Notebooks -->
     <string name="default_notebook">Sonstige</string>
-    <string name="notebooks_new_notebook">Neues Notizbuch</string>
     <string name="notebooks_hint_name">Name des Notizbuches</string>
     <string name="notebooks_unassigned">Kein Notizbuch</string>
     <string name="indicator_notebook_empty">Du hast keine Notizbücher.</string>
@@ -215,8 +211,6 @@
     <string name="action_uncheck_all_tasks">Alle Elemente abwählen</string>
     <string name="action_remove_all_checked_tasks">Alle markierten Aufgaben entfernen</string>
     <string name="indicator_note_date">Erstellt am %1$s\nZuletzt bearbeitet am %2$s</string>
-    <string name="indicator_restored_notes">Wiederhergestellte Notizen</string>
-    <string name="indicator_restored_note">Wiederhergestellte Notiz</string>
     <string name="indicator_archived_notes">Archivierte Notizen</string>
     <string name="indicator_archive_note">Archivierte Notiz</string>
     <string name="indicator_moved_notes_to_bin">Notizen in den Papierkorb verschoben</string>
@@ -248,16 +242,12 @@
     <!-- Syncing -->
     <string name="message_not_valid_https">Dies ist keine gültige HTTPS-URL.</string>
     <string name="indicator_nextcloud_currently_logged_in_as">Du bist aktuell als <b>%s</b> angemeldet.</string>
-    <string name="indicator_nextcloud_currently_not_logged_in">Du bist aktuell nicht angemeldet.</string>
-    <string name="action_nextcloud_authenticate">Authentifizieren</string>
-    <string name="indicator_offline_account">Offline-Konto</string>
     <string name="indicator_connecting">Verbinde…</string>
     <string name="message_something_went_wrong">Etwas ist schiefgelaufen.</string>
     <string name="message_server_connection_failed">Verbindung zum Server fehlgeschlagen. Bitte Serveradresse und Netzwerkverbindung prüfen.</string>
     <string name="message_invalid_credentials">Authentifizierung mit dem Server ist aufgrund falscher Zugangsdaten fehlgschlagen.</string>
     <string name="message_logged_in_successfully">Erfolgreich angemeldet!</string>
     <string name="message_server_not_compatible">Die Server-Version ist nicht mit dieser App kompatibel.</string>
-    <string name="message_internet_not_available">Keine Internetverbindung verfügbar.</string>
     <string name="message_credentials_cannot_be_blank">Zugangsdaten dürfen nicht leer sein.</string>
     <string name="preference_nextcloud_clear_credentials">Zugangsdaten und Server-URL löschen</string>
     <string name="notification_media_play_pause">Abspielen / Pause</string>
@@ -301,9 +291,6 @@
     <string name="about_send_logs_subtext">Anwendungsprotokolle zur Analyse an die Entwickler:innen senden</string>
     <string name="message_notes_not_installed">Die Notes App ist auf dem Nextcloud-Server nicht installiert.</string>
     <string name="widget_description">Die neuesten Notizen auf dem Home-Screen anzeigen</string>
-    <string name="action_new_note">Neue Notiz</string>
-    <string name="note_untitled">Ohne Titel</string>
-    <string name="tasks">Aufgaben</string>
     <string name="preferences_default_editor_mode">Standard-Editormodus</string>
     <string name="widget_no_pinned_notes">Noch keine angehefteten Notizen. Hefte eine an, um sie hier zu sehen.</string>
 </resources>

@@ -18,4 +18,6 @@
     <locale android:name="vi"/>
     <locale android:name="zh-CN"/>
     <locale android:name="zh-TW"/>
+    <locale android:name="ar"/>
+    <locale android:name="ro"/>
 </locale-config> 

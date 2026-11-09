@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="preferences_header_general">Allmän</string>
-    <string name="preferences_theme_mode">Temaläge</string>
     <string name="preferences_theme_mode_dark">Mörk</string>
     <string name="preferences_theme_mode_light">Ljus</string>
     <string name="preferences_theme_mode_system">Följ systemet</string>
-    <string name="preferences_dark_theme_mode">Mörkt temaläge</string>
     <string name="preferences_theme_dark_mode_standard">Standard</string>
     <string name="preferences_theme_dark_mode_black">Svart</string>
-    <string name="preferences_color_scheme">Färgschema</string>
     <string name="preferences_color_scheme_blue">Blå</string>
     <string name="preferences_color_scheme_pink">Rosa</string>
     <string name="preferences_color_scheme_green">Grön</string>

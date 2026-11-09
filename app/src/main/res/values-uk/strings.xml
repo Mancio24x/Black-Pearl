@@ -12,18 +12,15 @@
     <string name="nav_your_notebooks">Власні записники</string>
     <!-- Preferences -->
     <string name="preferences_header_general">Загальне</string>
-    <string name="preferences_theme_mode">Тема</string>
     <string name="preferences_theme_mode_dark">Темна</string>
     <string name="preferences_theme_mode_light">Світла</string>
     <string name="preferences_theme_mode_system">За системою</string>
-    <string name="preferences_dark_theme_mode">Темний режим</string>
     <string name="preferences_theme_dark_mode_standard">Темненький</string>
     <string name="preferences_theme_dark_mode_black">Темнючий</string>
     <string name="preferences_header_view">Перегляд</string>
     <string name="preferences_layout_mode">Розподіл нотатків</string>
     <string name="preferences_layout_mode_grid">Сітка</string>
     <string name="preferences_layout_mode_list">Список</string>
-    <string name="preferences_color_scheme">Колір підсвічення</string>
     <string name="preferences_color_scheme_blue">Блакитний</string>
     <string name="preferences_color_scheme_pink">Рожевий</string>
     <string name="preferences_color_scheme_green">Зелений</string>
@@ -130,7 +127,6 @@
     <string name="indicator_recorded_clip">Запис авдіо</string>
     <!-- Notebooks -->
     <string name="default_notebook">Загальний</string>
-    <string name="notebooks_new_notebook">Новий записник</string>
     <string name="notebooks_hint_name">Назва записника</string>
     <string name="notebooks_unassigned">Без записника</string>
     <string name="indicator_notebook_empty">У вас немає жодного записника.</string>
@@ -189,8 +185,6 @@
     <string name="action_insert_code">Додати код</string>
     <string name="action_remove_all_checked_tasks">Видалити всі позначені завдання</string>
     <string name="indicator_note_date">Створено %1$s\nВостаннє змінено %2$s</string>
-    <string name="indicator_restored_notes">Відновлено нотатки</string>
-    <string name="indicator_restored_note">Відновлено нотаток</string>
     <string name="indicator_archived_notes">Архівовано нотатки</string>
     <string name="indicator_archive_note">Архівовано нотаток</string>
     <string name="indicator_moved_notes_to_bin">Нотатки переміщені у смітник</string>
@@ -222,16 +216,12 @@
     <!-- Syncing -->
     <string name="message_not_valid_https">Це хибна HTTPS адреса.</string>
     <string name="indicator_nextcloud_currently_logged_in_as">Наразі, ви зайшли у Nextcloud з обліковкою <b>%s</b>.</string>
-    <string name="indicator_nextcloud_currently_not_logged_in">Наразі, входу у Nextcloud не виконано.</string>
-    <string name="action_nextcloud_authenticate">Авторизація</string>
-    <string name="indicator_offline_account">Локальна обліковка</string>
     <string name="indicator_connecting">З\'єднання…</string>
     <string name="message_something_went_wrong">Щось пішло не за планом.</string>
     <string name="message_server_connection_failed">Не вдалося підключитися до сервера. Перевірте адресу сервера та підключення до мережі.</string>
     <string name="message_invalid_credentials">Неможливо авторизуватися на сервері, так як ім\'я користувача та пароль не збігаються.</string>
     <string name="message_logged_in_successfully">Успішно увійшли в обліковку!</string>
     <string name="message_server_not_compatible">Версія сервера не підтримується цим додатком.</string>
-    <string name="message_internet_not_available">Бракує доступу до мережі інтернет.</string>
     <string name="message_credentials_cannot_be_blank">Вхідні дані не можуть бути пустими.</string>
     <string name="preference_nextcloud_clear_credentials">Очистити вхідні дані та посилання на сервер</string>
     <string name="notification_media_play_pause">Грати / Павза</string>

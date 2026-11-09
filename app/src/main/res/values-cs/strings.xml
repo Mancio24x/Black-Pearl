@@ -13,14 +13,11 @@
     <!-- Preferences -->
 	<!-- Preferences / General -->
 	<string name="preferences_header_general">Obecné</string>
-    <string name="preferences_theme_mode">Barevný režim</string>
     <string name="preferences_theme_mode_dark">Tmavý</string>
     <string name="preferences_theme_mode_light">Světlý</string>
     <string name="preferences_theme_mode_system">Podle systému</string>
-    <string name="preferences_dark_theme_mode">Temný režim</string>
     <string name="preferences_theme_dark_mode_standard">Standardní</string>
     <string name="preferences_theme_dark_mode_black">Černý</string>
-    <string name="preferences_color_scheme">Barvy aplikace</string>
     <string name="preferences_color_scheme_blue">Modré</string>
     <string name="preferences_color_scheme_pink">Růžové</string>
     <string name="preferences_color_scheme_green">Zelené</string>
@@ -148,7 +145,6 @@
     <string name="indicator_recorded_clip">Zvukové nahrávky</string>
     <!-- Notebooks -->
 	<string name="default_notebook">Ostatní</string>
-    <string name="notebooks_new_notebook">Nový zápisník</string>
     <string name="notebooks_hint_name">Jméno zápisníku</string>
     <string name="notebooks_unassigned">Žádný zápisník</string>
     <string name="indicator_notebook_empty">Nemáte žádný zápisník.</string>
@@ -207,8 +203,6 @@
     <string name="action_insert_code">Zdrojový kód</string>
     <string name="action_remove_all_checked_tasks">Odstranit vybrané úkoly</string>
     <string name="indicator_note_date">Vytvořeno %1$s\nNaposledy upraveno %2$s</string>
-    <string name="indicator_restored_notes">Obnovené poznámky</string>
-    <string name="indicator_restored_note">Obnovená poznámka</string>
     <string name="indicator_archived_notes">Poznámky archivovány</string>
     <string name="indicator_archive_note">Poznámka archivována</string>
     <string name="indicator_moved_notes_to_bin">Poznámky přesunuty do koše</string>
@@ -240,16 +234,12 @@
     <!-- Syncing -->
 	<string name="message_not_valid_https">Tohle není platná HTTPS adresa.</string>
     <string name="indicator_nextcloud_currently_logged_in_as">Jste přihlášeni jako <b>%s</b>.</string>
-    <string name="indicator_nextcloud_currently_not_logged_in">Nejste přihlášeni.</string>
-    <string name="action_nextcloud_authenticate">Ověřit se</string>
-    <string name="indicator_offline_account">Offline účet</string>
     <string name="indicator_connecting">Připojování…</string>
     <string name="message_something_went_wrong">Něco se nepovedlo.</string>
     <string name="message_server_connection_failed">Nelze se připojit k serveru. Zkontrolujte adresu serveru a připojení k síti.</string>
     <string name="message_invalid_credentials">Nelze se ověřit u serveru z důvodu chybných přihlašovacích údajů.</string>
     <string name="message_logged_in_successfully">Přihlášení úspěšné!</string>
     <string name="message_server_not_compatible">Verze serveru není kompatibilní s touto aplikací.</string>
-    <string name="message_internet_not_available">Připojení k internetu není k dispozici.</string>
     <string name="message_credentials_cannot_be_blank">Přihlašovací údaje musí být vyplněné.</string>
     <string name="preference_nextcloud_clear_credentials">Vymazat přihlašovací údaje a URL</string>
     <string name="notification_media_play_pause">Přehrát / Pozastavit</string>

@@ -10,11 +10,6 @@
     <string name="preferences_color_scheme_graphite">Grafite</string>
     <string name="preferences_color_scheme_monochrome">Monocromatico</string>
     <string name="preferences_color_scheme_custom">Il mio tema</string>
-    <string name="preferences_custom_color">Il mio colore</string>
-    <string name="preferences_custom_color_summary">Scegli un colore o scrivi il codice esadecimale: tutto il tema Material 3 viene generato da lì (Android 12+).</string>
-    <string name="preferences_custom_color_hex">Colore esadecimale</string>
-    <string name="preferences_custom_color_invalid">Usa 6 cifre esadecimali, es. 1B4F72</string>
-    <string name="preferences_custom_color_apply">Applica</string>
     <string name="preferences_card_shape">Forma degli angoli</string>
     <string name="preferences_card_shape_square">Squadrata</string>
     <string name="preferences_card_shape_rounded">Arrotondata</string>
@@ -87,9 +82,7 @@
     <string name="appearance_title">Aspetto</string>
     <string name="appearance_mode">Modalità</string>
     <string name="appearance_always_dark">Questo tema è sempre scuro</string>
-    <string name="appearance_ready_themes">Temi pronti</string>
     <string name="appearance_shape_font">Forma e carattere</string>
-    <string name="appearance_in_use">In uso</string>
     <string name="appearance_open_custom">In uso · tocca per cambiare i colori</string>
     <string name="custom_theme_background">Sfondo</string>
     <string name="custom_theme_cards">Schede</string>

@@ -152,6 +152,8 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     private var nextTaskId: Long = 0L
     private var isList: Boolean = false
     private var isFirstLoad: Boolean = true
+    /** True once the note text has been put in the content EditText (the source of truth while editing). */
+    private var contentLoadedInEditor = false
     private var formatter: DateTimeFormatter? = null
 
     private lateinit var attachmentsAdapter: AttachmentsAdapter
@@ -328,6 +330,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
         data = Data()
         isFirstLoad = true
+        contentLoadedInEditor = false
 
         if (model.isNotInitialized) {
             model.initialize(
@@ -624,9 +627,12 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
             .setCancelable(false)
             .show()
         viewLifecycleOwner.lifecycleScope.launch {
-            val result = OcrEngine(ctx.applicationContext).recognize(uri)
-            progress.dismiss()
-            ocrScanFile.delete() // temporary photo is never kept
+            val result = try {
+                OcrEngine(ctx.applicationContext).recognize(uri)
+            } finally {
+                progress.dismiss() // also when the screen is closed while recognizing
+                File(File(ctx.cacheDir, "ocr"), "scan.jpg").delete() // temporary photo is never kept
+            }
             when (result) {
                 is OcrEngine.Result.Text -> showOcrResult(result.text)
                 OcrEngine.Result.Unreadable -> showOcrMessage(R.string.ocr_unreadable)
@@ -700,13 +706,16 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
      * so it is updated too: otherwise the next keystroke would save the old text over this change.
      */
     private fun editContent(transform: (String) -> String) {
-        val fromEditor = binding.editTextContent.text?.toString().orEmpty()
-        val current = fromEditor.ifEmpty { data.note?.content ?: return }
+        val current = currentContent() ?: return
         val updated = transform(current)
         if (updated == current) return
         binding.editTextContent.withOnlyTextWatcher<MarkwonEditorTextWatcher> { setText(updated) }
         model.setNoteContent(updated)
     }
+
+    /** Text being edited: the EditText once loaded (even if the user emptied it), else the saved note. */
+    private fun currentContent(): String? =
+        if (contentLoadedInEditor) binding.editTextContent.text?.toString().orEmpty() else data.note?.content
 
     private fun insertImageInText(attachment: Attachment) {
         val cursor = model.selectedRange.second
@@ -720,7 +729,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     }
 
     private fun showImageActions(ref: ImageBlocks.Ref) {
-        val current = ImageBlocks.blocks(binding.editTextContent.text?.toString().orEmpty().ifEmpty { data.note?.content.orEmpty() })
+        val current = ImageBlocks.blocks(currentContent().orEmpty())
             .filter { it.destination == ref.destination }.getOrNull(ref.occurrence)?.layout ?: ImageBlocks.Layout()
         fun layout(l: ImageBlocks.Layout) = editContent { ImageBlocks.setLayout(it, ref, l) }
         BottomSheet.show(getString(R.string.image_actions_title), parentFragmentManager) {
@@ -1054,6 +1063,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                             editTextContent.withOnlyTextWatcher<MarkwonEditorTextWatcher> {
                                 setText(data.note.content)
                             }
+                            contentLoadedInEditor = true
                             val (selStart, selEnd) = model.selectedRange
                             if (selStart >= 0 && selEnd <= editTextContent.length()) {
                                 editTextContent.setSelection(selStart, selEnd)

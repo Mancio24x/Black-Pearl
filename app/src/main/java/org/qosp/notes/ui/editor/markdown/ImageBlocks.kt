@@ -45,8 +45,11 @@ object ImageBlocks {
         return Layout(align, width)
     }
 
-    fun format(alt: String, destination: String, title: String?): String =
-        if (title.isNullOrEmpty()) "![$alt]($destination)" else "![$alt]($destination \"$title\")"
+    fun format(alt: String, destination: String, title: String?): String {
+        // brackets or line breaks in a caption (e.g. a file named "photo [1].jpg") would break the Markdown
+        val safeAlt = alt.replace(Regex("[\\[\\]\\n\\r]"), " ").trim()
+        return if (title.isNullOrEmpty()) "![$safeAlt]($destination)" else "![$safeAlt]($destination \"$title\")"
+    }
 
     fun blocks(content: String): List<Block> = content.split('\n').mapIndexedNotNull { i, line ->
         LINE.matchEntire(line)?.let { m -> Block(i, m.groupValues[1], m.groupValues[2], m.groups[3]?.value) }

@@ -32,7 +32,8 @@ android {
 
         testInstrumentationRunner = "org.qosp.notes.TestRunner"
 
-        // Enable per-app language preferences
+        // Enable per-app language preferences.
+        // fa and sv translations exist but are ~10% complete: not shipped (would show a half-translated UI).
         androidResources {
             localeFilters += listOf(
                 "ar",
@@ -48,6 +49,7 @@ android {
                 "nl",
                 "pl",
                 "pt-rBR",
+                "ro",
                 "ru",
                 "tr",
                 "uk",

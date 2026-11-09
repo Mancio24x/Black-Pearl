@@ -13,16 +13,13 @@
     <!-- Preferences -->
     <!-- Preferences / General -->
     <string name="preferences_header_general">General</string>
-    <string name="preferences_theme_mode">Mod temă</string>
     <string name="preferences_theme_mode_dark">Întunecat</string>
     <string name="preferences_theme_mode_light">Luminos</string>
     <string name="preferences_theme_mode_system">Tema sistemului</string>
 
-    <string name="preferences_dark_theme_mode">Mod temă întunecată</string>
     <string name="preferences_theme_dark_mode_standard">Standard</string>
     <string name="preferences_theme_dark_mode_black">Negru</string>
 
-    <string name="preferences_color_scheme">Schemă de culori</string>
     <string name="preferences_color_scheme_blue">Albastru</string>
     <string name="preferences_color_scheme_pink">Roz</string>
     <string name="preferences_color_scheme_green">Verde</string>
@@ -201,7 +198,6 @@
 
     <!-- Notebooks -->
     <string name="default_notebook">Altele</string>
-    <string name="notebooks_new_notebook">Caiet nou</string>
     <string name="notebooks_hint_name">Nume caiet</string>
     <string name="notebooks_unassigned">Fără caiet</string>
     <string name="indicator_notebook_empty">Nu ai caiete.</string>
@@ -277,8 +273,6 @@
     <string name="action_uncheck_all_tasks">Debifează toate elementele</string>
     <string name="action_remove_all_checked_tasks">Elimină toate sarcinile bifate</string>
     <string name="indicator_note_date">Creat la %1$s\nUltima modificare la %2$s</string>
-    <string name="indicator_restored_notes">Notițe restaurate</string>
-    <string name="indicator_restored_note">Notiță restaurată</string>
     <string name="indicator_archived_notes">Notițe arhivate</string>
     <string name="indicator_archive_note">Notiță arhivată</string>
     <string name="indicator_moved_notes_to_bin">Notițe mutate în coș</string>
@@ -315,9 +309,6 @@
     <string name="message_not_valid_https">Acesta nu este un URL HTTPS valid.</string>
     <string name="indicator_nextcloud_currently_logged_in_as">Ești conectat ca <b>%s</b>
         .</string>
-    <string name="indicator_nextcloud_currently_not_logged_in">Nu ești conectat în prezent.</string>
-    <string name="action_nextcloud_authenticate">Autentifică</string>
-    <string name="indicator_offline_account">Cont offline</string>
     <string name="indicator_connecting">Se conectează…</string>
     <string name="message_something_went_wrong">Ceva nu a mers bine.</string>
     <string name="message_invalid_credentials">Nu s-a putut autentifica cu serverul din cauza
@@ -329,7 +320,6 @@
     <string name="message_logged_in_successfully">Conectare reușită!</string>
     <string name="message_notes_not_installed">Aplicația Notes nu este instalată în Nextcloud-ul tău.</string>
     <string name="message_server_not_compatible">Versiunea serverului nu este compatibilă cu această aplicație.</string>
-    <string name="message_internet_not_available">Conexiunea la internet nu este disponibilă.</string>
     <string name="message_credentials_cannot_be_blank">Datele de autentificare nu pot fi goale.</string>
     <string name="preference_nextcloud_clear_credentials">Șterge datele de autentificare și URL-ul serverului</string>
     <string name="notification_media_play_pause">Redare / Pauză</string>
@@ -368,8 +358,5 @@
     <string name="error_report_email" translatable="false">sixface@msn.com</string>
     <!-- Widget Strings -->
     <string name="widget_description">Afișează notițele tale recente pe ecranul principal</string>
-    <string name="action_new_note">Notiță nouă</string>
-    <string name="note_untitled">Fără titlu</string>
-    <string name="tasks">sarcini</string>
     <string name="widget_no_pinned_notes">Nu există notițe fixate încă. Fixează o notiță pentru a o vedea aici.</string>
 </resources>
