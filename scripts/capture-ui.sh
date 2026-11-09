@@ -22,12 +22,7 @@ for mode in no yes; do
   shot "whatsnew-night_$mode"
   tap_text "Continue" && sleep 3
   shot "main-night_$mode"
-  adb shell am start -W -n $MAIN -a android.intent.action.VIEW -d "blackpearl://notes/editor_create?newNoteIsList=false" >/dev/null
-  sleep 2; adb shell input text "Black%sPearl%stest"; adb shell input keyevent KEYCODE_ENTER
-  adb shell input text "Material%s3%snote"; shot "editor-night_$mode"
-  # back to the list: relaunch (BACK from a deep-linked editor may leave the app)
-  adb shell am start -W -n $PKG/org.qosp.notes.ui.launcher.LauncherActivity >/dev/null; sleep 3
-  shot "list-night_$mode"
+  # Settings > Appearance, starting from the notes list
   tap_text "Open navigation drawer"; shot "drawer-night_$mode"
   if tap_text "Settings"; then
     shot "settings-night_$mode"
@@ -37,8 +32,11 @@ for mode in no yes; do
       adb shell input swipe 500 1600 500 400 400; shot "appearance-shapes-night_$mode"
       adb shell input swipe 500 500 500 1800 300; adb shell input swipe 500 500 500 1800 300
       tap_text "My theme" && shot "my-theme-night_$mode"
-      adb shell input keyevent KEYCODE_BACK
     fi
-    adb shell input keyevent KEYCODE_BACK
   fi
+  # Editor last (a deep-linked editor may leave the app on BACK)
+  adb shell am force-stop $PKG
+  adb shell am start -W -n $MAIN -a android.intent.action.VIEW -d "blackpearl://notes/editor_create?newNoteIsList=false" >/dev/null
+  sleep 3; adb shell input text "Black%sPearl%stest"; adb shell input keyevent KEYCODE_ENTER
+  adb shell input text "Material%s3%snote"; shot "editor-night_$mode"
 done
