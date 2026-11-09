@@ -1,4 +1,12 @@
 updates:
+  - id: 9
+    title: Black Pearl 0.3 — your themes
+    items:
+      - New Appearance screen in Settings, with previews of every theme.
+      - 12 hand-made themes (Parchment, Open sea, Coral, Abyss and more) plus Material You.
+      - "My theme": pick background, cards and accent by touch, with live preview (Android 11+).
+      - New corner shape "Pill" and size of the "+" button.
+
   - id: 8
     title: Welcome to Black Pearl 0.2
     items:
