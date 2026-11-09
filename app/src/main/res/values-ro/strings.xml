@@ -170,7 +170,6 @@
     <string name="action_unarchive">Dezarhivează</string>
     <string name="action_export">Exportă</string>
     <string name="action_hide">Ascunde</string>
-    <string name="action_show">Afișează</string>
     <string name="action_archive">Arhivează</string>
     <string name="action_change_mode">Mod Editare/Vizualizare</string>
     <string name="action_pin">Fixează</string>
@@ -259,10 +258,6 @@
     <string name="action_convert_to_list">Convertește la listă</string>
     <string name="action_do_not_sync">Nu sincroniza</string>
     <string name="action_change_color">Schimbă culoarea</string>
-    <string name="action_enable_markdown">Activează markdown</string>
-    <string name="action_disable_markdown">Dezactivează markdown</string>
-    <string name="action_enable_screen_always_on">Activează ecran mereu pornit</string>
-    <string name="action_disable_screen_always_on">Dezactivează ecran mereu pornit</string>
     <string name="action_insert_bold_text">Inserează markdown bold</string>
     <string name="action_insert_italics">Inserează markdown italic</string>
     <string name="action_insert_strikethrough">Inserează markdown tăiat</string>

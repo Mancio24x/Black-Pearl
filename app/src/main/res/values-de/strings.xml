@@ -126,7 +126,6 @@
     <string name="action_unarchive">Wiederherstellen</string>
     <string name="action_export">Exportieren</string>
     <string name="action_hide">Ausblenden</string>
-    <string name="action_show">Anzeigen</string>
     <string name="action_archive">Archivieren</string>
     <string name="action_change_mode">Bearbeiten/Ansichtsmodus</string>
     <string name="action_pin">Anheften</string>
@@ -197,10 +196,6 @@
     <string name="action_convert_to_list">In Liste umwandeln</string>
     <string name="action_do_not_sync">Nicht synchronisieren</string>
     <string name="action_change_color">Farbe ändern</string>
-    <string name="action_enable_markdown">Markdown aktivieren</string>
-    <string name="action_disable_markdown">Markdown deaktivieren</string>
-    <string name="action_enable_screen_always_on">Bildschirm aktiv halten</string>
-    <string name="action_disable_screen_always_on">Bildschirm nicht aktiv halten</string>
     <string name="action_insert_bold_text">Fett formatieren</string>
     <string name="action_insert_italics">Kursiv formatieren</string>
     <string name="action_insert_strikethrough">Durchgestrichen formatieren</string>

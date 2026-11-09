@@ -107,7 +107,6 @@
     <string name="action_unarchive">Desarquivar</string>
     <string name="action_export">Exportar</string>
     <string name="action_hide">Esconder</string>
-    <string name="action_show">Exibir</string>
     <string name="action_archive">Arquivar</string>
     <string name="action_pin">Fixar</string>
     <string name="action_unpin">Desafixar</string>
@@ -176,8 +175,6 @@
     <string name="action_convert_to_list">Converter para lista</string>
     <string name="action_do_not_sync">Não sincronizar</string>
     <string name="action_change_color">Mudar cor</string>
-    <string name="action_enable_markdown">Habilitar marcação</string>
-    <string name="action_disable_markdown">Desabilitar marcação</string>
     <string name="action_insert_bold_text">Inserir marcador de negrito</string>
     <string name="action_insert_italics">Inserir marcador de itálico</string>
     <string name="action_insert_strikethrough">Inserir marcador de tachado</string>

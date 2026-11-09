@@ -118,7 +118,6 @@
     <string name="action_unarchive">取消存档</string>
     <string name="action_export">导出</string>
     <string name="action_hide">隐藏</string>
-    <string name="action_show">显示</string>
     <string name="action_archive">存档</string>
     <string name="action_pin">置顶</string>
     <string name="action_unpin">取消置顶</string>
@@ -187,8 +186,6 @@
     <string name="action_convert_to_list">转换为清单</string>
     <string name="action_do_not_sync">不同步</string>
     <string name="action_change_color">更改颜色</string>
-    <string name="action_enable_markdown">启用 Markdown</string>
-    <string name="action_disable_markdown">禁用 Markdown</string>
     <string name="action_insert_bold_text">插入 Markdown粗体</string>
     <string name="action_insert_italics">插入 Markdown斜体</string>
     <string name="action_insert_strikethrough">插入 Markdown删除线</string>
@@ -262,8 +259,6 @@
     <string name="preferences_sort_navdrawer_method">按以下方式对笔记本进行排序</string>
     <string name="preferences_file_storage_location">存储位置</string>
     <string name="preferences_file_storage_select">选择存储位置</string>
-    <string name="action_enable_screen_always_on">保持屏幕常亮</string>
-    <string name="action_disable_screen_always_on">取消屏幕常亮</string>
     <string name="action_screen_always_on">设置屏幕常亮</string>
     <string name="action_uncheck_all_tasks">取消勾选所有项</string>
     <string name="preferences_move_checked_items">勾选项目时动态移动所在列表</string>

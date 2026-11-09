@@ -89,3 +89,12 @@ Append one short entry per significant task: files, decisions, tests (with resul
 - Tests: `AppearancePreferencesTest` updated; device tests `CustomThemeTest.appliedThemeShowsTheChosenColors`,
   `CustomThemeActivityTest` (real activity, light and dark My theme, cold start and recreate). Screenshot script
   creates sample notes and a notebook, saves theme logs.
+
+## 2026-11-10 — Simpler M3 menus (branch feature/editor-menus)
+- Editor: `editor_top.xml` keeps mode / pin / reminders / restore + "more" → `NoteOptionsSheet` (Compose); actions moved
+  to `ids_blackpearl.xml`; `onOptionsItemSelected` → `runNoteAction(id)`, switches via `setNoteOption`. Export sheet =
+  PDF save/share + note backup. Picture sheet = segmented alignment / size + move + remove.
+- Lists: `showMenuForNote` → `NoteListSheet`. `BottomSheet.kt` restyled (drag handle, no flat background, pill rows);
+  popup menus rounded (`Widget.BlackPearl.PopupMenu`). Strings only used by the old menus removed (all locales);
+  Italian "Rispristina" typo fixed.
+- Tests: unit tests and all 36 device tests pass; screenshots of the sheets in the UI preview run.

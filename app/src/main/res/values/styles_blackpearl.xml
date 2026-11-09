@@ -92,4 +92,11 @@
         <item name="chipIconVisible">false</item>
         <item name="android:textAppearance">@style/TextAppearance.Material3.LabelLarge</item>
     </style>
+    <!-- Rounded popup menus -->
+    <style name="Widget.BlackPearl.PopupMenu" parent="Widget.Material3.PopupMenu">
+        <item name="android:popupBackground">@drawable/bg_popup_menu</item>
+    </style>
+    <style name="Widget.BlackPearl.PopupMenu.Overflow" parent="Widget.Material3.PopupMenu.Overflow">
+        <item name="android:popupBackground">@drawable/bg_popup_menu</item>
+    </style>
 </resources>

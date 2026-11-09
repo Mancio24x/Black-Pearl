@@ -105,11 +105,10 @@
     <string name="action_unarchive">Rimuovi dall\'archivio</string>
     <string name="action_export">Esporta</string>
     <string name="action_hide">Nascondi</string>
-    <string name="action_show">Mostra</string>
     <string name="action_archive">Archivia</string>
     <string name="action_pin">Fissa</string>
     <string name="action_unpin">Stacca</string>
-    <string name="action_restore">Rispristina</string>
+    <string name="action_restore">Ripristina</string>
     <string name="action_share">Condividi</string>
     <string name="action_pin_unpin">Fissa / Stacca</string>
     <string name="action_move_to">Sposta in…</string>
@@ -174,8 +173,6 @@
     <string name="action_convert_to_list">Converti in elenco</string>
     <string name="action_do_not_sync">Non sincronizzare</string>
     <string name="action_change_color">Cambia colore</string>
-    <string name="action_enable_markdown">Abilita Markdown</string>
-    <string name="action_disable_markdown">Disabilita Markdown</string>
     <string name="action_insert_bold_text">Inserisci grassetto Markdown</string>
     <string name="action_insert_italics">Inserisci corsivo Markdown</string>
     <string name="action_insert_strikethrough">Inserisci barrato Markdown</string>
@@ -268,8 +265,6 @@
     <string name="preferences_move_checked_items">Sposta gli elementi selezionati/non selezionati negli elenchi</string>
     <string name="action_change_mode">Modalità Modifica/Visualizza</string>
     <string name="action_screen_always_on">Schermo sempre acceso</string>
-    <string name="action_enable_screen_always_on">Abilita schermo sempre acceso</string>
-    <string name="action_disable_screen_always_on">Disabilita schermo sempre acceso</string>
     <string name="action_uncheck_all_tasks">Deseleziona tutti gli elementi</string>
     <string name="preferences_cloud_service_files">Archivio file</string>
     <string name="preferences_file_storage_info">Selezionare una cartella dall\'archivio locale o da un fornitore di servizi cloud. Tutte le note verranno memorizzate in formato Markdown.</string>

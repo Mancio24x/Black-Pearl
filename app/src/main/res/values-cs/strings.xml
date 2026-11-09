@@ -122,7 +122,6 @@
     <string name="action_unarchive">Vrátit z archivu</string>
     <string name="action_export">Exportovat</string>
     <string name="action_hide">Skrýt</string>
-    <string name="action_show">Zobrazit</string>
     <string name="action_archive">Archivovat</string>
     <string name="action_change_mode">Upravit / Zobrazit</string>
     <string name="action_pin">Připnout</string>
@@ -192,8 +191,6 @@
     <string name="action_convert_to_list">Převézt na seznam</string>
     <string name="action_do_not_sync">Nesynchronizovat</string>
     <string name="action_change_color">Změnit barvu</string>
-    <string name="action_enable_markdown">Povolit markdown</string>
-    <string name="action_disable_markdown">Zakázat markdown</string>
     <string name="action_insert_bold_text">Tučně</string>
     <string name="action_insert_italics">Kurzíva</string>
     <string name="action_insert_strikethrough">Přeškrtnutí</string>

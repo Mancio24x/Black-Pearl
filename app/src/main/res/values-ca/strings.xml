@@ -110,7 +110,6 @@
     <string name="action_unarchive">Desarxiva</string>
     <string name="action_export">Exporta</string>
     <string name="action_hide">Amaga</string>
-    <string name="action_show">Mostra</string>
     <string name="action_archive">Arxiva</string>
     <string name="action_change_mode">Mode Edició/Visualització</string>
     <string name="action_pin">Fixa</string>
@@ -180,8 +179,6 @@
     <string name="action_convert_to_list">Converteix en llista</string>
     <string name="action_do_not_sync">No sincronitzis</string>
     <string name="action_change_color">Canvia el color</string>
-    <string name="action_enable_markdown">Activa Markdown</string>
-    <string name="action_disable_markdown">Desactiva Markdown</string>
     <string name="action_insert_bold_text">Insereix negreta (Markdown)</string>
     <string name="action_insert_italics">Insereix cursiva (Markdown)</string>
     <string name="action_insert_strikethrough">Insereix ratllat (Markdown)</string>

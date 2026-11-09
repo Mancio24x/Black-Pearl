@@ -1,6 +1,5 @@
 package org.qosp.notes.ui.utils.views
 
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.ContextThemeWrapper
@@ -19,9 +18,10 @@ import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.bottomsheet.BottomSheetDragHandleView
 import kotlinx.parcelize.Parcelize
 import org.qosp.notes.R
-import org.qosp.notes.ui.utils.resolveAttribute
+import org.qosp.notes.ui.utils.dp
 
 class BottomSheet : BottomSheetDialogFragment() {
     @Suppress("UNCHECKED_CAST")
@@ -35,9 +35,10 @@ class BottomSheet : BottomSheetDialogFragment() {
         return NestedScrollView(requireContext()).apply {
             addView(
                 LinearLayout(context).apply {
-                    context.resolveAttribute(R.attr.colorDrawerBackground)?.let { background = ColorDrawable(it) }
+                    // Black Pearl: no flat background, so the Material 3 sheet shows its rounded corners
                     orientation = LinearLayout.VERTICAL
-                    setPadding(0, 0, 0, 16)
+                    setPadding(0, 0, 0, 16.dp(context))
+                    addView(BottomSheetDragHandleView(context))
 
                     addView(
                         LinearLayout(context).apply {
@@ -62,6 +63,10 @@ class BottomSheet : BottomSheetDialogFragment() {
                     actions?.forEach { action ->
                         addView(
                             AppCompatTextView(ContextThemeWrapper(context, R.style.BottomSheetAction)).apply {
+                                layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply {
+                                    marginStart = 12.dp(context)
+                                    marginEnd = 12.dp(context)
+                                }
                                 text = action.title ?: action.titleResId?.let { getString(it) } ?: ""
                                 setOnClickListener {
                                     action.onClick(this@BottomSheet)

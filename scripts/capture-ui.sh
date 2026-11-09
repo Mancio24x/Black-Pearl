@@ -66,6 +66,21 @@ for mode in no yes; do
   adb shell am start -W -n $MAIN -a android.intent.action.VIEW -d "blackpearl://notes/editor_create?newNoteIsList=false" >/dev/null
   sleep 3; adb shell input text "Black%sPearl%stest"; adb shell input keyevent KEYCODE_ENTER
   adb shell input text "Material%s3%snote"; shot "editor-night_$mode"
+  # The note's options sheet (one rounded sheet instead of the long "⋮" list), then its folded settings
+  adb shell input keyevent KEYCODE_BACK; sleep 1
+  if tap_text "Note options"; then
+    shot "note-options-night_$mode"
+    tap_text "More settings" && shot "note-options-more-night_$mode"
+    adb shell input keyevent KEYCODE_BACK; sleep 1
+    tap_text "Export" && shot "note-export-night_$mode"
+    adb shell input keyevent KEYCODE_BACK
+  fi
+  # Long press on a note in the list: the same Material 3 sheet style
+  adb shell am force-stop $PKG
+  adb shell am start -W -n $MAIN >/dev/null; sleep 3
+  b=$(adb shell uiautomator dump /sdcard/ui.xml >/dev/null 2>&1; adb pull /sdcard/ui.xml "$OUT/ui.xml" >/dev/null 2>&1; \
+    grep -o '<node[^>]*text="Idee racconto"[^>]*>' "$OUT/ui.xml" | head -1 | grep -o 'bounds="[^"]*"' | grep -o '[0-9]\+')
+  if [ -n "$b" ]; then set -- $b; adb shell input swipe $(( ($1+$3)/2 )) $(( ($2+$4)/2 )) $(( ($1+$3)/2 )) $(( ($2+$4)/2 )) 800; shot "note-longpress-night_$mode"; fi
 done
 # Theme / crash messages of this run, for diagnosis
 adb logcat -d -v time BlackPearlTheme:V ColorResLoaderCreator:V ColorResourcesTableCreator:V AndroidRuntime:E '*:S' > "$OUT/logcat.txt"
