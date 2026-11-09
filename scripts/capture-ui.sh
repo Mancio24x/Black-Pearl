@@ -19,6 +19,8 @@ new_note() { # $1 = "true" for a checklist, then title and body lines (use %s fo
   local list=$1; shift
   adb shell am start -W -n $MAIN -a android.intent.action.VIEW -d "blackpearl://notes/editor_create?newNoteIsList=$list" >/dev/null
   sleep 3
+  tap_text "Title"; adb shell input text "$1"; shift
+  tap_text "Take a note!" || tap_text "Task"
   for line in "$@"; do adb shell input text "$line"; adb shell input keyevent KEYCODE_ENTER; done
   adb shell input keyevent KEYCODE_BACK; sleep 1; adb shell input keyevent KEYCODE_BACK; sleep 2
 }
@@ -53,7 +55,7 @@ for mode in no yes; do
       if tap_text "My theme"; then
         shot "my-theme-night_$mode"
         # pick the dark "Abyss"-like background, then apply: the whole app must recolor at runtime
-        tap_text "Background" && tap_text "#0E1720"
+        tap_text "Background" && adb shell input swipe 500 1500 500 900 400 && tap_text "#0E1720"
         tap_text "Apply my theme" && sleep 3 && shot "my-theme-applied-night_$mode"
       fi
     fi

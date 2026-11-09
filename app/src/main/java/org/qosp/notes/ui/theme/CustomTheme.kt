@@ -1,9 +1,9 @@
 package org.qosp.notes.ui.theme
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.content.Context
 import android.os.Build
-import com.google.android.material.color.ColorResourcesOverride
+import com.google.android.material.color.BlackPearlColorResources
 import org.qosp.notes.preferences.CustomThemeColors
 
 /**
@@ -18,13 +18,17 @@ object CustomTheme {
 
     fun isDark(colors: CustomThemeColors): Boolean = ThemeRoles.isDark(colors.paper)
 
-    /** Must run in onCreate before the content view is inflated. @return false if not applied. */
+    /**
+     * Must run in onCreate before the content view is inflated, on a theme that already has Palette.Custom.
+     * Only the color resources change: the theme keeps pointing to them (no Material You overlay).
+     * @return false if not applied.
+     */
     @SuppressLint("RestrictedApi")
-    fun apply(activity: Activity, colors: CustomThemeColors): Boolean {
+    fun apply(context: Context, colors: CustomThemeColors): Boolean {
         if (!isSupported) return false
         val overrides = roles(colors).mapNotNull { (attr, color) ->
             CustomThemeResources.byAttribute[attr]?.let { it to color }
         }.toMap()
-        return ColorResourcesOverride.getInstance()?.applyIfPossible(activity, overrides) == true
+        return BlackPearlColorResources.override(context, overrides)
     }
 }
