@@ -20,3 +20,34 @@ Append one short entry per significant task: files, decisions, tests (with resul
 - Fix: `showPreferenceDialog` mapped clicks to the unfiltered enum list (wrong choice when an option is unsupported).
 - Tests: `assembleDebug` OK; `testDebugUnitTest` 78 tests, 0 failures (new `AppearancePreferencesTest`). Not yet checked on a device.
 - Open: review UI preview screenshots; manual check on phone; note colors (feature 2) still use the old fixed tints.
+
+## 2026-11-08 — Feature 1: repositionable images (branch feature/image-layout)
+- Files: `ui/editor/markdown/ImageBlocks.kt`, `ImageLayoutPlugin.kt`, `di/MarkwonModule.kt`, `ui/editor/EditorFragment.kt`,
+  `values/ids_blackpearl.xml`, `strings_blackpearl.xml` (en, it), tests `ImageBlocksTest`, `ImageLayoutPersistenceTest`.
+- Data safety: edits update both the EditText (editor source of truth) and the saved note.
+- Tests: `testDebugUnitTest` 90 tests, 0 failures; `assembleDebug` OK. Not yet checked on a device.
+- Open: drag & drop, text wrap beside images (see DECISIONS #13).
+
+## 2026-11-08 — Feature 2: note colors (branch feature/note-colors)
+- Files: `ui/common/NoteColorDialog.kt`, `EditorFragment.kt` (picker), `AbstractNotesFragment.kt` + `menu/main_selected_notes.xml`
+  (multi-select), `ActivityViewModel.colorNotes`, `values-night/themes.xml` (Cyan), strings, tests `NoteColorContrastTest`,
+  `NoteColorPersistenceTest`.
+- Tests: `testDebugUnitTest` 94 tests, 0 failures; `assembleDebug` OK. Not yet checked on a device.
+
+## 2026-11-09 — Feature 3: offline OCR (branch feature/offline-ocr)
+- Files: `ui/ocr/*`, `EditorFragment.kt`, `menu/editor_top.xml`, `xml/file_provider_paths.xml` (cache ocr/), `assets/tessdata/*`,
+  `gradle/libs.versions.toml`, `app/build.gradle.kts` (dep, noCompress, release ABIs, proguard file), `app/proguard-rules.pro`,
+  strings, tests `OcrTextTest` (JVM), `OcrEngineTest` (device, CI emulator job).
+- Tests: `testDebugUnitTest` 99 tests, 0 failures; `assembleDebug` + `assembleRelease` OK (release 25 MB, Tesseract names kept by R8).
+- Open: OcrEngineTest result in CI; phone check.
+
+## 2026-11-09 — Feature 4: PDF export (branch feature/pdf-export)
+- Files: `ui/pdf/*`, `EditorFragment.kt`, `menu/editor_top.xml`, `xml/file_provider_paths.xml` (cache pdf/), strings,
+  tests `PdfLayoutTest` (JVM), `NotePdfExporterTest` (device), `ui-preview.yml` runs device tests.
+- Tests: `testDebugUnitTest` 103 tests, 0 failures; `assembleDebug` OK. Device tests: see CI.
+
+## 2026-11-09 — Release 0.2.0 branch
+- #11 was squash-merged; #12–#15 were stacked on the pre-squash commits and conflicted with main. The 4 feature
+  commits were rebased onto main (content unchanged, verified by diff) and opened as one PR with version 0.2.0
+  (versionCode 4). Local: 103 unit tests OK, assembleDebug + assembleRelease OK.
+- Lesson: with squash merges, do not stack PRs; branch each feature from main after the previous one is merged.

@@ -32,3 +32,23 @@ Newest last. Format: date — decision — why.
     (guarded by `AppearancePreferencesTest`).
 12. **2026-11-08 — Customization = runtime theme overlays** (`Shape.*`, `NoteFont.*`, palettes, AMOLED) applied in
     `BaseActivity`, mirroring the Atlante approach (palettes + personal theme) without new libraries.
+13. **2026-11-08 — Image layout stored in the note text** as a standalone Markdown image line
+    `![alt](path "=align,width")` (see `ImageBlocks`). No DB/backup/sync format change, no migration; position survives
+    close, restart, backup, sync and export because it is plain text. Files stay attachments (deleting an attachment
+    also removes its image lines). Text wrapping beside images: not implemented (Markwon/TextView can't flow text
+    around a drawable without replacing the renderer). Drag & drop: not implemented; contextual menu instead.
+14. **2026-11-08 — Note colors reuse the existing `NoteColor` column** (no new table/field, no migration). Tints stay
+    per light/dark theme; `NoteColorContrastTest` enforces WCAG AA (≥ 4.5:1) of note text on every color for every
+    palette (dark Cyan darkened to #22606F to pass).
+15. **2026-11-09 — OCR = Tesseract4Android 4.8.0 (Apache-2.0, JitPack) + tessdata_fast `ita`/`eng` bundled in assets.**
+    Verified offline: models ship in the APK (sha256 in `assets/tessdata/README.md`), copied to private files on first use;
+    no network call, no API key; F-Droid compatible (builds from source). Rejected: Google ML Kit (proprietary/Play
+    Services). Size: models +6.5 MB, native engine ~7 MB per ABI. Release APK limited to arm64-v8a + armeabi-v7a
+    (~25 MB total; x86 Chromebooks/emulators not supported by release builds; debug keeps all ABIs). Camera via system
+    camera app (no CAMERA permission); gallery via GetContent (no storage permission); temp photo deleted after OCR.
+    Limits: printed text only (handwriting poor), needs sharp well-lit photos, no automatic page deskew/crop,
+    multi-column layouts may interleave.
+16. **2026-11-09 — PDF with Android `PdfDocument` + `StaticLayout`** (no library). Text is rendered with the app's Markwon
+    instance (same formatting as the preview), paginated line by line; images drawn from local files only (no network),
+    scaled to their layout width; non-placed image attachments appended. Save via SAF `CreateDocument` (user chooses
+    location, no storage permission); share via cache file + FileProvider + Sharesheet. Tables render as plain text.

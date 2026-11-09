@@ -7,6 +7,17 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.net.Uri
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
+import androidx.core.os.bundleOf
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import org.qosp.notes.BuildConfig
+import org.qosp.notes.ui.ocr.OcrEngine
+import org.qosp.notes.ui.pdf.NotePdfExporter
+import org.qosp.notes.ui.ocr.OcrText
+import java.io.File
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -57,6 +68,8 @@ import io.noties.markwon.editor.MarkwonEditor
 import io.noties.markwon.editor.MarkwonEditorTextWatcher
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
 import org.commonmark.node.Code
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -76,12 +89,15 @@ import org.qosp.notes.ui.attachments.recycler.AttachmentsGridManager
 import org.qosp.notes.ui.attachments.uri
 import org.qosp.notes.ui.common.BaseDialog
 import org.qosp.notes.ui.common.BaseFragment
+import org.qosp.notes.ui.common.showNoteColorDialog
 import org.qosp.notes.ui.common.showMoveToNotebookDialog
 import org.qosp.notes.ui.editor.dialog.InsertHyperlinkDialog
 import org.qosp.notes.ui.editor.dialog.InsertImageDialog
 import org.qosp.notes.ui.editor.dialog.InsertTableDialog
 import org.qosp.notes.ui.editor.markdown.MarkdownSpan
 import org.qosp.notes.ui.editor.markdown.applyTo
+import org.qosp.notes.ui.editor.markdown.ImageBlocks
+import org.qosp.notes.ui.editor.markdown.ImageLayoutPlugin
 import org.qosp.notes.ui.editor.markdown.insertMarkdown
 import org.qosp.notes.ui.editor.markdown.toggleCheckmarkCurrentLine
 import org.qosp.notes.ui.media.MediaActivity
@@ -158,6 +174,22 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         }
 
         model.insertAttachments(*attachments.toTypedArray())
+    }
+
+    // --- Black Pearl: PDF export (feature 4) ---
+    private val pdfSaveLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("application/pdf")) { uri ->
+        if (uri != null) exportPdf { requireContext().contentResolver.openOutputStream(uri) }
+    }
+
+    // --- Black Pearl: offline OCR (feature 3) ---
+    private val ocrScanFile get() = File(File(requireContext().cacheDir, "ocr").apply { mkdirs() }, "scan.jpg")
+    private val ocrScanUri get() = FileProvider.getUriForFile(requireContext(), "${BuildConfig.APPLICATION_ID}.provider", ocrScanFile)
+
+    private val ocrCameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { saved ->
+        if (saved) runOcr(ocrScanUri)
+    }
+    private val ocrGalleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) runOcr(uri)
     }
 
     private val takePhotoLauncher = registerForActivityResult(TakePictureContract) { saved ->
@@ -313,6 +345,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         observeData()
         setupEditTexts()
         setupMarkdown()
+        setupImageLayout()
         setupListeners()
 
         toolbar.setTitleTextColor(Color.TRANSPARENT)
@@ -439,6 +472,9 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                     }
                 }
 
+                R.id.action_scan_text -> showOcrSourceSheet()
+                R.id.action_export_pdf -> showPdfSheet()
+
                 R.id.action_record_audio -> {
                     clearFragmentResult(RECORD_CODE)
                     RecordAudioDialog().show(parentFragmentManager, null)
@@ -532,6 +568,186 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         }
     }
 
+    private fun pdfFileName() = (data.note?.title?.trim()?.ifEmpty { null } ?: getString(R.string.indicator_untitled))
+        .replace(Regex("[\\\\/:*?\"<>|\\n]"), "_").take(80) + ".pdf"
+
+    private fun showPdfSheet() {
+        BottomSheet.show(getString(R.string.pdf_export), parentFragmentManager) {
+            action(R.string.pdf_save, R.drawable.ic_export_note) { pdfSaveLauncher.launch(pdfFileName()) }
+            action(R.string.pdf_share, R.drawable.ic_share) {
+                val file = File(File(requireContext().cacheDir, "pdf").apply { mkdirs() }, pdfFileName())
+                exportPdf(onDone = {
+                    val uri = FileProvider.getUriForFile(requireContext(), "${BuildConfig.APPLICATION_ID}.provider", file)
+                    val send = Intent(Intent.ACTION_SEND).apply {
+                        type = "application/pdf"
+                        putExtra(Intent.EXTRA_STREAM, uri)
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                    startActivity(Intent.createChooser(send, getString(R.string.pdf_share)))
+                }) { file.outputStream() }
+            }
+        }
+    }
+
+    /** Renders the current note off the main thread; [open] gives the destination stream. */
+    private fun exportPdf(onDone: (() -> Unit)? = null, open: () -> java.io.OutputStream?) {
+        val note = data.note ?: return
+        val ctx = requireContext()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val ok = withContext(Dispatchers.IO) {
+                runCatching {
+                    open()?.use { NotePdfExporter(ctx.applicationContext, markwon).write(note, it) } != null
+                }.onFailure { Log.e(TAG, "PDF export failed", it) }.getOrDefault(false)
+            }
+            if (ok) {
+                if (onDone != null) onDone() else sendMessage(getString(R.string.pdf_saved))
+            } else {
+                sendMessage(getString(R.string.pdf_error))
+            }
+        }
+    }
+
+    private fun showOcrSourceSheet() {
+        BottomSheet.show(getString(R.string.ocr_scan_text), parentFragmentManager) {
+            action(R.string.ocr_from_camera, R.drawable.ic_camera) {
+                runCatching { ocrCameraLauncher.launch(ocrScanUri) }
+                    .onFailure { this@EditorFragment.sendMessage(getString(R.string.ocr_no_camera)) }
+            }
+            action(R.string.ocr_from_gallery, R.drawable.ic_photo) { ocrGalleryLauncher.launch("image/*") }
+        }
+    }
+
+    private fun runOcr(uri: Uri) {
+        val ctx = requireContext()
+        val progress = MaterialAlertDialogBuilder(ctx)
+            .setMessage(R.string.ocr_in_progress)
+            .setCancelable(false)
+            .show()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val result = OcrEngine(ctx.applicationContext).recognize(uri)
+            progress.dismiss()
+            ocrScanFile.delete() // temporary photo is never kept
+            when (result) {
+                is OcrEngine.Result.Text -> showOcrResult(result.text)
+                OcrEngine.Result.Unreadable -> showOcrMessage(R.string.ocr_unreadable)
+                is OcrEngine.Result.Error -> {
+                    Log.e(TAG, "OCR failed", result.cause)
+                    showOcrMessage(R.string.ocr_error)
+                }
+            }
+        }
+    }
+
+    private fun showOcrMessage(message: Int) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.ocr_scan_text)
+            .setMessage(message)
+            .setPositiveButton(R.string.ocr_try_again) { _, _ -> showOcrSourceSheet() }
+            .setNegativeButton(R.string.action_cancel, null)
+            .show()
+    }
+
+    /** Editable preview: the user fixes mistakes, then inserts into this note or creates a new one. */
+    private fun showOcrResult(text: String) {
+        val ctx = requireContext()
+        val input = TextInputEditText(ctx).apply {
+            setText(text)
+            minLines = 4
+            maxLines = 14
+            isVerticalScrollBarEnabled = true
+        }
+        val box = TextInputLayout(ctx).apply {
+            hint = getString(R.string.ocr_result_hint)
+            addView(input)
+            val pad = (20 * resources.displayMetrics.density).toInt()
+            setPadding(pad, pad / 2, pad, 0)
+        }
+        val canInsert = data.note?.let { !it.isList && !it.isDeleted } == true
+        MaterialAlertDialogBuilder(ctx)
+            .setTitle(R.string.ocr_result_title)
+            .setView(box)
+            .apply {
+                if (canInsert) setPositiveButton(R.string.ocr_insert_here) { _, _ ->
+                    val cursor = model.selectedRange.second
+                    var newCursor = -1
+                    editContent { content ->
+                        OcrText.insertAsParagraph(content, cursor, input.text.toString().trim()).also { newCursor = it.second }.first
+                    }
+                    if (newCursor >= 0) model.selectedRange = newCursor to newCursor
+                }
+            }
+            .setNeutralButton(R.string.ocr_new_note) { _, _ ->
+                findNavController().navigate(
+                    R.id.fragment_editor,
+                    bundleOf("transitionName" to "editor_ocr_${System.currentTimeMillis()}", "newNoteContent" to input.text.toString().trim())
+                )
+            }
+            .setNegativeButton(R.string.action_cancel, null)
+            .show()
+    }
+
+    // --- Black Pearl: repositionable images (see ImageBlocks / ImageLayoutPlugin) ---
+
+    private fun setupImageLayout() {
+        binding.textViewContentPreview.setTag(
+            R.id.tag_image_click_listener,
+            ImageLayoutPlugin.ImageClickListener { ref -> if (data.note?.isDeleted == false) showImageActions(ref) }
+        )
+    }
+
+    /**
+     * Applies an image edit to the current text. The EditText is the source of truth while editing,
+     * so it is updated too: otherwise the next keystroke would save the old text over this change.
+     */
+    private fun editContent(transform: (String) -> String) {
+        val fromEditor = binding.editTextContent.text?.toString().orEmpty()
+        val current = fromEditor.ifEmpty { data.note?.content ?: return }
+        val updated = transform(current)
+        if (updated == current) return
+        binding.editTextContent.withOnlyTextWatcher<MarkwonEditorTextWatcher> { setText(updated) }
+        model.setNoteContent(updated)
+    }
+
+    private fun insertImageInText(attachment: Attachment) {
+        val cursor = model.selectedRange.second
+        var newCursor = -1
+        editContent { content ->
+            val (updated, end) = ImageBlocks.insert(content, cursor, attachment.path, attachment.description.substringBeforeLast('.'))
+            newCursor = end
+            updated
+        }
+        if (newCursor >= 0) model.selectedRange = newCursor to newCursor
+    }
+
+    private fun showImageActions(ref: ImageBlocks.Ref) {
+        val current = ImageBlocks.blocks(binding.editTextContent.text?.toString().orEmpty().ifEmpty { data.note?.content.orEmpty() })
+            .filter { it.destination == ref.destination }.getOrNull(ref.occurrence)?.layout ?: ImageBlocks.Layout()
+        fun layout(l: ImageBlocks.Layout) = editContent { ImageBlocks.setLayout(it, ref, l) }
+        BottomSheet.show(getString(R.string.image_actions_title), parentFragmentManager) {
+            action(R.string.image_move_up, R.drawable.ic_up) { editContent { ImageBlocks.move(it, ref, up = true) } }
+            action(R.string.image_move_down, R.drawable.ic_down) { editContent { ImageBlocks.move(it, ref, up = false) } }
+            action(R.string.image_align_left, R.drawable.ic_photo, condition = current.align != ImageBlocks.Align.LEFT) {
+                layout(current.copy(align = ImageBlocks.Align.LEFT))
+            }
+            action(R.string.image_align_center, R.drawable.ic_photo, condition = current.align != ImageBlocks.Align.CENTER) {
+                layout(current.copy(align = ImageBlocks.Align.CENTER))
+            }
+            action(R.string.image_align_right, R.drawable.ic_photo, condition = current.align != ImageBlocks.Align.RIGHT) {
+                layout(current.copy(align = ImageBlocks.Align.RIGHT))
+            }
+            listOf(25 to R.string.image_size_small, 50 to R.string.image_size_medium, 75 to R.string.image_size_large)
+                .forEach { (pct, label) ->
+                    action(label, R.drawable.ic_photo, condition = current.widthPercent != pct) {
+                        layout(current.copy(widthPercent = pct))
+                    }
+                }
+            action(R.string.image_size_full, R.drawable.ic_photo, condition = current.widthPercent != null) {
+                layout(current.copy(widthPercent = null))
+            }
+            action(R.string.image_remove_from_note, R.drawable.ic_bin) { editContent { ImageBlocks.remove(it, ref) } }
+        }
+    }
+
     private fun setupAttachmentsRecycler() = with(binding) {
         // Create the adapter
         val listener = object : AttachmentRecyclerListener {
@@ -564,10 +780,23 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                             EditAttachmentDialog.build(noteId, attachment.path).show(parentFragmentManager, null)
                         }
                         action(R.string.action_delete, R.drawable.ic_bin) {
+                            // also drop its image lines from the text, so no broken image is left behind
+                            editContent { content ->
+                                generateSequence(content) { c ->
+                                    ImageBlocks.remove(c, ImageBlocks.Ref(attachment.path)).takeIf { it != c }
+                                }.last()
+                            }
                             model.deleteAttachment(attachment)
                         }
                         action(R.string.action_share, R.drawable.ic_share) {
                             shareAttachment(requireContext(), attachment)
+                        }
+                        action(
+                            R.string.image_insert_in_text,
+                            R.drawable.ic_photo,
+                            condition = attachment.type == Attachment.Type.IMAGE && data.note?.isList == false,
+                        ) {
+                            insertImageInText(attachment)
                         }
                     }
                 }
@@ -1152,19 +1381,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     }
 
     private fun showColorChangeDialog() {
-        val selected = NoteColor.entries.indexOf(data.note?.color).coerceAtLeast(0)
-        val dialog = BaseDialog.build(requireContext()) {
-            setTitle(getString(R.string.action_change_color))
-            setSingleChoiceItems(
-                NoteColor.entries.map { it.localizedName }.toTypedArray(),
-                selected
-            ) { _, which ->
-                model.setColor(NoteColor.entries[which])
-            }
-            setPositiveButton(getString(R.string.action_done)) { _, _ -> }
-        }
-
-        dialog.show()
+        showNoteColorDialog(data.note?.color) { model.setColor(it) }
     }
 
     private fun showRemindersDialog(note: Note) {
@@ -1263,24 +1480,6 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
         model.updateTaskList(updatedTasks)
     }
-
-    private val NoteColor.localizedName
-        get() = getString(
-            when (this) {
-                NoteColor.Default -> R.string.default_string
-                NoteColor.Red -> R.string.preferences_color_scheme_red
-                NoteColor.Orange -> R.string.preferences_color_scheme_orange
-                NoteColor.Yellow -> R.string.preferences_color_scheme_yellow
-                NoteColor.Green -> R.string.preferences_color_scheme_green
-                NoteColor.Teal -> R.string.preferences_color_scheme_teal
-                NoteColor.Cyan -> R.string.preferences_color_scheme_cyan
-                NoteColor.Blue -> R.string.preferences_color_scheme_blue
-                NoteColor.Purple -> R.string.preferences_color_scheme_purple
-                NoteColor.Pink -> R.string.preferences_color_scheme_pink
-                NoteColor.Brown -> R.string.preferences_color_scheme_brown
-                NoteColor.Gray -> R.string.preferences_color_scheme_gray
-            }
-        )
 
     companion object {
         const val MARKDOWN_DIALOG_RESULT = "MARKDOWN_DIALOG_RESULT"

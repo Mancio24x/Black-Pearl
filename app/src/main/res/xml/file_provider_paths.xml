@@ -5,4 +5,12 @@
     <files-path
             name="test_media_files"
             path="test_media/"/>
+    <!-- temporary photos for OCR (Black Pearl), never attached to notes -->
+    <cache-path
+            name="ocr_scans"
+            path="ocr/"/>
+    <!-- PDFs created for sharing (Black Pearl), overwritten on each export -->
+    <cache-path
+            name="pdf_exports"
+            path="pdf/"/>
 </paths>

@@ -34,6 +34,7 @@ import org.qosp.notes.ui.editor.markdown.CodeHandler
 import org.qosp.notes.ui.editor.markdown.HeadingHandler
 import org.qosp.notes.ui.editor.markdown.StrikethroughHandler
 import org.qosp.notes.ui.utils.coil.CoilImagesPlugin
+import org.qosp.notes.ui.editor.markdown.ImageLayoutPlugin
 import org.qosp.notes.ui.utils.resolveAttribute
 
 object MarkwonModule {
@@ -66,6 +67,8 @@ object MarkwonModule {
                     })
         })
         .usePlugin(CoilImagesPlugin.create(context, preferenceRepository))
+        // Black Pearl: image layout (position/size/alignment) — must come after the Coil plugin
+        .usePlugin(ImageLayoutPlugin(context))
         .apply {
             val mainColor = context.resolveAttribute(colorMarkdownTask)
             val backgroundColor = context.resolveAttribute(colorBackground)
