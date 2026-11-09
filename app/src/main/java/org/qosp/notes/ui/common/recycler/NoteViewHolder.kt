@@ -2,7 +2,10 @@ package org.qosp.notes.ui.common.recycler
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Outline
 import android.view.ContextThemeWrapper
+import android.view.View
+import android.view.ViewOutlineProvider
 import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.core.view.doOnPreDraw
@@ -48,6 +51,15 @@ class NoteViewHolder(
             layoutManager = AttachmentsPreviewGridManager(context, 2)
             adapter = attachmentsAdapter
             setRecycledViewPool(attachmentsViewPool)
+            // Black Pearl (design 1A): images sit inside the card with their own rounded corners
+            val inset = 8.dp(context).toFloat()
+            outlineProvider = object : ViewOutlineProvider() {
+                override fun getOutline(view: View, outline: Outline) {
+                    val radius = (binding.root.radius - inset).coerceAtLeast(inset / 2)
+                    outline.setRoundRect(0, 0, view.width, view.height, radius)
+                }
+            }
+            clipToOutline = true
         }
 
         binding.recyclerTasks.apply {

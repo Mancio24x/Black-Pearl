@@ -25,15 +25,6 @@
         <item name="cornerSize">50%</item>
     </style>
 
-    <style name="Widget.Custom.BottomAppBar" parent="Widget.Material3.BottomAppBar">
-        <item name="backgroundTint">?attr/colorBottomAppBarBackground</item>
-        <!-- M3 default "embed" hid the FAB: keep Quillpad's cradle (FAB sits in a notch above the bar) -->
-        <item name="fabAnchorMode">cradle</item>
-        <item name="fabCradleMargin">6dp</item>
-        <item name="fabCradleRoundedCornerRadius">10dp</item>
-        <item name="fabCradleVerticalOffset">0dp</item>
-    </style>
-
     <style name="TextAppearance.Custom.DrawerItem" parent="android:Widget.TextView">
         <item name="fontFamily">@font/inter_font_family</item>
         <item name="android:textStyle">bold</item>

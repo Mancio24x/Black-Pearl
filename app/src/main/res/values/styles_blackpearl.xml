@@ -51,4 +51,45 @@
     <style name="NoteFont.System" parent=""><item name="noteFontFamily">sans-serif</item></style>
     <style name="NoteFont.Serif" parent=""><item name="noteFontFamily">serif</item></style>
     <style name="NoteFont.Mono" parent=""><item name="noteFontFamily">monospace</item></style>
+
+    <!-- Note list "Soft" design (1A) -->
+    <style name="TextAppearance.BlackPearl.ListTitle" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:fontFamily">serif</item>
+        <item name="fontFamily">serif</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">30sp</item>
+        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+    <style name="ThemeOverlay.BlackPearl.ListToolbar" parent="">
+        <item name="toolbarNavigationButtonStyle">@style/Widget.BlackPearl.ToolbarNavRound</item>
+    </style>
+    <style name="Widget.BlackPearl.ToolbarNavRound" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+        <item name="android:background">@drawable/bg_round_tonal</item>
+        <item name="android:minWidth">48dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:padding">12dp</item>
+    </style>
+    <style name="Widget.BlackPearl.SoftCard" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">?attr/colorNoteDefault</item>
+    </style>
+    <style name="Widget.BlackPearl.QuickAction" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:scaleType">center</item>
+        <item name="tint">?attr/colorOnSurface</item>
+    </style>
+    <style name="Widget.BlackPearl.NotebookChip" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/bp_chip_background</item>
+        <item name="chipStrokeColor">@color/bp_chip_stroke</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="android:textColor">@color/bp_chip_text</item>
+        <item name="chipMinHeight">36dp</item>
+        <item name="chipCornerRadius">18dp</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="chipIconVisible">false</item>
+        <item name="android:textAppearance">@style/TextAppearance.Material3.LabelLarge</item>
+    </style>
 </resources>

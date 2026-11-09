@@ -76,8 +76,8 @@ enum class ColorScheme(
 
 enum class CardShape(override val nameResource: Int, val styleResource: Int) : HasNameResource, EnumPreference by key("card_shape") {
     SQUARE(R.string.preferences_card_shape_square, R.style.Shape_Square),
-    ROUNDED(R.string.preferences_card_shape_rounded, R.style.Shape_Rounded) { override val isDefault = true },
-    EXTRA_ROUNDED(R.string.preferences_card_shape_extra_rounded, R.style.Shape_ExtraRounded),
+    ROUNDED(R.string.preferences_card_shape_rounded, R.style.Shape_Rounded),
+    EXTRA_ROUNDED(R.string.preferences_card_shape_extra_rounded, R.style.Shape_ExtraRounded) { override val isDefault = true },
     PILL(R.string.preferences_card_shape_pill, R.style.Shape_Pill),
 }
 

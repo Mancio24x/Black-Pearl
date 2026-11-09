@@ -15,6 +15,25 @@ tap_text() { # tap the first node whose text or content-desc equals $1
   set -- $b; adb shell input tap $(( ($1+$3)/2 )) $(( ($2+$4)/2 ))
 }
 MAIN=$PKG/org.qosp.notes.ui.MainActivity
+new_note() { # $1 = "true" for a checklist, then title and body lines (use %s for spaces)
+  local list=$1; shift
+  adb shell am start -W -n $MAIN -a android.intent.action.VIEW -d "blackpearl://notes/editor_create?newNoteIsList=$list" >/dev/null
+  sleep 3
+  for line in "$@"; do adb shell input text "$line"; adb shell input keyevent KEYCODE_ENTER; done
+  adb shell input keyevent KEYCODE_BACK; sleep 1; adb shell input keyevent KEYCODE_BACK; sleep 2
+}
+# Sample notes and a notebook, so the list screenshots show real cards and notebook chips
+adb shell am start -W -n $PKG/org.qosp.notes.ui.launcher.LauncherActivity >/dev/null; sleep 3
+tap_text "Continue" && sleep 2
+new_note false "Storia%sRinascimento" "Firenze,%si%sMedici%se%sla%snascita%sdella%sprospettiva."
+new_note true "Spesa" "Latte" "Pane" "Caffe"
+new_note false "Viaggio%sin%sSardegna" "Cala%sGoloritze%sall%salba,%spoi%sOrosei."
+new_note false "Idee%sracconto" "Una%smappa,%suna%sX,%sun%staccuino%sche%snessuno%ssa%sleggere."
+adb shell am force-stop $PKG
+adb shell am start -W -n $MAIN >/dev/null; sleep 3
+tap_text "Open navigation drawer" && tap_text "Your Notebooks" && sleep 2 && tap_text "Create a notebook" \
+  && sleep 1 && adb shell input text "Scuola" && tap_text "Save"
+sleep 1; adb shell input keyevent KEYCODE_BACK
 for mode in no yes; do
   adb shell cmd uimode night $mode; adb shell am force-stop $PKG
   # explicit component: the debug build also has a LeakCanary launcher icon
