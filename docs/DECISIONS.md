@@ -52,3 +52,5 @@ Newest last. Format: date — decision — why.
     instance (same formatting as the preview), paginated line by line; images drawn from local files only (no network),
     scaled to their layout width; non-placed image attachments appended. Save via SAF `CreateDocument` (user chooses
     location, no storage permission); share via cache file + FileProvider + Sharesheet. Tables render as plain text.
+17. **2026-11-09 — Release version from the git tag** (`-PreleaseVersion`, versionCode = X*10000+Y*100+Z, e.g. 0.2.1 → 201).
+    Avoids a PR just to bump numbers on the protected `main`. Codes stay above the earlier manual ones (1–4).

@@ -20,8 +20,15 @@ android {
         applicationId = "io.github.mancio24x.blackpearl"
         minSdk = 24
         targetSdk = 37
-        versionCode = 4
-        versionName = "0.2.0"
+        // Release builds get the version from the git tag (release.yml passes -PreleaseVersion=X.Y.Z):
+        // versionCode = X*10000 + Y*100 + Z, always increasing. Local/debug builds use the defaults below.
+        val releaseVersion = project.findProperty("releaseVersion")?.toString()
+        versionName = releaseVersion ?: "0.2.0"
+        versionCode = releaseVersion
+            ?.split(".")
+            ?.map { it.toInt() }
+            ?.let { (major, minor, patch) -> major * 10000 + minor * 100 + patch }
+            ?: 4
 
         testInstrumentationRunner = "org.qosp.notes.TestRunner"
 

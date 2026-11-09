@@ -35,6 +35,10 @@ jobs:
             echo "::error::Missing secret KEYSTORE_BASE64 (see docs/TESTING.md > Release signing)"; exit 1
           fi
 
+      - name: Check tag format
+        run: |
+          [[ "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]{1,2}\.[0-9]{1,2}$ ]] || { echo "::error::Tag must be vX.Y.Z (Y, Z < 100)"; exit 1; }
+
       - name: Unit tests
         run: ./gradlew testDebugUnitTest
 
@@ -47,6 +51,7 @@ jobs:
         run: |
           echo "$KEYSTORE_BASE64" | base64 -d > app/release.jks
           ./gradlew assembleRelease \
+            -PreleaseVersion="${GITHUB_REF_NAME#v}" \
             -Pkeystore=release.jks \
             -Pstorepass="$STORE_PASS" \
             -Pkeyalias="$KEY_ALIAS" \
