@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
@@ -16,9 +17,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.qosp.notes.App
 import org.qosp.notes.R
+import org.qosp.notes.components.importer.OtherAppsImport
 import org.qosp.notes.data.model.Note
 import org.qosp.notes.preferences.BackupStrategy
 import org.qosp.notes.preferences.PreferenceRepository
@@ -46,6 +49,11 @@ class BackupService : LifecycleService() {
         super.onStartCommand(intent, flags, startId)
         intent?.let { i ->
             val action = i.extras?.getSerializable(ACTION) as? Action ?: return@let
+            if (action == Action.IMPORT) {
+                val uris = i.extras?.getParcelableArrayList<Uri>(URIS_EXTRA).orEmpty()
+                if (uris.isNotEmpty()) importNotes(uris)
+                return@let
+            }
             val uri = i.extras?.getParcelable<Uri>(URI_EXTRA) ?: return@let
 
             when (action) {
@@ -56,6 +64,7 @@ class BackupService : LifecycleService() {
                     val notes = i.extras?.getParcelableArrayList<Note>(NOTES)?.toSet()
                     backupNotes(notes, uri)
                 }
+                Action.IMPORT -> Unit
             }
         }
         return START_STICKY
@@ -187,13 +196,48 @@ class BackupService : LifecycleService() {
         )
     }
 
+    /** Black Pearl: notes exported by other apps (and Black Pearl / Quillpad backups), see OtherAppsImport. */
+    private fun importNotes(uris: List<Uri>) = startJob {
+        val notificationId = nextId
+        val notificationBuilder = NotificationCompat.Builder(applicationContext, App.BACKUPS_CHANNEL_ID)
+            .setOnlyAlertOnce(true)
+            .setContentTitle(getString(R.string.import_in_progress))
+            .setSmallIcon(R.drawable.ic_notification_icon)
+            .setProgress(0, 0, true)
+            .setOngoing(true)
+        startForeground(notificationId, notificationBuilder.build())
+
+        val outcome = runCatching { OtherAppsImport(applicationContext, backupManager).import(uris) }
+        val message = outcome.fold(
+            onSuccess = {
+                if (it.notes == 0) getString(R.string.import_nothing_found)
+                else resources.getQuantityString(R.plurals.import_done, it.notes, it.notes)
+            },
+            onFailure = { getString(R.string.import_failed) },
+        )
+        notificationManager?.notify(
+            notificationId,
+            notificationBuilder
+                .setContentTitle(message)
+                .setContentText(outcome.exceptionOrNull()?.message ?: outcome.getOrNull()?.formats?.joinToString(", "))
+                .setProgress(0, 0, false)
+                .setOngoing(false)
+                .setAutoCancel(true)
+                .build()
+        )
+        // Also visible when notifications are off
+        withContext(Dispatchers.Main) { Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show() }
+    }
+
     enum class Action {
         RESTORE,
         BACKUP,
+        IMPORT,
     }
 
     companion object {
         private const val URI_EXTRA = "URI_EXTRA"
+        private const val URIS_EXTRA = "URIS_EXTRA"
         private const val NOTES = "NOTES"
         private const val ACTION = "ACTION"
 
@@ -201,6 +245,14 @@ class BackupService : LifecycleService() {
             Intent(context, BackupService::class.java).also { intent ->
                 intent.putExtra(ACTION, Action.RESTORE)
                 intent.putExtra(URI_EXTRA, backupUri)
+                ContextCompat.startForegroundService(context, intent)
+            }
+        }
+
+        fun importNotes(context: Context, uris: List<Uri>) {
+            Intent(context, BackupService::class.java).also { intent ->
+                intent.putExtra(ACTION, Action.IMPORT)
+                intent.putParcelableArrayListExtra(URIS_EXTRA, ArrayList(uris))
                 ContextCompat.startForegroundService(context, intent)
             }
         }

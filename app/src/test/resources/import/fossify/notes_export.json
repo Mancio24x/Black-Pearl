@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "title": "Generale",
+    "value": "Prima riga\n☐ comprare\n☑ fatto",
+    "type": "TYPE_TEXT",
+    "path": "",
+    "protectionType": -1,
+    "protectionHash": ""
+  },
+  {
+    "id": 2,
+    "title": "Compiti",
+    "value": "[{\"id\": 1, \"dateCreated\": 1700000000000, \"title\": \"matematica\", \"isDone\": true}, {\"id\": 2, \"dateCreated\": 1700000000001, \"title\": \"storia\", \"isDone\": false}]",
+    "type": "TYPE_CHECKLIST",
+    "path": "",
+    "protectionType": -1,
+    "protectionHash": ""
+  },
+  {
+    "id": 3,
+    "title": "Vecchio formato",
+    "value": "tipo numerico",
+    "type": 0,
+    "path": ""
+  }
+]

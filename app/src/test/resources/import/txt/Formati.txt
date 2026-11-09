@@ -1,0 +1,9 @@
+• uno
+◦ due
+1) primo
+2024. anno speciale
+	indentato con tab
+    quattro spazi
+- già markdown
+[ ] casella
+[x] fatta

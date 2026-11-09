@@ -1,0 +1,25 @@
+{
+  "attachments": [
+    {
+      "filePath": "1a2b3c4d.jpeg",
+      "mimetype": "image/jpeg"
+    }
+  ],
+  "color": "CERULEAN",
+  "isTrashed": false,
+  "isPinned": false,
+  "isArchived": true,
+  "textContent": "Cala Goloritzé all'alba\n• costume\n• crema\n\n    indirizzo indentato",
+  "textContentHtml": "<p dir=\"ltr\">Cala Goloritzé all'alba</p>",
+  "title": "Viaggio in Sardegna",
+  "userEditedTimestampUsec": 1700000000000000,
+  "createdTimestampUsec": 1690000000000000,
+  "annotations": [
+    {
+      "description": "",
+      "source": "WEBLINK",
+      "title": "Orosei",
+      "url": "https://it.wikipedia.org/wiki/Orosei"
+    }
+  ]
+}

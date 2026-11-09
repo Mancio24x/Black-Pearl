@@ -171,6 +171,8 @@ dependencies {
     implementation(libs.monitor)
     implementation(libs.junit.ktx)
     coreLibraryDesugaring(libs.coreLibraryDesugaring)
+    // Import from other note apps: HTML / Evernote ENML to Markdown
+    implementation(libs.jsoup)
 
     // Test
     testImplementation(libs.junit)
