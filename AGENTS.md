@@ -53,5 +53,6 @@ Black Pearl is an Android note-taking app, a GPL-3.0 fork of [Quillpad](https://
 - Per feature: implement → tests → build → review → commit → PR → CI green → merge.
 - Clear commit messages (`feat:`, `fix:`, `docs:`, `ci:`, `chore:`).
 - Two agents must not edit the same files concurrently.
+- PRs are squash-merged: do not stack feature PRs on each other; start each feature branch from the updated `main`.
 - `upstream` remote = original Quillpad (fetch only). Never push there; never auto-merge upstream changes —
   cherry-pick reviewed fixes only.

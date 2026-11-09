@@ -45,3 +45,9 @@ Append one short entry per significant task: files, decisions, tests (with resul
 - Files: `ui/pdf/*`, `EditorFragment.kt`, `menu/editor_top.xml`, `xml/file_provider_paths.xml` (cache pdf/), strings,
   tests `PdfLayoutTest` (JVM), `NotePdfExporterTest` (device), `ui-preview.yml` runs device tests.
 - Tests: `testDebugUnitTest` 103 tests, 0 failures; `assembleDebug` OK. Device tests: see CI.
+
+## 2026-11-09 — Release 0.2.0 branch
+- #11 was squash-merged; #12–#15 were stacked on the pre-squash commits and conflicted with main. The 4 feature
+  commits were rebased onto main (content unchanged, verified by diff) and opened as one PR with version 0.2.0
+  (versionCode 4). Local: 103 unit tests OK, assembleDebug + assembleRelease OK.
+- Lesson: with squash merges, do not stack PRs; branch each feature from main after the previous one is merged.
