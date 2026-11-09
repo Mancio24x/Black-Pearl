@@ -1,0 +1,3 @@
+Lista spesa
+☐ Pane
+☑ Latte

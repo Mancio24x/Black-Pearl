@@ -1,0 +1,38 @@
+[
+  {
+    "type": "LIST",
+    "color": "BLUE",
+    "title": "Da fare",
+    "pinned": true,
+    "timestamp": 1700000000000,
+    "modifiedTimestamp": 1700000500000,
+    "labels": [
+      "lavoro"
+    ],
+    "body": "",
+    "items": [
+      {
+        "body": "email",
+        "checked": true,
+        "isChild": false,
+        "order": 0
+      },
+      {
+        "body": "riunione",
+        "checked": false,
+        "isChild": false,
+        "order": 1
+      }
+    ]
+  },
+  {
+    "type": "NOTE",
+    "color": "DEFAULT",
+    "title": "Pensieri",
+    "pinned": false,
+    "timestamp": 1700000000000,
+    "labels": [],
+    "body": "testo libero\ncon due righe",
+    "items": []
+  }
+]

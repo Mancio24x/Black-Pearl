@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE en-export SYSTEM "http://xml.evernote.com/pub/evernote-export4.dtd">
+<en-export export-date="20230801T100000Z" application="Evernote" version="10.60.4">
+  <note>
+    <title>Lista valigia</title>
+    <created>20230701T080000Z</created>
+    <updated>20230702T090000Z</updated>
+    <tag>vacanze</tag>
+    <tag>estate</tag>
+    <note-attributes><author>Leo</author></note-attributes>
+    <content>
+      <![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">
+<en-note><div><en-todo checked="true"/>Costume</div><div><en-todo/>Crema</div><div><br/></div><div>Foto:</div><en-media hash="f829b914fc47cfc9c0747c119c27cf1b" type="image/png"/></en-note>]]>
+    </content>
+    <resource>
+      <data encoding="base64">
+iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAf
+FcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAA
+AABJRU5ErkJggg==
+      </data>
+      <mime>image/png</mime>
+      <width>1</width><height>1</height>
+      <resource-attributes><file-name>spiaggia.png</file-name></resource-attributes>
+    </resource>
+  </note><note>
+    <title>Appunti</title>
+    <created>20230703T080000Z</created>
+    <updated>20230703T080000Z</updated>
+    <content><![CDATA[<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><h1>Titolo interno</h1><p>Testo <b>grassetto</b> e <i>corsivo</i> con <a href="https://example.com">un link</a>.</p><ul><li>uno</li><li>due<ul><li>sotto</li></ul></li></ul><ol><li>primo</li></ol><table><tr><th>A</th><th>B</th></tr><tr><td>1</td><td>2</td></tr></table><div>Riga&nbsp;con&nbsp;spazi</div></en-note>]]></content>
+  </note>
+</en-export>

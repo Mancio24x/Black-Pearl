@@ -99,4 +99,18 @@
     <string name="appearance_subtitle">Temi, il mio tema, modalità, forme e caratteri</string>
     <string name="list_search_notes">Cerca nelle note</string>
     <string name="list_filter_all">Tutte</string>
+    <string name="nav_import_export">Importa ed esporta</string>
+    <string name="import_from_other_apps">Importa note da altre app</string>
+    <string name="import_export_backup">Esporta un backup di Black Pearl</string>
+    <string name="import_restore_backup">Ripristina un backup di Black Pearl</string>
+    <string name="import_choose_files">Scegli i file</string>
+    <string name="import_supported_formats">Esporta le note dall\'altra app, poi scegli qui i file (puoi sceglierne più di uno, o uno .zip).\n\n• Google Keep (.zip o .tgz di Google Takeout)\n• Evernote (.enex)\n• Joplin (.jex, o .zip di un\'esportazione Markdown)\n• Simplenote, Standard Notes, Fossify Notes (.zip o .json)\n• Obsidian, Notesnook, Bear e altre app Markdown (.md o .zip)\n• Qualsiasi app che esporta testo semplice (.txt): convertito in Markdown\n• HTML (.html) e JSON di note (Notally, Omni Notes…)\n• Backup di Black Pearl e Quillpad\n\nLe note che hai già restano come sono: quelle importate vengono aggiunte, con liste di controllo, immagini, tag e taccuini.</string>
+    <string name="import_in_progress">Importazione delle note…</string>
+    <string name="import_nothing_found">Nessuna nota trovata nei file scelti</string>
+    <string name="import_failed">Importazione non riuscita</string>
+    <plurals name="import_done">
+        <item quantity="one">%d nota importata</item>
+        <item quantity="many">%d note importate</item>
+        <item quantity="other">%d note importate</item>
+    </plurals>
 </resources>

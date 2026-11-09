@@ -101,4 +101,17 @@
     <string name="appearance_subtitle">Themes, my theme, mode, shapes and fonts</string>
     <string name="list_search_notes">Search notes</string>
     <string name="list_filter_all">All</string>
+    <string name="nav_import_export">Import and export</string>
+    <string name="import_from_other_apps">Import notes from other apps</string>
+    <string name="import_export_backup">Export a Black Pearl backup</string>
+    <string name="import_restore_backup">Restore a Black Pearl backup</string>
+    <string name="import_choose_files">Choose files</string>
+    <string name="import_supported_formats">Export your notes from the other app, then choose the files here (you can pick several, or a .zip).\n\n• Google Keep (Google Takeout .zip or .tgz)\n• Evernote (.enex)\n• Joplin (.jex, or a .zip of a Markdown export)\n• Simplenote, Standard Notes, Fossify Notes (.zip or .json)\n• Obsidian, Notesnook, Bear and other Markdown apps (.md or .zip)\n• Any app that exports plain text (.txt): converted to Markdown\n• HTML (.html) and note JSON (Notally, Omni Notes…)\n• Black Pearl and Quillpad backups\n\nYour current notes stay as they are: imported notes are added, with their checklists, pictures, tags and notebooks.</string>
+    <string name="import_in_progress">Importing notes…</string>
+    <string name="import_nothing_found">No notes found in the chosen files</string>
+    <string name="import_failed">Import failed</string>
+    <plurals name="import_done">
+        <item quantity="one">%d note imported</item>
+        <item quantity="other">%d notes imported</item>
+    </plurals>
 </resources>
