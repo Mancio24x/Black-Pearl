@@ -1,7 +1,6 @@
 package org.qosp.notes.ui.editor
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.qosp.notes.R
 import org.qosp.notes.data.model.Note
+import org.qosp.notes.ui.common.DangerRow
 import org.qosp.notes.ui.common.QuickActions
 import org.qosp.notes.ui.common.SheetAction
 import org.qosp.notes.ui.common.SheetChoice
@@ -46,7 +45,7 @@ fun NoteOptionsSheet(note: Note, onAction: (Int) -> Unit, onSwitch: (id: Int, on
         SheetGroup {
             SheetRow(R.drawable.ic_restore, stringResource(R.string.action_restore)) { onAction(R.id.action_restore_note) }
         }
-        DeleteRow(stringResource(R.string.action_delete_permanently)) { onAction(R.id.action_delete_permanently_note) }
+        DangerRow(stringResource(R.string.action_delete_permanently)) { onAction(R.id.action_delete_permanently_note) }
         return
     }
 
@@ -106,14 +105,7 @@ fun NoteOptionsSheet(note: Note, onAction: (Int) -> Unit, onSwitch: (id: Int, on
         }
     }
 
-    DeleteRow(stringResource(R.string.action_delete)) { onAction(R.id.action_delete_note) }
-}
-
-@Composable
-private fun DeleteRow(label: String, onClick: () -> Unit) {
-    Column(Modifier.padding(horizontal = 10.dp, vertical = 4.dp)) {
-        SheetRow(R.drawable.ic_bin, label, color = MaterialTheme.colorScheme.error, onClick = onClick)
-    }
+    DangerRow(stringResource(R.string.action_delete)) { onAction(R.id.action_delete_note) }
 }
 
 /**
@@ -161,5 +153,5 @@ fun ImageOptionsSheet(
             }
         }
     }
-    DeleteRow(stringResource(R.string.image_remove_from_note), onRemove)
+    DangerRow(stringResource(R.string.image_remove_from_note), onRemove)
 }

@@ -105,7 +105,6 @@
     <string name="action_unarchive">Opphev arkivering</string>
     <string name="action_export">Eksporter</string>
     <string name="action_hide">Skjul</string>
-    <string name="action_show">Vis</string>
     <string name="action_archive">Arkiver</string>
     <string name="action_pin">Fest</string>
     <string name="action_unpin">Løsne</string>
@@ -174,8 +173,6 @@
     <string name="action_convert_to_list">Konverter til liste</string>
     <string name="action_do_not_sync">Ikke synkroniser</string>
     <string name="action_change_color">Endre farge</string>
-    <string name="action_enable_markdown">Markdown</string>
-    <string name="action_disable_markdown">Skru av markdown</string>
     <string name="action_insert_bold_text">Sett inn fet markdown</string>
     <string name="action_insert_italics">Sett inn skråskriftsmarkdown</string>
     <string name="action_insert_strikethrough">Sett inn gjennomstreket markdown</string>
@@ -276,7 +273,6 @@
     <string name="about_send_logs_subtext">Send appens loggfiler til utvikleren for undersøkelse</string>
     <string name="action_change_mode">Rediger/Vis-modus</string>
     <string name="action_screen_always_on">Skjerm alltid på</string>
-    <string name="action_disable_screen_always_on">Deaktivert Skjem alltid på</string>
     <string name="message_certificates_invalid">Sertifikat-feil. Skru på \"Stol på selvsignert sertifikat (SSC)\" for å fortsette.</string>
     <string name="message_notes_not_installed">Notes-appen er ikke installert i din Nextcloud.</string>
     <string name="widget_no_pinned_notes">Ingen festede notater enda. Fest et notat for å se det her.</string>

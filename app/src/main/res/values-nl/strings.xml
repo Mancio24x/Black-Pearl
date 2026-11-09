@@ -125,7 +125,6 @@
     <string name="action_unarchive">Uit archief halen</string>
     <string name="action_export">Exporteren</string>
     <string name="action_hide">Verbergen</string>
-    <string name="action_show">Toon</string>
     <string name="action_archive">Archiveren</string>
     <string name="action_change_mode">Toon- en bewerkmodus</string>
     <string name="action_pin">Vastpinnen</string>
@@ -196,10 +195,6 @@
     <string name="action_convert_to_list">Converteer naar lijst</string>
     <string name="action_do_not_sync">Niet synchroniseren</string>
     <string name="action_change_color">Verander kleur</string>
-    <string name="action_enable_markdown">Markdown inschakelen</string>
-    <string name="action_disable_markdown">Markdown uitschakelen</string>
-    <string name="action_enable_screen_always_on">\"Scherm altijd aan\" inschakelen</string>
-    <string name="action_disable_screen_always_on">\"Scherm altijd aan\" uitschakelen</string>
     <string name="action_insert_bold_text">Vetgedrukte markdown invoegen</string>
     <string name="action_insert_italics">Cursieve markdown invoegen</string>
     <string name="action_insert_strikethrough">Doorgestreepte markdown invoegen</string>

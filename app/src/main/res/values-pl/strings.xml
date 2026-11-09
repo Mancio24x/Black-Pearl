@@ -106,7 +106,6 @@
     <string name="action_unarchive">Przywróć z archiwum</string>
     <string name="action_export">Eksportuj</string>
     <string name="action_hide">Ukryj</string>
-    <string name="action_show">Pokaż</string>
     <string name="action_archive">Zarchiwizuj</string>
     <string name="action_pin">Przypnij</string>
     <string name="action_unpin">Odepnij</string>
@@ -175,8 +174,6 @@
     <string name="action_convert_to_list">Konwertuj na listę</string>
     <string name="action_do_not_sync">Nie synchronizuj</string>
     <string name="action_change_color">Zmień kolor</string>
-    <string name="action_enable_markdown">Włącz markdown</string>
-    <string name="action_disable_markdown">Wyłącz markdown</string>
     <string name="action_insert_bold_text">Wstaw pogrubienie</string>
     <string name="action_insert_italics">Wstaw kursywę</string>
     <string name="action_insert_strikethrough">Wstaw przekreślenie</string>
@@ -286,8 +283,6 @@
     <string name="about_send_logs_subtext">Wyślij dzienniki aplikacji do dewelopera celem przeprowadzenia śledztwa</string>
     <string name="action_change_mode">Tryb edycji/podglądu</string>
     <string name="action_screen_always_on">Ekran zawsze włączony</string>
-    <string name="action_enable_screen_always_on">Włącz ekran zawsze włączony</string>
-    <string name="action_disable_screen_always_on">Wyłącz ekranz zawsze włączony</string>
     <string name="action_uncheck_all_tasks">Odznacz wszystkie pozycje</string>
     <string name="message_certificates_invalid">Błąd certyfikatu. Aby kontynuować proszę włączyć \"ufaj certyfikatowi samopodpisanemu\"..</string>
     <string name="message_notes_not_installed">Aplikacja Notes nie jest zainstalowana w Twoim Nextcloud.</string>

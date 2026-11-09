@@ -105,7 +105,6 @@
     <string name="action_unarchive">Desarchivar</string>
     <string name="action_export">Exportar</string>
     <string name="action_hide">Ocultar</string>
-    <string name="action_show">Mostrar</string>
     <string name="action_archive">Archivar</string>
     <string name="action_pin">Fijar</string>
     <string name="action_unpin">Soltar</string>
@@ -174,8 +173,6 @@
     <string name="action_convert_to_list">Convertir a lista</string>
     <string name="action_do_not_sync">No sincronizar</string>
     <string name="action_change_color">Cambiar color</string>
-    <string name="action_enable_markdown">Habilitar formato</string>
-    <string name="action_disable_markdown">Deshabilitar formato</string>
     <string name="action_insert_bold_text">Insertar formato negrita</string>
     <string name="action_insert_italics">Insertar formato cursiva</string>
     <string name="action_insert_strikethrough">Insertar formato tachado</string>
@@ -267,8 +264,6 @@
     <string name="preferences_font_size_default">Predeterminado</string>
     <string name="about_send_logs">Enviar logs de error</string>
     <string name="about_send_logs_subtext">Enviar logs al desarrollador de la app para investigación</string>
-    <string name="action_enable_screen_always_on">Habilitar Pantalla siempre activa</string>
-    <string name="action_disable_screen_always_on">Deshabilitar pantalla siempre activa</string>
     <string name="preferences_header_view_notebook">Libreta</string>
     <string name="preferences_top_bar">Barra superior</string>
     <string name="preferences_default_editor_mode_edit">Modo de edición</string>

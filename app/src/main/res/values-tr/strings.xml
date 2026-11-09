@@ -133,7 +133,6 @@
     <string name="action_unarchive">Arşivden çıkar</string>
     <string name="action_export">Dışa aktar</string>
     <string name="action_hide">Gizle</string>
-    <string name="action_show">Göster</string>
     <string name="action_archive">Arşivle</string>
     <string name="action_change_mode">Düzenleme/Görüntüleme modu</string>
     <string name="action_pin">Sabitle</string>
@@ -204,10 +203,6 @@
     <string name="action_convert_to_list">Listeye dönüştür</string>
     <string name="action_do_not_sync">Senkronize etme</string>
     <string name="action_change_color">Renk değiştir</string>
-    <string name="action_enable_markdown">Markdown’u etkinleştir</string>
-    <string name="action_disable_markdown">Markdown’u devre dışı bırak</string>
-    <string name="action_enable_screen_always_on">Ekranı her zaman açık tutmayı etkinleştir</string>
-    <string name="action_disable_screen_always_on">Ekranı her zaman açık tutmayı devre dışı bırak</string>
     <string name="action_insert_bold_text">Kalın markdown ekle</string>
     <string name="action_insert_italics">İtalik markdown ekle</string>
     <string name="action_insert_strikethrough">Üstü çizili markdown ekle</string>

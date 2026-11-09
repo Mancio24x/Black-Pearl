@@ -122,7 +122,6 @@
     <string name="action_unarchive">Hủy lưu trữ</string>
     <string name="action_export">Xuất</string>
     <string name="action_hide">Ẩn</string>
-    <string name="action_show">Hiển thị</string>
     <string name="action_archive">Lưu trữ</string>
     <string name="action_change_mode">Chế độ chỉnh sửa/xem</string>
     <string name="action_pin">Ghim</string>
@@ -193,10 +192,6 @@
     <string name="action_convert_to_list">Chuyển thành danh sách</string>
     <string name="action_do_not_sync">Không đồng bộ</string>
     <string name="action_change_color">Thay đổi màu sắc</string>
-    <string name="action_enable_markdown">Bật markdown</string>
-    <string name="action_disable_markdown">Tắt markdown</string>
-    <string name="action_enable_screen_always_on">Kích hoạt màn hình luôn bật</string>
-    <string name="action_disable_screen_always_on">Tắt màn hình luôn bật</string>
     <string name="action_insert_bold_text">Chèn markdown in đậm</string>
     <string name="action_insert_italics">Chèn markdown in nghiêng</string>
     <string name="action_insert_strikethrough">Chèn markdown gạch ngang</string>

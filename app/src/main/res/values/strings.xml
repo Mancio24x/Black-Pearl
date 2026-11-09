@@ -165,7 +165,6 @@
     <string name="action_unarchive">Unarchive</string>
     <string name="action_export">Export</string>
     <string name="action_hide">Hide</string>
-    <string name="action_show">Show</string>
     <string name="action_archive">Archive</string>
     <string name="action_change_mode">Edit/View mode</string>
     <string name="action_pin">Pin</string>
@@ -252,10 +251,6 @@
     <string name="action_convert_to_list">Convert to list</string>
     <string name="action_do_not_sync">Do not sync</string>
     <string name="action_change_color">Change color</string>
-    <string name="action_enable_markdown">Enable markdown</string>
-    <string name="action_disable_markdown">Disable markdown</string>
-    <string name="action_enable_screen_always_on">Enable screen always on</string>
-    <string name="action_disable_screen_always_on">Disable screen always on</string>
     <string name="action_insert_bold_text">Insert bold markdown</string>
     <string name="action_insert_italics">Insert italics markdown</string>
     <string name="action_insert_strikethrough">Insert strikethrough markdown</string>

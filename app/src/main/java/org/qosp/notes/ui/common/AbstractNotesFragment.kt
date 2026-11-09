@@ -43,7 +43,6 @@ import org.qosp.notes.ui.common.recycler.onBackPressedHandler
 import org.qosp.notes.ui.utils.collect
 import org.qosp.notes.ui.utils.liftAppBarOnScroll
 import org.qosp.notes.ui.utils.shareNote
-import org.qosp.notes.ui.utils.views.BottomSheet
 import org.qosp.notes.ui.widget.WidgetUpdateHelper
 import java.util.concurrent.TimeUnit
 
@@ -445,37 +444,46 @@ abstract class AbstractNotesFragment(@LayoutRes resId: Int) : BaseFragment(resId
 
     fun showMenuForNote(position: Int, isSelectionEnabled: Boolean = true) {
         val note = recyclerAdapter.getItemAtPosition(position)
-        val isNormal = !note.isDeleted && !note.isArchived
+        OptionsSheet.show(parentFragmentManager) { close ->
+            NoteListSheet(
+                note = note,
+                canSelect = isSelectionEnabled,
+                onAction = { action ->
+                    close()
+                    runNoteListAction(note, action)
+                },
+                onSwitch = { option, on -> setNoteListOption(note, option, on) },
+            )
+        }
+    }
 
-        BottomSheet.show(note.title, parentFragmentManager) {
-            action(R.string.action_unpin, R.drawable.ic_unpin, condition = note.isPinned && isNormal) {
+    private fun runNoteListAction(note: Note, action: NoteListAction) {
+        when (action) {
+            NoteListAction.PIN -> {
                 activityModel.pinNotes(note)
                 // Refresh widgets to reflect pin state change
                 WidgetUpdateHelper.updateAllWidgets(requireContext())
             }
-            action(R.string.action_pin, R.drawable.ic_pin, condition = !note.isPinned && isNormal) {
-                activityModel.pinNotes(note)
-                // Refresh widgets to reflect pin state change
-                WidgetUpdateHelper.updateAllWidgets(requireContext())
-            }
-            action(R.string.action_restore, R.drawable.ic_restore, condition = note.isDeleted) {
-                activityModel.restoreNotes(note)
-            }
-            action(R.string.action_delete_permanently, R.drawable.ic_bin, condition = note.isDeleted) {
-                activityModel.deleteNotesPermanently(note)
-                sendMessage(getString(R.string.indicator_deleted_note_permanently))
-            }
-            action(R.string.action_archive, R.drawable.ic_archive_action, condition = !note.isArchived && isNormal) {
+            NoteListAction.ARCHIVE -> if (note.isArchived) {
+                activityModel.unarchiveNotes(note)
+            } else {
                 activityModel.archiveNotes(note)
                 sendMessage(getString(R.string.indicator_archive_note))
             }
-            action(R.string.action_unarchive, R.drawable.ic_unarchive, condition = note.isArchived) {
-                activityModel.unarchiveNotes(note)
+            NoteListAction.MOVE -> showMoveToNotebookDialog(note)
+            NoteListAction.SHARE -> shareNote(requireContext(), note)
+            NoteListAction.DUPLICATE -> activityModel.duplicateNotes(note)
+            NoteListAction.EXPORT -> {
+                activityModel.notesToBackup = setOf(note)
+                exportNotesLauncher.launch(null)
             }
-            action(R.string.action_move_to, R.drawable.ic_notebook_swap, condition = isNormal) {
-                showMoveToNotebookDialog(note)
+            NoteListAction.SELECT -> toggleNoteSelected(note.id)
+            NoteListAction.RESTORE -> activityModel.restoreNotes(note)
+            NoteListAction.DELETE_FOREVER -> {
+                activityModel.deleteNotesPermanently(note)
+                sendMessage(getString(R.string.indicator_deleted_note_permanently))
             }
-            action(R.string.action_delete, R.drawable.ic_bin, condition = !note.isDeleted) {
+            NoteListAction.DELETE -> {
                 activityModel.deleteNotes(note)
                 lifecycleScope.launch {
                     if (data.noteDeletionTimeInDays == 0L) {
@@ -485,43 +493,15 @@ abstract class AbstractNotesFragment(@LayoutRes resId: Int) : BaseFragment(resId
                     }
                 }
             }
-            action(R.string.action_show, R.drawable.ic_show, condition = note.isHidden) {
-                activityModel.showNotes(note)
-            }
-            action(R.string.action_hide, R.drawable.ic_hidden, condition = !note.isHidden) {
-                activityModel.hideNotes(note)
-            }
-            action(R.string.action_compact_preview, R.drawable.ic_preview, condition = !note.isCompactPreview) {
-                activityModel.makeNotesCompactPreview(note)
-            }
-            action(R.string.action_full_preview, R.drawable.ic_preview, condition = note.isCompactPreview) {
-                activityModel.makeNotesFullPreview(note)
-            }
-            action(R.string.action_disable_screen_always_on, R.drawable.ic_pin, condition = !note.isDeleted && note.screenAlwaysOn) {
-                activityModel.disableScreenAlwaysOn(note)
-            }
-            action(R.string.action_enable_screen_always_on, R.drawable.ic_pin, condition = !note.isDeleted && !note.screenAlwaysOn) {
-                activityModel.enableScreenAlwaysOn(note)
-            }
-            action(R.string.action_disable_markdown, R.drawable.ic_markdown, condition = !note.isDeleted && note.isMarkdownEnabled) {
-                activityModel.disableMarkdown(note)
-            }
-            action(R.string.action_enable_markdown, R.drawable.ic_markdown, condition = !note.isDeleted && !note.isMarkdownEnabled) {
-                activityModel.enableMarkdown(note)
-            }
-            action(R.string.action_duplicate, R.drawable.ic_duplicate, condition = isNormal) {
-                activityModel.duplicateNotes(note)
-            }
-            action(R.string.action_export, R.drawable.ic_export_note) {
-                activityModel.notesToBackup = setOf(note)
-                exportNotesLauncher.launch(null)
-            }
-            action(R.string.action_share, R.drawable.ic_share) {
-                shareNote(requireContext(), note)
-            }
-            action(R.string.action_select_more, R.drawable.ic_select_more, condition = isSelectionEnabled) {
-                toggleNoteSelected(note.id)
-            }
+        }
+    }
+
+    private fun setNoteListOption(note: Note, option: NoteListOption, on: Boolean) {
+        when (option) {
+            NoteListOption.HIDDEN -> if (on) activityModel.hideNotes(note) else activityModel.showNotes(note)
+            NoteListOption.COMPACT -> if (on) activityModel.makeNotesCompactPreview(note) else activityModel.makeNotesFullPreview(note)
+            NoteListOption.SCREEN_ON -> if (on) activityModel.enableScreenAlwaysOn(note) else activityModel.disableScreenAlwaysOn(note)
+            NoteListOption.MARKDOWN -> if (on) activityModel.enableMarkdown(note) else activityModel.disableMarkdown(note)
         }
     }
 }

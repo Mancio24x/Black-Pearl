@@ -111,7 +111,6 @@
     <string name="action_unarchive">Désarchiver</string>
     <string name="action_export">Exporter</string>
     <string name="action_hide">Cacher</string>
-    <string name="action_show">Montrer</string>
     <string name="action_archive">Archiver</string>
     <string name="action_pin">Épingler</string>
     <string name="action_unpin">Désépingler</string>
@@ -180,8 +179,6 @@
     <string name="action_convert_to_list">Convertir en liste</string>
     <string name="action_do_not_sync">Ne pas synchroniser</string>
     <string name="action_change_color">Changer la couleur</string>
-    <string name="action_enable_markdown">Activer le Markdown</string>
-    <string name="action_disable_markdown">Désactiver le markown</string>
     <string name="action_insert_bold_text">Insérer le markdown de mise en gras</string>
     <string name="action_insert_italics">Insérer le markdown de mise en italique</string>
     <string name="action_insert_strikethrough">Insérer le markdown pour barrer le texte</string>
@@ -264,8 +261,6 @@
     <string name="preferences_file_storage_select">Sélectionnez l\'emplacement de stockage</string>
     <string name="preferences_color_scheme_gray">Gris</string>
     <string name="preferences_color_scheme_system">Thème du système</string>
-    <string name="action_disable_screen_always_on">Désactiver l\'écran toujours allumé</string>
-    <string name="action_enable_screen_always_on">Activer l\'écran toujours allumé</string>
     <string name="action_screen_always_on">Écran toujours allumé</string>
     <string name="continue_next">Continuer</string>
     <string name="preferences_header_view_tags">Liste des tags</string>

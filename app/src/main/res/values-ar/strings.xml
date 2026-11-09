@@ -134,7 +134,6 @@
     <string name="action_unarchive">إلغاء الأرشفة</string>
     <string name="action_export">تصدير</string>
     <string name="action_hide">إخفاء</string>
-    <string name="action_show">إظهار</string>
     <string name="action_archive">أرشفة</string>
     <string name="action_change_mode">وضع التحرير/العرض</string>
     <string name="action_pin">تثبيت</string>
@@ -205,10 +204,6 @@
     <string name="action_convert_to_list">تحويل إلى قائمة</string>
     <string name="action_do_not_sync">عدم المزامنة</string>
     <string name="action_change_color">تغيير اللون</string>
-    <string name="action_enable_markdown">تفعيل markdown</string>
-    <string name="action_disable_markdown">تعطيل markdown</string>
-    <string name="action_enable_screen_always_on">تفعيل الشاشة مضاءة دائماً</string>
-    <string name="action_disable_screen_always_on">تعطيل الشاشة مضاءة دائماً</string>
     <string name="action_insert_bold_text">إدراج نص غامق markdown</string>
     <string name="action_insert_italics">إدراج نص مائل markdown</string>
     <string name="action_insert_strikethrough">إدراج نص مشطوب markdown</string>

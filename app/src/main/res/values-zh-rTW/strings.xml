@@ -122,7 +122,6 @@
     <string name="action_unarchive">取消歸檔</string>
     <string name="action_export">匯出</string>
     <string name="action_hide">隱藏</string>
-    <string name="action_show">顯示</string>
     <string name="action_archive">歸檔</string>
     <string name="action_change_mode">編輯/檢視模式e</string>
     <string name="action_pin">置頂</string>
@@ -192,8 +191,6 @@
     <string name="action_convert_to_list">轉換為清單</string>
     <string name="action_do_not_sync">不同步</string>
     <string name="action_change_color">更改顏色</string>
-    <string name="action_enable_markdown">啟用Markdown</string>
-    <string name="action_disable_markdown">停用Markdown</string>
     <string name="action_insert_bold_text">插入Markdown粗體</string>
     <string name="action_insert_italics">插入Markdown斜體</string>
     <string name="action_insert_strikethrough">插入Markdown刪除線</string>

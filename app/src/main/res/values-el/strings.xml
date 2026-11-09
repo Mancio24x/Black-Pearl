@@ -99,7 +99,6 @@
     <string name="action_unarchive">Ανάκτηση από το αρχείο</string>
     <string name="action_export">Εξαγωγή</string>
     <string name="action_hide">Απόκρυψη</string>
-    <string name="action_show">Προβολή</string>
     <string name="action_pin">Καρφίτσωμα</string>
     <string name="action_unpin">Ξεκαρφίτσωμα</string>
     <string name="action_restore">Ανάκτηση από τον κάδο</string>
@@ -157,8 +156,6 @@
     <string name="action_convert_to_list">Μετατροπή σε λίστα</string>
     <string name="action_do_not_sync">Απενεργοποιήση συγχρονισμού</string>
     <string name="action_change_color">Αλλαγή χρώματος</string>
-    <string name="action_enable_markdown">Ενεργοποίηση Markdown</string>
-    <string name="action_disable_markdown">Απενεργοποίηση Markdown</string>
     <string name="action_insert_bold_text">Εισαγωγή έντονου markdown</string>
     <string name="action_insert_italics">Εισαγωγή italics markdown</string>
     <string name="action_insert_strikethrough">Εισαγωγή strikethrough markdown</string>
