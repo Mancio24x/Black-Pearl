@@ -88,6 +88,7 @@ import org.qosp.notes.ui.attachments.recycler.AttachmentsAdapter
 import org.qosp.notes.ui.attachments.recycler.AttachmentsGridManager
 import org.qosp.notes.ui.attachments.uri
 import org.qosp.notes.ui.common.BaseDialog
+import org.qosp.notes.ui.common.OptionsSheet
 import org.qosp.notes.ui.common.BaseFragment
 import org.qosp.notes.ui.common.showNoteColorDialog
 import org.qosp.notes.ui.common.showMoveToNotebookDialog
@@ -391,8 +392,43 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_note_options) showNoteOptions() else runNoteAction(item.itemId)
+        return super.onOptionsItemSelected(item)
+    }
+
+    // Black Pearl: the note's options in one rounded sheet instead of the long "⋮" list
+    private fun showNoteOptions() {
+        val note = data.note ?: return
+        view?.hideKeyboard()
+        OptionsSheet.show(parentFragmentManager) { close ->
+            NoteOptionsSheet(
+                note = note,
+                onAction = { id ->
+                    close()
+                    runNoteAction(id)
+                },
+                onSwitch = ::setNoteOption,
+            )
+        }
+    }
+
+    private fun setNoteOption(id: Int, on: Boolean) {
+        val note = data.note ?: return
+        when (id) {
+            R.id.action_enable_disable_markdown ->
+                if (on) activityModel.enableMarkdown(note) else activityModel.disableMarkdown(note)
+            R.id.action_hide_note -> if (on) activityModel.hideNotes(note) else activityModel.showNotes(note)
+            R.id.action_do_not_sync -> if (on) activityModel.makeNotesLocal(note) else activityModel.makeNotesSyncable(note)
+            R.id.action_screen_always_on -> {
+                if (on) activityModel.enableScreenAlwaysOn(note) else activityModel.disableScreenAlwaysOn(note)
+                setupScreenAlwaysOn(on)
+            }
+        }
+    }
+
+    private fun runNoteAction(id: Int) {
         data.note?.let { note ->
-            when (item.itemId) {
+            when (id) {
                 R.id.action_convert_note -> {
                     if (note.isList) model.toTextNote() else model.toList()
                 }
@@ -442,14 +478,6 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                     setupMenuItems(note, note.reminders.isNotEmpty())
                 }
 
-                R.id.action_hide_note -> {
-                    if (note.isHidden) activityModel.showNotes(note) else activityModel.hideNotes(note)
-                }
-
-                R.id.action_do_not_sync -> {
-                    if (note.isLocalOnly) activityModel.makeNotesSyncable(note) else activityModel.makeNotesLocal(note)
-                }
-
                 R.id.action_change_color -> {
                     showColorChangeDialog()
                 }
@@ -476,28 +504,11 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                 }
 
                 R.id.action_scan_text -> showOcrSourceSheet()
-                R.id.action_export_pdf -> showPdfSheet()
+                R.id.action_export_options -> showExportSheet()
 
                 R.id.action_record_audio -> {
                     clearFragmentResult(RECORD_CODE)
                     RecordAudioDialog().show(parentFragmentManager, null)
-                }
-
-                R.id.action_enable_disable_markdown -> {
-                    if (note.isMarkdownEnabled) {
-                        activityModel.disableMarkdown(note)
-                    } else {
-                        activityModel.enableMarkdown(note)
-                    }
-                }
-
-                R.id.action_screen_always_on -> {
-                    if (note.screenAlwaysOn) {
-                        activityModel.disableScreenAlwaysOn(note)
-                    } else {
-                        activityModel.enableScreenAlwaysOn(note)
-                    }
-                    setupScreenAlwaysOn(!note.screenAlwaysOn)
                 }
 
                 R.id.action_uncheck_all_tasks -> {
@@ -513,7 +524,6 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                 else -> false
             }
         }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onPause() {
@@ -574,8 +584,8 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     private fun pdfFileName() = (data.note?.title?.trim()?.ifEmpty { null } ?: getString(R.string.indicator_untitled))
         .replace(Regex("[\\\\/:*?\"<>|\\n]"), "_").take(80) + ".pdf"
 
-    private fun showPdfSheet() {
-        BottomSheet.show(getString(R.string.pdf_export), parentFragmentManager) {
+    private fun showExportSheet() {
+        BottomSheet.show(getString(R.string.action_export), parentFragmentManager) {
             action(R.string.pdf_save, R.drawable.ic_export_note) { pdfSaveLauncher.launch(pdfFileName()) }
             action(R.string.pdf_share, R.drawable.ic_share) {
                 val file = File(File(requireContext().cacheDir, "pdf").apply { mkdirs() }, pdfFileName())
@@ -589,6 +599,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                     startActivity(Intent.createChooser(send, getString(R.string.pdf_share)))
                 }) { file.outputStream() }
             }
+            action(R.string.export_note_backup, R.drawable.ic_file) { runNoteAction(R.id.action_export_note) }
         }
     }
 
@@ -731,29 +742,16 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     private fun showImageActions(ref: ImageBlocks.Ref) {
         val current = ImageBlocks.blocks(currentContent().orEmpty())
             .filter { it.destination == ref.destination }.getOrNull(ref.occurrence)?.layout ?: ImageBlocks.Layout()
-        fun layout(l: ImageBlocks.Layout) = editContent { ImageBlocks.setLayout(it, ref, l) }
-        BottomSheet.show(getString(R.string.image_actions_title), parentFragmentManager) {
-            action(R.string.image_move_up, R.drawable.ic_up) { editContent { ImageBlocks.move(it, ref, up = true) } }
-            action(R.string.image_move_down, R.drawable.ic_down) { editContent { ImageBlocks.move(it, ref, up = false) } }
-            action(R.string.image_align_left, R.drawable.ic_photo, condition = current.align != ImageBlocks.Align.LEFT) {
-                layout(current.copy(align = ImageBlocks.Align.LEFT))
-            }
-            action(R.string.image_align_center, R.drawable.ic_photo, condition = current.align != ImageBlocks.Align.CENTER) {
-                layout(current.copy(align = ImageBlocks.Align.CENTER))
-            }
-            action(R.string.image_align_right, R.drawable.ic_photo, condition = current.align != ImageBlocks.Align.RIGHT) {
-                layout(current.copy(align = ImageBlocks.Align.RIGHT))
-            }
-            listOf(25 to R.string.image_size_small, 50 to R.string.image_size_medium, 75 to R.string.image_size_large)
-                .forEach { (pct, label) ->
-                    action(label, R.drawable.ic_photo, condition = current.widthPercent != pct) {
-                        layout(current.copy(widthPercent = pct))
-                    }
-                }
-            action(R.string.image_size_full, R.drawable.ic_photo, condition = current.widthPercent != null) {
-                layout(current.copy(widthPercent = null))
-            }
-            action(R.string.image_remove_from_note, R.drawable.ic_bin) { editContent { ImageBlocks.remove(it, ref) } }
+        OptionsSheet.show(parentFragmentManager) { close ->
+            ImageOptionsSheet(
+                layout = current,
+                onLayout = { layout -> editContent { ImageBlocks.setLayout(it, ref, layout) } },
+                onMove = { up -> editContent { ImageBlocks.move(it, ref, up) } },
+                onRemove = {
+                    close()
+                    editContent { ImageBlocks.remove(it, ref) }
+                },
+            )
         }
     }
 
@@ -936,18 +934,6 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
     private fun setupMenuItems(note: Note, hasReminders: Boolean) = mainMenu?.run {
         findItem(R.id.action_restore_note)?.isVisible = note.isDeleted
-        findItem(R.id.action_delete_permanently_note)?.isVisible = note.isDeleted
-        findItem(R.id.action_delete_note)?.isVisible = !note.isDeleted
-        findItem(R.id.action_view_tags)?.isVisible = !note.isDeleted
-        findItem(R.id.action_change_color)?.isVisible = !note.isDeleted
-        findItem(R.id.action_attach_file)?.isVisible = !note.isDeleted
-        findItem(R.id.action_record_audio)?.isVisible = !note.isDeleted
-        findItem(R.id.action_take_photo)?.isVisible = !note.isDeleted
-        findItem(R.id.action_convert_note)?.apply {
-            title =
-                if (note.isList) getString(R.string.action_convert_to_note) else getString(R.string.action_convert_to_list)
-            isVisible = !note.isDeleted
-        }
 
         findItem(R.id.action_change_mode)?.apply {
             // if view/edit mode FAB isn't displayed (user pref) show it in the top menu
@@ -967,40 +953,6 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         findItem(R.id.action_view_reminders)?.apply {
             setIcon(if (hasReminders) R.drawable.ic_bell_filled else R.drawable.ic_bell)
             isVisible = !note.isDeleted
-        }
-
-        findItem(R.id.action_archive_note)?.apply {
-            title = if (note.isArchived) getString(R.string.action_unarchive) else getString(R.string.action_archive)
-            isVisible = !note.isDeleted
-        }
-
-        findItem(R.id.action_enable_disable_markdown)?.apply {
-            title =
-                if (note.isMarkdownEnabled) getString(R.string.action_disable_markdown) else getString(R.string.action_enable_markdown)
-            isVisible = !note.isDeleted
-        }
-
-        findItem(R.id.action_hide_note)?.apply {
-            isChecked = note.isHidden
-            isVisible = !note.isDeleted
-        }
-
-        findItem(R.id.action_do_not_sync)?.apply {
-            isChecked = note.isLocalOnly
-            isVisible = !note.isDeleted
-        }
-
-        findItem(R.id.action_screen_always_on)?.apply {
-            isChecked = note.screenAlwaysOn
-            isVisible = !note.isDeleted
-        }
-
-        findItem(R.id.action_uncheck_all_tasks)?.apply {
-            isVisible = note.isList && !note.isDeleted
-        }
-
-        findItem(R.id.action_remove_all_checked_tasks)?.apply {
-            isVisible = note.isList && !note.isDeleted
         }
     }
 

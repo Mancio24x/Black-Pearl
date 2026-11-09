@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Rounded Material 3 background of popup menus (sort, overflow…) -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:radius="16dp"/>
+    <solid android:color="?attr/colorSurfaceContainer"/>
+    <padding android:top="8dp" android:bottom="8dp"/>
+</shape>

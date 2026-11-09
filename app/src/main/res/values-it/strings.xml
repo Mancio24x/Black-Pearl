@@ -109,7 +109,7 @@
     <string name="action_archive">Archivia</string>
     <string name="action_pin">Fissa</string>
     <string name="action_unpin">Stacca</string>
-    <string name="action_restore">Rispristina</string>
+    <string name="action_restore">Ripristina</string>
     <string name="action_share">Condividi</string>
     <string name="action_pin_unpin">Fissa / Stacca</string>
     <string name="action_move_to">Sposta in…</string>

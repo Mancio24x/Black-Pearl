@@ -53,6 +53,8 @@
         <item name="noteFontFamily">@font/inter_font_family</item>
 
         <item name="popupTheme">@style/Widget.Custom.PopupMenu</item>
+        <item name="popupMenuStyle">@style/Widget.BlackPearl.PopupMenu</item>
+        <item name="actionOverflowMenuStyle">@style/Widget.BlackPearl.PopupMenu.Overflow</item>
         <item name="materialAlertDialogTheme">@style/DialogTheme</item>
     </style>
 

@@ -40,6 +40,8 @@
     <style name="Widget.Custom.PopupMenu" parent="Widget.Material3.PopupMenu.Overflow">
         <item name="radioButtonStyle">@style/Widget.Custom.RadioButton.ZeroMinWidth</item>
         <item name="checkboxStyle">@style/Widget.Custom.CheckBox.ZeroMinWidth</item>
+        <item name="popupMenuStyle">@style/Widget.BlackPearl.PopupMenu</item>
+        <item name="actionOverflowMenuStyle">@style/Widget.BlackPearl.PopupMenu.Overflow</item>
     </style>
 
     <style name="Widget.Custom.RadioButton.ZeroMinWidth" parent="Widget.AppCompat.CompoundButton.RadioButton">
@@ -114,17 +116,27 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <!-- Bottom sheets (BottomSheet.kt), Material 3: title, then pill-shaped rows -->
     <style name="BottomSheetHeader">
-        <item name="android:textColor">?attr/colorControlNormal</item>
-        <item name="android:padding">16dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.Material3.TitleMedium</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:ellipsize">end</item>
     </style>
 
     <style name="BottomSheetAction">
-        <item name="android:background">@drawable/state_drawer_item_background</item>
-        <item name="android:textViewStyle">@style/TextAppearance.Material3.TitleSmall</item>
+        <item name="android:background">@drawable/bg_sheet_action</item>
+        <item name="android:textAppearance">@style/TextAppearance.Material3.BodyLarge</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="drawableTint">?attr/colorOnSurfaceVariant</item>
         <item name="android:drawablePadding">16dp</item>
-        <item name="android:padding">12dp</item>
-        <item name="android:gravity">center|start</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:gravity">center_vertical|start</item>
     </style>
 </resources>
 

@@ -46,7 +46,6 @@
     <string name="ocr_result_hint">Check and fix the text</string>
     <string name="ocr_insert_here">Insert in this note</string>
     <string name="ocr_new_note">New note</string>
-    <string name="pdf_export">Export PDF</string>
     <string name="pdf_save">Save PDF…</string>
     <string name="pdf_share">Share PDF</string>
     <string name="pdf_saved">PDF saved</string>
@@ -114,4 +113,15 @@
         <item quantity="one">%d note imported</item>
         <item quantity="other">%d notes imported</item>
     </plurals>
+    <string name="sheet_note_options">Note options</string>
+    <string name="sheet_photo">Photo</string>
+    <string name="sheet_file">File</string>
+    <string name="sheet_audio">Audio</string>
+    <string name="sheet_color">Color</string>
+    <string name="sheet_more_settings">More settings</string>
+    <string name="option_markdown">Markdown formatting</string>
+    <string name="option_hidden">Hidden note</string>
+    <string name="export_note_backup">Backup of this note (.zip)</string>
+    <string name="image_alignment">Alignment</string>
+    <string name="image_size">Size</string>
 </resources>
