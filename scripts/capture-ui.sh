@@ -31,7 +31,12 @@ for mode in no yes; do
       adb shell input swipe 500 1600 500 500 400; shot "appearance-themes-night_$mode"
       adb shell input swipe 500 1600 500 400 400; shot "appearance-shapes-night_$mode"
       adb shell input swipe 500 500 500 1800 300; adb shell input swipe 500 500 500 1800 300
-      tap_text "My theme" && shot "my-theme-night_$mode"
+      if tap_text "My theme"; then
+        shot "my-theme-night_$mode"
+        # pick the dark "Abyss"-like background, then apply: the whole app must recolor at runtime
+        tap_text "Background" && tap_text "#0E1720"
+        tap_text "Apply my theme" && sleep 3 && shot "my-theme-applied-night_$mode"
+      fi
     fi
   fi
   # Editor last (a deep-linked editor may leave the app on BACK)
