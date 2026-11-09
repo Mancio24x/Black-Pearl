@@ -59,3 +59,9 @@ Newest last. Format: date — decision — why.
     roles (`ThemeRoles.custom`) applied at runtime via Material's `ColorResourcesOverride` (public API, Android 11+;
     older devices fall back to Black Pearl). Dark/light of "My theme" is derived from its background. Old "My color"
     (seed, Android 12+) replaced; its stored accent key is reused. Appearance settings moved to one Compose screen.
+19. **2026-11-09 — "My theme" without Material's overlay; night mode before attach.** `ColorResourcesOverride
+    .applyIfPossible` also applies `ThemeOverlay.Material3.PersonalizedColors`, which points all roles and text colors
+    to Material You (wallpaper): the chosen colors never showed. We call Material's loader directly
+    (`BlackPearlColorResources`, in Material's package because `ResourcesLoaderUtils` is package-private).
+    Night mode is now set in `BaseActivity.attachBaseContext`: changing it in onCreate made AppCompat re-apply the
+    manifest theme, losing the palette whenever a theme forces the other light/dark mode.

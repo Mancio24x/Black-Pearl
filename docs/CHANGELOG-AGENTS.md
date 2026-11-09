@@ -70,3 +70,13 @@ Append one short entry per significant task: files, decisions, tests (with resul
   English+Italian only (MissingTranslation).
 - Tests: new device test `NoteLifecycleTest`; CI now runs ALL device tests. Unit tests 108 OK.
 - Lint: FragmentLiveDataObserve in ExtendedListAdapter is a false positive (observes viewLifecycleOwnerLiveData).
+
+## 2026-11-09 — Notes list "Soft" (1A) + theme fixes (branch feature/notes-list-soft)
+- 1A: `layout_appbar_main.xml` (serif title, round menu button, search pill, notebook chips), `fragment_main.xml`
+  (floating quick-action pill instead of the BottomAppBar; `main_bottom.xml` and its style removed), `MainFragment.kt`,
+  card padding 16dp / gap 12dp, inset rounded images (`NoteViewHolder`), extra rounded = default card shape.
+- Fixes: "My theme" showed Material You colors (overlay) and went blank right after Apply; any theme forcing the other
+  light/dark mode lost its palette at app start (night mode now set in attachBaseContext).
+- Tests: `AppearancePreferencesTest` updated; device tests `CustomThemeTest.appliedThemeShowsTheChosenColors`,
+  `CustomThemeActivityTest` (real activity, light and dark My theme, cold start and recreate). Screenshot script
+  creates sample notes and a notebook, saves theme logs.
