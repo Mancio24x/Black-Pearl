@@ -115,3 +115,10 @@ Append one short entry per significant task: files, decisions, tests (with resul
 - Fix: actions kept in memory, only the header in the arguments; a sheet recreated by Android closes itself.
 - Tests: `BottomSheetStateTest` (Robolectric; reproduced the crash before the fix), 128 unit tests OK; the screenshot
   run now goes through Export → Save PDF and → Share PDF.
+
+## 2026-11-10 — Second crash on "Share PDF" (branch fix/pdf-share-crash)
+- Found by the emulator run of #25 (after it was merged): the Share PDF action called `requireContext()` /
+  `startActivity()` inside the sheet action, where they belong to the `BottomSheet`; the sheet is closed when the PDF
+  is ready → "Fragment BottomSheet not attached to a context". Moved to `EditorFragment.sharePdf()`.
+- Other sheet actions were checked: they all run at once, while the sheet is still attached.
+- CI: `ui-preview.yml` now fails when `logcat.txt` contains a FATAL EXCEPTION from the screenshot run.
