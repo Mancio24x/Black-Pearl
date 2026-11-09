@@ -96,9 +96,12 @@ for mode in no yes; do
       imgTop=$(( $2 + line ))
       adb shell input tap $(( $1 + 200 )) $(( imgTop + 150 )); sleep 1
       shot "photo-selected-night_$mode"
-      # corner handle: bottom-right of a 600x400 px picture
-      adb shell input swipe $(( $1 + 600 )) $(( imgTop + 400 )) $(( $1 + 300 )) $(( imgTop + 400 )) 900; sleep 3
+      # corner handle: bottom-right of the 600x400 px picture → half the text width
+      adb shell input swipe $(( $1 + 598 )) $(( imgTop + 392 )) $(( $1 + 300 )) $(( imgTop + 392 )) 900; sleep 3
       shot "photo-resized-night_$mode"
+      # still selected: drag the picture itself below "Ultima riga"
+      adb shell input swipe $(( $1 + 100 )) $(( imgTop + 60 )) $(( $1 + 100 )) $(( imgTop + 420 )) 1200; sleep 3
+      shot "photo-moved-night_$mode"
     fi
     adb shell input keyevent KEYCODE_BACK
   fi

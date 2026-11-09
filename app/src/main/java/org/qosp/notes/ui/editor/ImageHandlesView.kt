@@ -10,7 +10,6 @@ import android.util.AttributeSet
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import android.widget.ImageButton
@@ -94,7 +93,7 @@ class ImageHandlesView @JvmOverloads constructor(context: Context, attrs: Attrib
 
     private val frame = View(context).apply {
         contentDescription = context.getString(R.string.image_actions_title)
-        setOnClickListener { selected?.let { listener?.onMore(it) } }
+        isClickable = true
     }
     private val resizeHandle = handle(R.drawable.ic_resize, R.string.image_resize)
     private val moveHandle = handle(R.drawable.ic_drag, R.string.image_move)
@@ -128,10 +127,11 @@ class ImageHandlesView @JvmOverloads constructor(context: Context, attrs: Attrib
 
     init {
         setWillNotDraw(false)
-        listOf(frame, toolbar, moveHandle, resizeHandle).forEach {
-            it.isVisible = false
-            addView(it, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
-        }
+        addView(frame, LayoutParams(0, 0))
+        addView(toolbar, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
+        addView(moveHandle)
+        addView(resizeHandle)
+        listOf(frame, toolbar, moveHandle, resizeHandle).forEach { it.isVisible = false }
         setupResize()
         setupMove()
     }
@@ -185,8 +185,12 @@ class ImageHandlesView @JvmOverloads constructor(context: Context, attrs: Attrib
         val barW = toolbar.measuredWidth.toFloat()
         val barH = toolbar.measuredHeight.toFloat()
         toolbar.translationX = (image.centerX() - barW / 2).coerceIn(0f, (width - barW).coerceAtLeast(0f))
-        // above the picture, or below it when there is no room (picture at the top of the note)
-        toolbar.translationY = if (image.top - barH - dp(28) >= 0) image.top - barH - dp(28) else image.bottom + dp(20)
+        // above the picture; below it if there is no room; else over its lower part (never cut off)
+        toolbar.translationY = when {
+            image.top - barH - dp(28) >= 0 -> image.top - barH - dp(28)
+            image.bottom + dp(24) + barH <= height -> image.bottom + dp(24)
+            else -> (image.bottom - barH - dp(28)).coerceAtLeast(image.top + dp(28))
+        }
         invalidate()
         return true
     }
@@ -288,17 +292,23 @@ class ImageHandlesView @JvmOverloads constructor(context: Context, attrs: Attrib
     @SuppressLint("ClickableViewAccessibility")
     private fun setupMove() {
         var grab = 0f
-        moveHandle.setOnTouchListener { _, e ->
+        var downY = 0f
+        val slop = android.view.ViewConfiguration.get(context).scaledTouchSlop
+        fun drag(e: MotionEvent, fromHandle: Boolean): Boolean {
             val location = IntArray(2).also { getLocationOnScreen(it) }
             when (e.actionMasked) {
                 MotionEvent.ACTION_DOWN -> {
                     parent.requestDisallowInterceptTouchEvent(true)
-                    moving = true
+                    downY = e.rawY
                     grab = e.rawY - location[1] - image.top
                     moveY = image.top
                     dropIndex = -1
+                    moving = fromHandle
+                    if (moving) invalidate()
                 }
                 MotionEvent.ACTION_MOVE -> {
+                    if (!moving && abs(e.rawY - downY) > slop) moving = true
+                    if (!moving) return true
                     moveY = e.rawY - location[1] - grab
                     updateDrop()
                     // near the top or bottom of the screen: scroll the note
@@ -317,17 +327,24 @@ class ImageHandlesView @JvmOverloads constructor(context: Context, attrs: Attrib
                     invalidate()
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    moving = false
                     removeCallbacks(autoScroll)
                     val ref = selected
+                    if (!moving) {
+                        // a tap on the selected picture: its options
+                        if (!fromHandle && e.actionMasked == MotionEvent.ACTION_UP && ref != null) listener?.onMore(ref)
+                        return true
+                    }
+                    moving = false
                     val steps = if (dropIndex >= 0) ImageGestures.steps(imageUnit(), dropIndex) else 0
                     if (ref != null && e.actionMasked == MotionEvent.ACTION_UP && steps != 0) listener?.onMove(ref, steps)
                     dropIndex = -1
                     invalidate()
                 }
             }
-            true
+            return true
         }
+        moveHandle.setOnTouchListener { _, e -> drag(e, fromHandle = true) }
+        frame.setOnTouchListener { _, e -> drag(e, fromHandle = false) }
     }
 
     private fun units(): List<IntRange> = ImageGestures.units(textView?.text ?: "")
@@ -423,7 +440,7 @@ class ImageHandlesView @JvmOverloads constructor(context: Context, attrs: Attrib
     }
 
     private fun handle(icon: Int, label: Int) = ImageButton(context).apply {
-        val size = dp(36).toInt()
+        val size = dp(HANDLE_DP).toInt()
         layoutParams = LayoutParams(size, size)
         minimumWidth = size
         minimumHeight = size
@@ -455,8 +472,12 @@ class ImageHandlesView @JvmOverloads constructor(context: Context, attrs: Attrib
     }
 
     private fun View.center(x: Float, y: Float) {
-        val size = (layoutParams as ViewGroup.LayoutParams).width.toFloat()
+        val size = HANDLE_DP * density
         translationX = x - size / 2
         translationY = y - size / 2
+    }
+
+    private companion object {
+        const val HANDLE_DP = 36
     }
 }
