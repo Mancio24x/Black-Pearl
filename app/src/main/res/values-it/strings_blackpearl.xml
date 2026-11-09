@@ -123,4 +123,6 @@
     <string name="export_note_backup">Backup di questa nota (.zip)</string>
     <string name="image_alignment">Allineamento</string>
     <string name="image_size">Dimensione</string>
+    <string name="image_resize">Ridimensiona l\'immagine</string>
+    <string name="image_move">Sposta l\'immagine</string>
 </resources>

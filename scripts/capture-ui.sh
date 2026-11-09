@@ -32,6 +32,14 @@ new_note false "Storia%sRinascimento" "Firenze,%si%sMedici%se%sla%snascita%sdell
 new_note true "Spesa" "Latte" "Pane" "Caffe"
 new_note false "Viaggio%sin%sSardegna" "Cala%sGoloritze%sall%salba,%spoi%sOrosei."
 new_note false "Idee%sracconto" "Una%smappa,%suna%sX,%sun%staccuino%sche%snessuno%ssa%sleggere."
+# A note with a picture (from the web) between two lines, to show the move / resize handles
+adb shell am start -W -n $MAIN -a android.intent.action.VIEW -d "blackpearl://notes/editor_create?newNoteIsList=false" >/dev/null
+sleep 3
+tap_text "Title"; adb shell input text "Foto"
+tap_text "Take a note!"; adb shell input text "Prima%sriga"; adb shell input keyevent KEYCODE_ENTER
+adb shell "input text '![mare](https://picsum.photos/id/1015/600/400)'"; adb shell input keyevent KEYCODE_ENTER
+adb shell input text "Ultima%sriga"
+adb shell input keyevent KEYCODE_BACK; sleep 1; adb shell input keyevent KEYCODE_BACK; sleep 2
 adb shell am force-stop $PKG
 adb shell am start -W -n $MAIN >/dev/null; sleep 3
 tap_text "Open navigation drawer" && tap_text "Your Notebooks" && sleep 2 && tap_text "Create a notebook" \
@@ -73,6 +81,28 @@ for mode in no yes; do
     tap_text "More settings" && shot "note-options-more-night_$mode"
     adb shell input keyevent KEYCODE_BACK; sleep 1
     tap_text "Export" && shot "note-export-night_$mode"
+    adb shell input keyevent KEYCODE_BACK
+  fi
+  # Tap the picture: frame, handles and bar; then drag the corner handle to make it smaller
+  adb shell am force-stop $PKG
+  adb shell am start -W -n $MAIN >/dev/null; sleep 3
+  if tap_text "Foto"; then
+    sleep 5; shot "photo-view-night_$mode"
+    adb shell uiautomator dump /sdcard/ui.xml >/dev/null 2>&1; adb pull /sdcard/ui.xml "$OUT/ui.xml" >/dev/null 2>&1
+    b=$(grep -o '<node[^>]*resource-id="[^"]*text_view_content_preview"[^>]*>' "$OUT/ui.xml" | head -1 | grep -o 'bounds="[^"]*"' | grep -o '[0-9]\+')
+    if [ -n "$b" ]; then
+      set -- $b
+      line=$(( 63 ))  # one line of body text at this density, roughly
+      imgTop=$(( $2 + line ))
+      adb shell input tap $(( $1 + 200 )) $(( imgTop + 150 )); sleep 1
+      shot "photo-selected-night_$mode"
+      # corner handle: bottom-right of the 600x400 px picture → half the text width
+      adb shell input swipe $(( $1 + 598 )) $(( imgTop + 392 )) $(( $1 + 300 )) $(( imgTop + 392 )) 900; sleep 3
+      shot "photo-resized-night_$mode"
+      # still selected: drag the picture itself below "Ultima riga"
+      adb shell input swipe $(( $1 + 100 )) $(( imgTop + 60 )) $(( $1 + 100 )) $(( imgTop + 420 )) 1200; sleep 3
+      shot "photo-moved-night_$mode"
+    fi
     adb shell input keyevent KEYCODE_BACK
   fi
   # Long press on a note in the list: the same Material 3 sheet style

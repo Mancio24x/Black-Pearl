@@ -98,6 +98,7 @@ import org.qosp.notes.ui.editor.dialog.InsertTableDialog
 import org.qosp.notes.ui.editor.markdown.MarkdownSpan
 import org.qosp.notes.ui.editor.markdown.applyTo
 import org.qosp.notes.ui.editor.markdown.ImageBlocks
+import org.qosp.notes.ui.editor.markdown.ImageGestures
 import org.qosp.notes.ui.editor.markdown.ImageLayoutPlugin
 import org.qosp.notes.ui.editor.markdown.insertMarkdown
 import org.qosp.notes.ui.editor.markdown.toggleCheckmarkCurrentLine
@@ -705,11 +706,38 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
     // --- Black Pearl: repositionable images (see ImageBlocks / ImageLayoutPlugin) ---
 
+    // Black Pearl: tap a picture in the preview to get a frame with handles (resize, move) and a small bar
     private fun setupImageLayout() {
+        val handles = binding.imageHandles
+        handles.textView = binding.textViewContentPreview
+        handles.scrollView = binding.scrollView
+        handles.listener = object : ImageHandlesView.Listener {
+            override fun onResize(ref: ImageBlocks.Ref, widthPercent: Int) =
+                changeImageLayout(ref) { it.copy(widthPercent = widthPercent) }
+
+            override fun onMove(ref: ImageBlocks.Ref, steps: Int) = editContent { ImageGestures.moveBy(it, ref, steps) }
+
+            override fun onAlign(ref: ImageBlocks.Ref, align: ImageBlocks.Align) = changeImageLayout(ref) { it.copy(align = align) }
+
+            override fun onMore(ref: ImageBlocks.Ref) = showImageActions(ref)
+
+            override fun onRemove(ref: ImageBlocks.Ref) {
+                handles.clear()
+                editContent { ImageBlocks.remove(it, ref) }
+            }
+        }
         binding.textViewContentPreview.setTag(
             R.id.tag_image_click_listener,
-            ImageLayoutPlugin.ImageClickListener { ref -> if (data.note?.isDeleted == false) showImageActions(ref) }
+            ImageLayoutPlugin.ImageClickListener { ref -> if (data.note?.isDeleted == false) handles.select(ref) }
         )
+    }
+
+    private fun imageLayout(ref: ImageBlocks.Ref) = ImageBlocks.blocks(currentContent().orEmpty())
+        .filter { it.destination == ref.destination }.getOrNull(ref.occurrence)?.layout ?: ImageBlocks.Layout()
+
+    private fun changeImageLayout(ref: ImageBlocks.Ref, change: (ImageBlocks.Layout) -> ImageBlocks.Layout) {
+        val layout = change(imageLayout(ref))
+        editContent { ImageBlocks.setLayout(it, ref, layout) }
     }
 
     /**
@@ -740,15 +768,14 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     }
 
     private fun showImageActions(ref: ImageBlocks.Ref) {
-        val current = ImageBlocks.blocks(currentContent().orEmpty())
-            .filter { it.destination == ref.destination }.getOrNull(ref.occurrence)?.layout ?: ImageBlocks.Layout()
         OptionsSheet.show(parentFragmentManager) { close ->
             ImageOptionsSheet(
-                layout = current,
+                layout = imageLayout(ref),
                 onLayout = { layout -> editContent { ImageBlocks.setLayout(it, ref, layout) } },
                 onMove = { up -> editContent { ImageBlocks.move(it, ref, up) } },
                 onRemove = {
                     close()
+                    binding.imageHandles.clear()
                     editContent { ImageBlocks.remove(it, ref) }
                 },
             )
@@ -1404,6 +1431,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         }
 
         textViewContentPreview.isVisible = !model.inEditMode && !isList
+        if (model.inEditMode) imageHandles.clear()
         editTextContent.isVisible = model.inEditMode && !isList
 
         val shouldDisplayFAB = data.showFabChangeMode && !isNoteDeleted && !noteHasEmptyContent
