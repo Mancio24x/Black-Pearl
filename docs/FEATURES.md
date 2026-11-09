@@ -28,5 +28,5 @@ Status legend: **Existing** (inherited from Quillpad, untouched) · **To improve
 | 0b | Material 3 UI + customization (17 palettes, dynamic colors, my color, corners, note font, AMOLED) | Completed | `feature/material3-ui` |
 | 1 | Repositionable images in notes (insert from attachments/camera/gallery, move up/down, reorder, align, resize 25–100% keeping ratio, remove from note) | Completed — device check pending | `feature/image-layout` |
 | 2 | Colored notes: swatch picker with live preview, "No color", change from list multi-select, WCAG AA contrast in light/dark for all palettes | Completed — device check pending | `feature/note-colors` |
-| 3 | Offline OCR ("Scan text") | Planned | `feature/offline-ocr` |
+| 3 | Offline OCR ("Scan text"): camera or gallery, Italian + English, editable preview, insert here or new note, fully offline | Completed — device test in CI, phone check pending | `feature/offline-ocr` |
 | 4 | PDF export | Planned | `feature/pdf-export` |

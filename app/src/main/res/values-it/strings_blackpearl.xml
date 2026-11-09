@@ -37,4 +37,16 @@
     <string name="image_size_full">Larghezza piena</string>
     <string name="image_remove_from_note">Rimuovi dalla nota (l\'allegato resta)</string>
     <string name="note_color_none">Nessun colore</string>
+    <string name="ocr_scan_text">Scansiona testo</string>
+    <string name="ocr_from_camera">Scatta una foto</string>
+    <string name="ocr_from_gallery">Scegli un\'immagine</string>
+    <string name="ocr_no_camera">Nessuna app fotocamera disponibile</string>
+    <string name="ocr_in_progress">Riconoscimento del testo… (offline, sul dispositivo)</string>
+    <string name="ocr_unreadable">Nessun testo leggibile. Riprova con una foto nitida, ben illuminata e con la pagina che riempie l\'inquadratura.</string>
+    <string name="ocr_error">Impossibile leggere l\'immagine.</string>
+    <string name="ocr_try_again">Riprova</string>
+    <string name="ocr_result_title">Testo riconosciuto</string>
+    <string name="ocr_result_hint">Controlla e correggi il testo</string>
+    <string name="ocr_insert_here">Inserisci in questa nota</string>
+    <string name="ocr_new_note">Nuova nota</string>
 </resources>

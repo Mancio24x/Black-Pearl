@@ -38,4 +38,16 @@
     <string name="image_size_full">Full width</string>
     <string name="image_remove_from_note">Remove from note (keep attachment)</string>
     <string name="note_color_none">No color</string>
+    <string name="ocr_scan_text">Scan text</string>
+    <string name="ocr_from_camera">Take a photo</string>
+    <string name="ocr_from_gallery">Choose an image</string>
+    <string name="ocr_no_camera">No camera app available</string>
+    <string name="ocr_in_progress">Recognizing text… (offline, on this device)</string>
+    <string name="ocr_unreadable">No readable text found. Try a sharper, well-lit photo with the page filling the frame.</string>
+    <string name="ocr_error">The image could not be read.</string>
+    <string name="ocr_try_again">Try again</string>
+    <string name="ocr_result_title">Recognized text</string>
+    <string name="ocr_result_hint">Check and fix the text</string>
+    <string name="ocr_insert_here">Insert in this note</string>
+    <string name="ocr_new_note">New note</string>
 </resources>
