@@ -23,6 +23,7 @@ import androidx.navigation.NavDeepLinkBuilder
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -45,6 +46,9 @@ import org.qosp.notes.databinding.ActivityMainBinding
 import org.qosp.notes.preferences.CloudService
 import org.qosp.notes.preferences.SortNavdrawerNotebooksMethod
 import org.qosp.notes.ui.attachments.fromUri
+import org.qosp.notes.ui.utils.ExportNotesContract
+import org.qosp.notes.ui.utils.ImportNotesContract
+import org.qosp.notes.ui.utils.RestoreNotesContract
 import org.qosp.notes.ui.utils.closeAndThen
 import org.qosp.notes.ui.utils.collect
 import org.qosp.notes.ui.utils.hideKeyboard
@@ -61,6 +65,13 @@ class MainActivity : BaseActivity() {
     private val backendProvider by inject<BackendProvider>()
 
     private val topLevelMenu get() = binding.navigationView.menu
+
+    // Black Pearl: "Import and export" in the drawer
+    private val importLauncher = registerForActivityResult(ImportNotesContract) { uris ->
+        if (uris.isNotEmpty()) BackupService.importNotes(this, uris)
+    }
+    private val restoreLauncher = registerForActivityResult(RestoreNotesContract) { uri -> uri?.let(::restoreNotes) }
+    private val backupLauncher = registerForActivityResult(ExportNotesContract) { uri -> uri?.let(::startBackup) }
     private val notebooksMenu get() = topLevelMenu.findItem(R.id.menu_notebooks).subMenu
 
     private val primaryDestinations = setOf(
@@ -349,6 +360,11 @@ class MainActivity : BaseActivity() {
                 }
             }
 
+        topLevelMenu.findItem(R.id.nav_import_export)?.setOnMenuItemClickListener {
+            binding.drawer.closeAndThen { showImportExport() }
+            false
+        }
+
         notebooksMenu?.findItem(R.id.nav_default_notebook)?.setOnMenuItemClickListener {
             binding.drawer.closeAndThen {
                 navController.navigateSafely(
@@ -474,5 +490,31 @@ class MainActivity : BaseActivity() {
 
     fun restoreNotes(backupUri: Uri) {
         BackupService.restoreNotes(this, backupUri)
+    }
+
+    private fun showImportExport() {
+        val actions = arrayOf(
+            getString(R.string.import_from_other_apps),
+            getString(R.string.import_export_backup),
+            getString(R.string.import_restore_backup),
+        )
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.nav_import_export)
+            .setItems(actions) { _, which ->
+                when (which) {
+                    0 -> MaterialAlertDialogBuilder(this)
+                        .setTitle(R.string.import_from_other_apps)
+                        .setMessage(R.string.import_supported_formats)
+                        .setPositiveButton(R.string.import_choose_files) { _, _ -> importLauncher.launch(null) }
+                        .setNegativeButton(R.string.action_cancel, null)
+                        .show()
+                    1 -> {
+                        activityModel.notesToBackup = null
+                        backupLauncher.launch(null)
+                    }
+                    2 -> restoreLauncher.launch(null)
+                }
+            }
+            .show()
     }
 }

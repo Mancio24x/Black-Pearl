@@ -35,6 +35,20 @@ object ChooseFilesContract : ActivityResultContract<None?, List<Uri>>() {
     }
 }
 
+/** Black Pearl: files exported by other note apps (any type, several at once). */
+object ImportNotesContract : ActivityResultContract<None?, List<Uri>>() {
+    override fun createIntent(context: Context, input: None?): Intent {
+        return Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            type = "*/*"
+        }
+    }
+
+    override fun parseResult(resultCode: Int, intent: Intent?): List<Uri> =
+        ChooseFilesContract.parseResult(resultCode, intent)
+}
+
 object StorageLocationContract : ActivityResultContract<Uri?, Uri?>() {
     override fun createIntent(context: Context, input: Uri?): Intent {
         return Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {

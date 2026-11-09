@@ -59,3 +59,9 @@ Newest last. Format: date — decision — why.
     roles (`ThemeRoles.custom`) applied at runtime via Material's `ColorResourcesOverride` (public API, Android 11+;
     older devices fall back to Black Pearl). Dark/light of "My theme" is derived from its background. Old "My color"
     (seed, Android 12+) replaced; its stored accent key is reused. Appearance settings moved to one Compose screen.
+20. **2026-11-09 — Import from other apps.** Formats are recognised by content (not only extension) and converted to
+    Markdown; notes are added, never replaced, through `BackupManager.restoreNotesFromBackup` (notebooks and tags reused
+    by name). Plain text gets a light Markdown conversion (checkbox/bullet symbols, "1)", indentation kept with no-break
+    spaces). New dependency **jsoup** (MIT) for HTML and Evernote ENML: a hand-written HTML parser would be fragile.
+    Evernote files are read one note at a time; Takeout's wrong image extensions are tolerated. Encrypted exports
+    (Standard Notes, Joplin E2EE) are not supported.

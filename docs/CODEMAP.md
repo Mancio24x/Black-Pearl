@@ -29,6 +29,7 @@ Tests: `app/src/test/java/org/qosp/notes/` (unit, JVM/Robolectric) and `app/src/
 | Database (Room) + migrations | `J/data/AppDatabase.kt`, `J/data/DatabaseConverters.kt`, `J/data/dao/*`, schemas `app/schemas/` |
 | Repositories | `J/data/repo/*` |
 | Backup / restore (zip: `backup.json` + media) | `J/data/Backup.kt`, `J/components/backup/BackupManager.kt`, `BackupService.kt`, test `data/BackupTest.kt` |
+| Import from other apps (Keep, Evernote, Joplin, Simplenote, Standard Notes, Fossify, Markdown, TXT, HTML, note JSON) | `J/components/importer/*`: `NoteImporter.kt` (dispatch, titles, dates, colors), `ImportArchives.kt` (zip/tar/tgz/jex), `JsonFormats.kt`, `EnexFormat.kt`, `JoplinFormat.kt`, `TextFormats.kt` (md/txt/html, front matter, links), `PlainTextMarkdown.kt`, `HtmlMarkdown.kt`, `OtherAppsImport.kt` (Android: copy files, save via `BackupManager.restoreNotesFromBackup`); `BackupService` (`Action.IMPORT`); drawer item `nav_import_export` in `MainActivity`; tests `components/importer/NoteImporterTest` + samples in `app/src/test/resources/import/`, device `ImportOtherAppsTest` |
 | Sync core | `J/data/sync/core/*` (`SynchronizeNotes.kt`), `J/components/workers/SyncWorker.kt` |
 | Sync: Nextcloud Notes | `J/data/sync/nextcloud/*`, `J/ui/sync/nextcloud/*` |
 | Sync: local folder (SAF, .md/.txt files) | `J/data/sync/fs/StorageBackend.kt`, `StorageConfig.kt` |

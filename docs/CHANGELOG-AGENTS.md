@@ -70,3 +70,13 @@ Append one short entry per significant task: files, decisions, tests (with resul
   English+Italian only (MissingTranslation).
 - Tests: new device test `NoteLifecycleTest`; CI now runs ALL device tests. Unit tests 108 OK.
 - Lint: FragmentLiveDataObserve in ExtendedListAdapter is a false positive (observes viewLifecycleOwnerLiveData).
+
+## 2026-11-09 — Import from other apps (branch feature/import-other-apps)
+- New package `components/importer/` (pure Kotlin parsers + `OtherAppsImport` Android writer), `BackupService`
+  `Action.IMPORT` (foreground, notification + toast), `ImportNotesContract`, drawer item "Import and export" (import,
+  export backup, restore backup) in `MainActivity`/`nav_drawer.xml`, strings EN/IT, jsoup dependency.
+- Tests: `NoteImporterTest` (15 tests) on sample exports of Keep (zip and tgz), Simplenote, Standard Notes (incl. Super
+  notes and an encrypted item), Fossify, Notally/Omni Notes JSON, Evernote .enex, Joplin .jex, Obsidian vault, TXT in
+  Windows-1252/UTF-16, HTML; device test `ImportOtherAppsTest` (real zip → DB, pictures copied, existing notes kept,
+  Black Pearl backup restored).
+- Open: samples are written from the apps' documented formats, not exported from the real apps; check on the phone.

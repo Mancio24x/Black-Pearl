@@ -1,0 +1,31 @@
+{
+  "activeNotes": [
+    {
+      "id": "a1",
+      "content": "Lista della spesa\r\n- [ ] uova\r\n- [x] farina",
+      "creationDate": "2023-05-01T10:00:00.000Z",
+      "lastModified": "2023-05-02T11:30:00.000Z",
+      "tags": [
+        "casa"
+      ],
+      "markdown": true
+    },
+    {
+      "id": "a2",
+      "content": "Idee\n\n• una\n• due",
+      "creationDate": "2023-06-01T10:00:00.000Z",
+      "lastModified": "2023-06-01T10:00:00.000Z",
+      "pinned": true,
+      "tags": []
+    }
+  ],
+  "trashedNotes": [
+    {
+      "id": "t1",
+      "content": "Vecchia\nda buttare",
+      "creationDate": "2022-01-01T00:00:00.000Z",
+      "lastModified": "2022-01-01T00:00:00.000Z",
+      "tags": []
+    }
+  ]
+}

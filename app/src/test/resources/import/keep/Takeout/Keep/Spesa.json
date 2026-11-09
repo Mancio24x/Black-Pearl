@@ -1,0 +1,26 @@
+{
+  "color": "GREEN",
+  "isTrashed": false,
+  "isPinned": true,
+  "isArchived": false,
+  "listContent": [
+    {
+      "textHtml": "Latte",
+      "text": "Latte",
+      "isChecked": true
+    },
+    {
+      "textHtml": "Pane",
+      "text": "Pane",
+      "isChecked": false
+    }
+  ],
+  "title": "Spesa",
+  "userEditedTimestampUsec": 1699999999000000,
+  "createdTimestampUsec": 1699990000000000,
+  "labels": [
+    {
+      "name": "Casa"
+    }
+  ]
+}
