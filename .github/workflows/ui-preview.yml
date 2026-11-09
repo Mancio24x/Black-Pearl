@@ -43,8 +43,9 @@ jobs:
           profile: pixel_6
           disable-animations: true
           script: |
-            ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=org.qosp.notes.tests.OcrEngineTest,org.qosp.notes.tests.NotePdfExporterTest
+            ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=org.qosp.notes.tests.OcrEngineTest,org.qosp.notes.tests.NotePdfExporterTest,org.qosp.notes.tests.CustomThemeTest || echo DEVICE_TESTS_FAILED > device-tests-failed
             scripts/capture-ui.sh
+            test ! -f device-tests-failed
       - uses: actions/upload-artifact@v4
         if: always()
         with:
