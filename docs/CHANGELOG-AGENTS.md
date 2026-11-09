@@ -107,3 +107,11 @@ Append one short entry per significant task: files, decisions, tests (with resul
 - Tests: `ImageGesturesTest` (4); all unit tests and 36 device tests pass; screenshot script creates a note with a web
   picture, selects it, resizes it with the corner handle and drags it below the last line.
 - Open: line↔unit mapping can be off around fenced code blocks and tables (moves still go the right way).
+
+## 2026-11-10 — Crash on "Save PDF" / "Share PDF" (branch fix/pdf-export-crash)
+- Cause: `BottomSheet` kept its actions (lambdas) in the fragment arguments; when the app went to the background with
+  a sheet open (file picker, share sheet, camera, home) Android saved them → "Parcelable encountered IOException
+  writing serializable object" → crash. Affected Export, Scan text, attachment, reminder, tag and notebook sheets.
+- Fix: actions kept in memory, only the header in the arguments; a sheet recreated by Android closes itself.
+- Tests: `BottomSheetStateTest` (Robolectric; reproduced the crash before the fix), 128 unit tests OK; the screenshot
+  run now goes through Export → Save PDF and → Share PDF.

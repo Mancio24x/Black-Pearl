@@ -80,8 +80,17 @@ for mode in no yes; do
     shot "note-options-night_$mode"
     tap_text "More settings" && shot "note-options-more-night_$mode"
     adb shell input keyevent KEYCODE_BACK; sleep 1
-    tap_text "Export" && shot "note-export-night_$mode"
-    adb shell input keyevent KEYCODE_BACK
+    # Export → Save PDF (the file picker puts the app in the background: it used to crash here)
+    if tap_text "Note options" && tap_text "Export"; then
+      shot "note-export-night_$mode"
+      tap_text "Save PDF…" && sleep 4 && shot "pdf-save-night_$mode"
+      adb shell input keyevent KEYCODE_BACK; sleep 2; shot "after-pdf-save-night_$mode"
+    fi
+    # Export → Share PDF (share sheet)
+    if tap_text "Note options" && tap_text "Export"; then
+      tap_text "Share PDF" && sleep 5 && shot "pdf-share-night_$mode"
+      adb shell input keyevent KEYCODE_BACK; sleep 2; shot "after-pdf-share-night_$mode"
+    fi
   fi
   # Tap the picture: frame, handles and bar; then drag the corner handle to make it smaller
   adb shell am force-stop $PKG
