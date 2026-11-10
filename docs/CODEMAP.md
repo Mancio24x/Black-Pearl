@@ -42,7 +42,7 @@ Tests: `app/src/test/java/org/qosp/notes/` (unit, JVM/Robolectric) and `app/src/
 | Settings > Appearance (Compose) | `J/ui/appearance/AppearanceFragment.kt`, `AppearanceScreen.kt` (gallery, mode, shapes, fonts, FAB size), `ThemeEditorScreen.kt` (HSV picker, contrast, preview) |
 | Shapes / note font / FAB size | `R/values/styles_blackpearl.xml`, `attrs_blackpearl.xml`, enums `CardShape`/`NoteFont`/`FabSize`; FAB size applied in `J/ui/main/MainFragment.kt` |
 | Black Pearl strings | `R/values/strings_blackpearl.xml`, `R/values-it/strings_blackpearl.xml` (keep new strings here, not in upstream `strings.xml`) |
-| Home-screen widget | `J/ui/widget/*`, `R/xml/notes_widget_info.xml` |
+| Home-screen widgets | pinned notes: `J/ui/widget/NotesWidget*`, `R/xml/notes_widget_info.xml`; checklist (tick from the home screen): `J/ui/widget/ChecklistWidget.kt` (provider, service, factory, per-widget note id), `ChecklistWidgetConfigureActivity.kt` (choose the list), `R/layout/widget_checklist*.xml`, `R/xml/checklist_widget_info.xml`; refresh: `WidgetUpdateHelper` (also on `MainActivity.onStop`) |
 | DI modules (Koin) | `J/di/*` |
 | About screen, links | `J/ui/about/AboutFragment.kt`, `R/values/no_translate_strings.xml` |
 | App name, app id, version | `R/values/no_translate_strings.xml` (`app_name`), `app/build.gradle.kts` |

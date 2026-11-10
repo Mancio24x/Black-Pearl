@@ -489,6 +489,12 @@ class MainActivity : BaseActivity() {
         BackupService.backupNotes(this, activityModel.notesToBackup, backupUri)
     }
 
+    // Black Pearl: lists ticked in the app show up in the home-screen widgets when leaving it
+    override fun onStop() {
+        super.onStop()
+        WidgetUpdateHelper.updateAllWidgets(this)
+    }
+
     fun restoreNotes(backupUri: Uri) {
         BackupService.restoreNotes(this, backupUri)
     }

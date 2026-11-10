@@ -157,4 +157,10 @@
     </plurals>
     <string name="lock_notification_hidden">Open Black Pearl to see it</string>
     <string name="lock_widget_hidden">Notes are hidden while the app lock is on</string>
+    <string name="checklist_widget_name">Black Pearl list</string>
+    <string name="checklist_widget_description">A checklist you can tick from the home screen</string>
+    <string name="checklist_widget_choose">Which list should the widget show?</string>
+    <string name="checklist_widget_no_lists">You have no lists yet: create one in Black Pearl (the checkbox button), then add the widget again.</string>
+    <string name="checklist_widget_empty">This list is empty</string>
+    <string name="checklist_widget_missing">List not found: hold the widget to choose another one</string>
 </resources>

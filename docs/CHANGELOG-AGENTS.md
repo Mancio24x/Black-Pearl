@@ -165,3 +165,10 @@ Append one short entry per significant task: files, decisions, tests (with resul
   `readsWhiteTextOnADarkSign`.
 - Edit/view FAB stays at the bottom right also while the note is empty (it was hidden until text was typed, which
   looked like it had gone missing next to the new "+").
+\n
+## 2026-11-10 — Checklist widget (branch feature/checklist-widget)
+- New provider/service/factory (`ui/widget/ChecklistWidget.kt`), configure activity (BaseActivity: protected by the app
+  lock), layouts and white checkbox drawables (widgets cannot use theme attributes), manifest entries, strings EN/IT.
+  Ticks go through a broadcast to the provider → `ChecklistWidgets.toggle` → `WidgetUpdateHelper`. Widgets refresh
+  also when leaving the app (`MainActivity.onStop`).
+- Test: device `ChecklistWidgetTest` (items shown, ticks saved, deleted list shows nothing).

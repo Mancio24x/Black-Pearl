@@ -85,6 +85,30 @@
                 android:resource="@xml/notes_widget_info"/>
         </receiver>
 
+        <!-- Black Pearl checklist widget: tick a list from the home screen -->
+        <receiver
+            android:name=".ui.widget.ChecklistWidgetProvider"
+            android:label="@string/checklist_widget_name"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/checklist_widget_info"/>
+        </receiver>
+        <service
+            android:name=".ui.widget.ChecklistWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false"/>
+        <activity
+            android:name=".ui.widget.ChecklistWidgetConfigureActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+            </intent-filter>
+        </activity>
+
         <!-- Widget Service -->
         <service
             android:name=".ui.widget.NotesWidgetService"
