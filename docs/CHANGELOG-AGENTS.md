@@ -165,3 +165,8 @@ Append one short entry per significant task: files, decisions, tests (with resul
   `readsWhiteTextOnADarkSign`.
 - Edit/view FAB stays at the bottom right also while the note is empty (it was hidden until text was typed, which
   looked like it had gone missing next to the new "+").
+
+## 2026-11-10 — "Convert to list" makes real checkboxes (branch fix/convert-to-list)
+- `Note.stringToTaskList()`: "- [ ] x", "[x] y", "☐/☑", bullets and numbers are stripped into the checkbox state
+  instead of staying in the item text; empty lines skipped. Test `data/ConvertToListTest`.
+- Checklist boxes: ticked = theme accent (`color/bp_task_checkbox`), was grey `colorControlNormal`.
