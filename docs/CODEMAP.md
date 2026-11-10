@@ -6,6 +6,7 @@ Tests: `app/src/test/java/org/qosp/notes/` (unit, JVM/Robolectric) and `app/src/
 | Feature | Main files |
 |---|---|
 | App start, Koin setup, media folder const | `J/App.kt`, `J/Config.kt` |
+| Sample note shipped in the APK (added once at start, local only) | `J/components/SampleNote.kt`, asset `app/src/main/assets/sample/*.md`, flag `PreferenceRepository.SAMPLE_NOTE_ADDED`; test `components/SampleNoteTest` |
 | Launcher / welcome screen (Compose) | `J/ui/launcher/LauncherActivity.kt`, `WelcomeScreen.kt` |
 | Main activity, nav drawer | `J/ui/MainActivity.kt`, `J/ui/ActivityViewModel.kt`, `R/navigation/nav_graph.xml`, `R/menu/nav_drawer.xml` |
 | Note list (home, design 1A "Soft") | `J/ui/main/MainFragment.kt` (search bar, notebook chips, quick-action pill), `MainViewModel.kt`, `J/ui/common/AbstractNotesFragment.kt`, `R/layout/fragment_main.xml`, `layout_appbar_main.xml`, `chip_notebook_filter.xml`, styles `Widget.BlackPearl.*` in `R/values*/styles_blackpearl.xml` |
