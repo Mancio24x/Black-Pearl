@@ -3,8 +3,12 @@ package org.qosp.notes
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.qosp.notes.components.SampleNote
 import org.koin.android.ext.android.get
 import org.qosp.notes.preferences.PreferenceRepository
 import org.qosp.notes.ui.lock.AppLock
@@ -98,6 +102,12 @@ class App : Application(), ImageLoaderFactory {
         createNotificationChannels()
         enqueueWorkers()
         startAppLock()
+        addSampleNote()
+    }
+
+    // Black Pearl: the notebook shipped in the APK appears once among the notes
+    private fun addSampleNote() {
+        CoroutineScope(Dispatchers.IO).launch { SampleNote.addOnce(this@App, get(), get()) }
     }
 
     // Black Pearl: locked at start when a PIN is set, and again after some time in the background

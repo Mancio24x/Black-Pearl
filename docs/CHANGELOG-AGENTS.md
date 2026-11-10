@@ -165,3 +165,14 @@ Append one short entry per significant task: files, decisions, tests (with resul
   `readsWhiteTextOnADarkSign`.
 - Edit/view FAB stays at the bottom right also while the note is empty (it was hidden until text was typed, which
   looked like it had gone missing next to the new "+").
+
+## 2026-11-10 — Sample note shipped in the APK (branch feature/sample-note)
+- Owner: "voglio che chiunque abbia l'apk abbia il file md come test". His notebook is now the asset
+  `app/src/main/assets/sample/Quaderno delle Ricette Sburrate.md` (~17 KB); `components/SampleNote.kt` adds it once
+  as a note at app start (`App.addSampleNote`), flag `sample_note_added` in the DataStore (`PreferenceRepository`).
+  New installs and updates both get it; deleting it is final.
+- Decision: the note is **local only** — with Nextcloud/folder sync every device would upload its own copy.
+- Title = first heading ("Quaderno delle Ricette Sburrate"), text = the rest, unchanged.
+- Device tests use `TestApplication`, not `App`: they do not get the note.
+- Tests: `testDebugUnitTest` 139/139 (3 new in `SampleNoteTest`), `assembleDebug` OK, asset present in the APK.
+  Not checked on a phone or emulator.
