@@ -28,10 +28,6 @@
     <string name="image_align_left">Align left</string>
     <string name="image_align_center">Center</string>
     <string name="image_align_right">Align right</string>
-    <string name="image_size_small">Small (25%)</string>
-    <string name="image_size_medium">Medium (50%)</string>
-    <string name="image_size_large">Large (75%)</string>
-    <string name="image_size_full">Full width</string>
     <string name="image_remove_from_note">Remove from note (keep attachment)</string>
     <string name="note_color_none">No color</string>
     <string name="ocr_scan_text">Scan text</string>

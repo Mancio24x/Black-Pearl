@@ -28,10 +28,12 @@
             android:icon="@drawable/ic_restore"
             android:visible="false"
             app:showAsAction="ifRoom"/>
-    <!-- Black Pearl: every other note action is in one sheet (NoteOptionsSheet) -->
+    <!-- Black Pearl: every other note action is in one sheet (NoteOptionsSheet), opened by the "+" button at the
+         bottom left. This item is only shown for a note in the bin, which has no "+" button. -->
     <item
             android:id="@+id/action_note_options"
             android:icon="@drawable/ic_more_vert"
             android:title="@string/sheet_note_options"
+            android:visible="false"
             app:showAsAction="always"/>
 </menu>
