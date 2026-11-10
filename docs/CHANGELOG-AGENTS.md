@@ -202,3 +202,12 @@ Append one short entry per significant task: files, decisions, tests (with resul
 - Validation: 143 unit tests passed; `assembleDebug` passed; XML/widget-absence checks and `git diff --check` passed.
   `lintDebug` failed with 243 pre-existing errors in unchanged files (FragmentLiveDataObserve, MissingQuantity,
   MissingTranslation); no errors in either edited application file. Lint is report-only in CI. Device checks run in CI.
+
+## 2026-11-10 — Remove confirmed dead code
+- Removed four unused Compose contrast schemes, their 140 exclusive colours, and the unused ColorFamily/
+  unspecified_scheme pair; active View-derived themes and light/dark fallback schemes remain.
+- Removed TagsViewModel.TagDataList and its imports, six unused sync result/exception types, the unused DAO
+  methods moveRemotelyDeletedNotesToBin/getAllNoteTagRelations, and the unreferenced ic_more_vert drawable.
+- No schema, migration, serialized field, sync contract or active theme change.
+- Validation: 143 unit tests passed; assembleDebug and compileDebugAndroidTestKotlin passed;
+  git diff --check passed. Device tests compiled but were not executed locally.
