@@ -1,6 +1,10 @@
 package org.qosp.notes.ui.editor.markdown
 
 import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.RectF
 import android.text.Layout
 import android.text.TextPaint
 import android.text.style.AlignmentSpan
@@ -8,6 +12,7 @@ import android.text.style.ClickableSpan
 import android.view.View
 import io.noties.markwon.AbstractMarkwonPlugin
 import io.noties.markwon.MarkwonVisitor
+import io.noties.markwon.core.MarkwonTheme
 import io.noties.markwon.image.AsyncDrawable
 import io.noties.markwon.image.AsyncDrawableSpan
 import io.noties.markwon.image.ImageSize
@@ -23,6 +28,7 @@ import org.qosp.notes.ui.attachments.getAttachmentUri
 /**
  * Renders Markdown images with the Black Pearl layout stored in the image title (see [ImageBlocks]):
  * width in percent (ratio kept), left/center/right alignment, relative attachment paths, and a click target.
+ * Pictures are drawn with rounded corners ([cornerRadius], design 2).
  *
  * A screen that wants image clicks sets a [ImageClickListener] as tag [R.id.tag_image_click_listener]
  * on the TextView; other TextViews (note cards, widget) ignore clicks.
@@ -42,6 +48,35 @@ class ImageLayoutPlugin(private val context: Context) : AbstractMarkwonPlugin() 
 
         override fun updateDrawState(ds: TextPaint) = Unit // no link styling
     }
+
+    /** A loaded picture clipped to rounded corners; the placeholder text is drawn as before. */
+    private class RoundedImageSpan(
+        theme: MarkwonTheme,
+        drawable: AsyncDrawable,
+        isLink: Boolean,
+        private val radius: Float,
+    ) : AsyncDrawableSpan(theme, drawable, ALIGN_BOTTOM, isLink) {
+        private val path = Path()
+        private val rect = RectF()
+
+        override fun draw(
+            canvas: Canvas, text: CharSequence?, start: Int, end: Int, x: Float, top: Int, y: Int, bottom: Int, paint: Paint
+        ) {
+            val bounds = drawable.bounds
+            if (!drawable.hasResult() || bounds.isEmpty) return super.draw(canvas, text, start, end, x, top, y, bottom, paint)
+            // same place as AsyncDrawableSpan (ALIGN_BOTTOM): translated by (x, bottom - bounds.bottom)
+            val dy = (bottom - bounds.bottom).toFloat()
+            rect.set(x + bounds.left, dy + bounds.top, x + bounds.right, dy + bounds.bottom)
+            path.reset()
+            path.addRoundRect(rect, radius, radius, Path.Direction.CW)
+            val save = canvas.save()
+            canvas.clipPath(path)
+            super.draw(canvas, text, start, end, x, top, y, bottom, paint)
+            canvas.restoreToCount(save)
+        }
+    }
+
+    private val radius = cornerRadius(context)
 
     override fun configureVisitor(builder: MarkwonVisitor.Builder) {
         builder.on(Image::class.java) { visitor, image ->
@@ -68,7 +103,7 @@ class ImageLayoutPlugin(private val context: Context) : AbstractMarkwonPlugin() 
 
             val drawable = AsyncDrawable(resolved, configuration.asyncDrawableLoader(), configuration.imageSizeResolver(), size)
             val spans = mutableListOf<Any>(
-                AsyncDrawableSpan(configuration.theme(), drawable, AsyncDrawableSpan.ALIGN_BOTTOM, image.parent is Link),
+                RoundedImageSpan(configuration.theme(), drawable, image.parent is Link, radius),
             )
             if (standalone) spans += ImageClickSpan(ImageBlocks.Ref(raw, occurrence))
             when (layout.align) {
@@ -78,5 +113,10 @@ class ImageLayoutPlugin(private val context: Context) : AbstractMarkwonPlugin() 
             }
             visitor.setSpans(start, spans.toTypedArray())
         }
+    }
+
+    companion object {
+        /** Corner radius of pictures in notes (design 2: 24dp). */
+        fun cornerRadius(context: Context) = 24 * context.resources.displayMetrics.density
     }
 }

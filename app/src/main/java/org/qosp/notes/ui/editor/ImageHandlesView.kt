@@ -32,7 +32,8 @@ import kotlin.math.roundToInt
 /**
  * Black Pearl: drawn over the note preview, lets the user handle a picture directly. Tap a picture: a rounded frame
  * appears with a round **resize** handle on its corner (live size, snaps to 25/50/75/100 %) and a **move** handle on
- * top (drag the picture between the lines; a line shows where it lands), plus a small bar: alignment, more, remove.
+ * top (drag the picture between the lines; a line shows where it lands), plus a dark pill bar (design 2): move up,
+ * move down, align left, centre, size in % (opens the picture's options) and remove.
  * Touches elsewhere go through to the text (and close the frame).
  */
 class ImageHandlesView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
@@ -59,10 +60,13 @@ class ImageHandlesView @JvmOverloads constructor(context: Context, attrs: Attrib
     private val primary = MaterialColors.getColor(this, androidx.appcompat.R.attr.colorPrimary)
     private val background = MaterialColors.getColor(this, android.R.attr.colorBackground)
     private val onPrimary = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnPrimary)
+    private val barColor = MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurfaceInverse)
+    private val onBarColor = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurfaceInverse)
+    private val onSurface = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurface)
 
     private val framePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = dp(2)
+        strokeWidth = dp(FRAME_STROKE_DP)
         color = primary
     }
     private val coverPaint = Paint().apply { color = background }
@@ -97,21 +101,55 @@ class ImageHandlesView @JvmOverloads constructor(context: Context, attrs: Attrib
     }
     private val resizeHandle = handle(R.drawable.ic_resize, R.string.image_resize)
     private val moveHandle = handle(R.drawable.ic_drag, R.string.image_move)
+    private val alignLeft = toolButton(R.drawable.ic_align_left, R.string.image_align_left) { align(ImageBlocks.Align.LEFT) }
+    private val alignCenter = toolButton(R.drawable.ic_align_center, R.string.image_align_center) { align(ImageBlocks.Align.CENTER) }
+    private val sizeButton = TextView(context).apply {
+        layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(44).toInt())
+        minWidth = dp(44).toInt()
+        gravity = android.view.Gravity.CENTER
+        setPadding(dp(12).toInt(), 0, dp(12).toInt(), 0)
+        setTextColor(onBarColor)
+        textSize = 14f
+        typeface = android.graphics.Typeface.DEFAULT_BOLD
+        background = ContextCompat.getDrawable(context, R.drawable.bg_round_ripple_pill)
+        contentDescription = context.getString(R.string.image_size)
+        TooltipCompat.setTooltipText(this, contentDescription)
+        isClickable = true
+        setOnClickListener { selected?.let { listener?.onMore(it) } }
+    }
     private val toolbar = MaterialCardView(context).apply {
-        radius = dp(24)
-        cardElevation = dp(3)
-        setCardBackgroundColor(MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurfaceContainerHigh))
+        radius = dp(28)
+        cardElevation = dp(8)
+        setCardBackgroundColor(barColor)
         addView(
             LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
-                setPadding(dp(4).toInt(), 0, dp(4).toInt(), 0)
-                addView(toolButton(R.drawable.ic_align_left, R.string.image_align_left) { align(ImageBlocks.Align.LEFT) })
-                addView(toolButton(R.drawable.ic_align_center, R.string.image_align_center) { align(ImageBlocks.Align.CENTER) })
-                addView(toolButton(R.drawable.ic_align_right, R.string.image_align_right) { align(ImageBlocks.Align.RIGHT) })
-                addView(toolButton(R.drawable.ic_more_vert, R.string.sheet_more_settings) { selected?.let { listener?.onMore(it) } })
-                addView(toolButton(R.drawable.ic_bin, R.string.image_remove_from_note) { selected?.let { listener?.onRemove(it) } })
+                setPadding(dp(6).toInt(), dp(6).toInt(), dp(6).toInt(), dp(6).toInt())
+                addView(toolButton(R.drawable.ic_up, R.string.image_move_up) { selected?.let { listener?.onMove(it, -1) } })
+                addView(toolButton(R.drawable.ic_down, R.string.image_move_down) { selected?.let { listener?.onMove(it, 1) } })
+                addView(alignLeft)
+                addView(alignCenter)
+                addView(sizeButton)
+                addView(
+                    toolButton(R.drawable.ic_bin, R.string.image_remove_from_note) { selected?.let { listener?.onRemove(it) } }
+                        .apply {
+                            imageTintList = android.content.res.ColorStateList.valueOf(
+                                MaterialColors.getColor(this, com.google.android.material.R.attr.colorErrorContainer)
+                            )
+                        }
+                )
             }
         )
+    }
+
+    /** The current alignment is shown as a light round button; the size button shows the width in %. */
+    private fun updateBar() {
+        listOf(alignLeft to ImageBlocks.Align.LEFT, alignCenter to ImageBlocks.Align.CENTER).forEach { (button, a) ->
+            val active = align == a
+            button.background = ContextCompat.getDrawable(context, if (active) R.drawable.bg_round_solid else R.drawable.bg_round_ripple)
+            button.imageTintList = android.content.res.ColorStateList.valueOf(if (active) onSurface else onBarColor)
+        }
+        sizeButton.text = context.getString(R.string.image_size_percent, widthPercent ?: 100)
     }
 
     // The text is redrawn after each change (and pictures load again): follow the selected picture, hiding the
@@ -178,6 +216,7 @@ class ImageHandlesView @JvmOverloads constructor(context: Context, attrs: Attrib
         if (!findImage(ref, image) || image.isEmpty) return false
         if (image == placed) return true // nothing moved: avoid redrawing every frame
         placed.set(image)
+        updateBar()
         frame.fitTo(image)
         resizeHandle.center(if (align == ImageBlocks.Align.RIGHT) image.left else image.right, image.bottom)
         moveHandle.center(image.centerX(), image.top)
@@ -400,7 +439,7 @@ class ImageHandlesView @JvmOverloads constructor(context: Context, attrs: Attrib
                     d.draw(canvas)
                     canvas.restoreToCount(save)
                 }
-                canvas.drawRoundRect(tmp, dp(12), dp(12), framePaint)
+                drawFrame(canvas, tmp)
                 bubble(canvas, "$resizePercent%", tmp.centerX(), tmp.centerY())
             }
             moving -> {
@@ -414,10 +453,21 @@ class ImageHandlesView @JvmOverloads constructor(context: Context, attrs: Attrib
                     canvas.restoreToCount(save)
                 }
                 tmp.set(image.left, moveY, image.right, moveY + image.height())
-                canvas.drawRoundRect(tmp, dp(12), dp(12), framePaint)
+                drawFrame(canvas, tmp)
             }
-            else -> canvas.drawRoundRect(image, dp(12), dp(12), framePaint)
+            else -> drawFrame(canvas, image)
         }
+    }
+
+    // Design 2: a 3dp outline 3dp away from the picture, following its 24dp rounded corners
+    private val frameRect = RectF()
+
+    private fun drawFrame(canvas: Canvas, picture: RectF) {
+        val gap = dp(FRAME_GAP_DP) + dp(FRAME_STROKE_DP) / 2
+        frameRect.set(picture)
+        frameRect.inset(-gap, -gap)
+        val radius = ImageLayoutPlugin.cornerRadius(context) + gap
+        canvas.drawRoundRect(frameRect, radius, radius, framePaint)
     }
 
     private fun currentDrawable(): android.graphics.drawable.Drawable? {
@@ -461,6 +511,7 @@ class ImageHandlesView @JvmOverloads constructor(context: Context, attrs: Attrib
         val size = dp(44).toInt()
         layoutParams = LinearLayout.LayoutParams(size, size)
         setImageDrawable(ContextCompat.getDrawable(context, icon))
+        imageTintList = android.content.res.ColorStateList.valueOf(onBarColor)
         background = ContextCompat.getDrawable(context, R.drawable.bg_round_ripple)
         contentDescription = context.getString(label)
         TooltipCompat.setTooltipText(this, contentDescription)
@@ -484,5 +535,7 @@ class ImageHandlesView @JvmOverloads constructor(context: Context, attrs: Attrib
 
     private companion object {
         const val HANDLE_DP = 36
+        const val FRAME_STROKE_DP = 3
+        const val FRAME_GAP_DP = 3
     }
 }

@@ -99,4 +99,52 @@
     <style name="Widget.BlackPearl.PopupMenu.Overflow" parent="Widget.Material3.PopupMenu.Overflow">
         <item name="android:popupBackground">@drawable/bg_popup_menu</item>
     </style>
+    <!-- Note editor, design 2 "Editor con immagini": always this shape and font, whatever the Appearance settings -->
+    <style name="ThemeOverlay.BlackPearl.EditorToolbar" parent="">
+        <item name="toolbarNavigationButtonStyle">@style/Widget.BlackPearl.EditorNavRound</item>
+        <item name="actionButtonStyle">@style/Widget.BlackPearl.EditorActionRound</item>
+    </style>
+    <style name="Widget.BlackPearl.EditorNavRound" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+        <item name="android:background">@drawable/bg_round_header</item>
+        <item name="android:minWidth">56dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+    <style name="Widget.BlackPearl.EditorActionRound" parent="Widget.AppCompat.ActionButton">
+        <item name="android:background">@drawable/bg_round_header</item>
+        <item name="android:minWidth">54dp</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+    </style>
+    <style name="Widget.BlackPearl.EditorNotebookPill" parent="">
+        <item name="android:background">@drawable/bg_pill_header</item>
+        <item name="android:minHeight">40dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">14dp</item>
+        <item name="android:paddingEnd">14dp</item>
+        <item name="android:drawablePadding">8dp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:fontFamily">@font/inter_font_family</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">?attr/colorNoteText</item>
+        <item name="drawableTint">?attr/colorNoteText</item>
+    </style>
+    <style name="TextAppearance.BlackPearl.EditorTitle" parent="TextAppearance.Custom.Title">
+        <item name="android:fontFamily">@font/fraunces_semibold</item>
+        <item name="fontFamily">@font/fraunces_semibold</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">30sp</item>
+        <item name="android:letterSpacing">-0.013</item>
+    </style>
+    <style name="TextAppearance.BlackPearl.EditorBody" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:fontFamily">@font/inter_font_family</item>
+        <item name="fontFamily">@font/inter_font_family</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    <style name="Widget.BlackPearl.EditorFab" parent="Widget.Custom.FloatingActionButton">
+        <item name="fabCustomSize">64dp</item>
+        <item name="maxImageSize">26dp</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Custom.Round</item>
+    </style>
 </resources>

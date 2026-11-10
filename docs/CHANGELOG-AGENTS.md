@@ -165,3 +165,20 @@ Append one short entry per significant task: files, decisions, tests (with resul
   `readsWhiteTextOnADarkSign`.
 - Edit/view FAB stays at the bottom right also while the note is empty (it was hidden until text was typed, which
   looked like it had gone missing next to the new "+").
+
+## 2026-11-10 — Editor looks like design 2 "Editor con immagini" (branch feature/editor-design-2)
+- Owner: screen 2 of the Claude Design canvas was "non fatto"; then: shape and font must be the design's, not
+  depend on Settings > Appearance ("in fondo ai temi, non va bene") → the editor always uses them.
+- Header: round 48dp translucent buttons (back, note colour dot = `action_change_color`, "more" = note options,
+  now always shown; pin / reminders kept), notebook as a 40dp pill. Title Fraunces SemiBold 30sp (bundled
+  `res/font/fraunces_semibold.ttf`, 72pt static cut, OFL in `docs/licenses/Fraunces-OFL.txt`); body Inter 16sp,
+  24dp side margins. Editor font-size preference still applies (title scaled 30/16).
+- Pictures in notes are drawn with 24dp rounded corners (`ImageLayoutPlugin.RoundedImageSpan`, clipPath); the
+  selected one gets a 3dp outline 3dp away. Picture bar: dark pill (inverse surface), up, down, align left, centre
+  (active one light), size % (opens the picture sheet, which keeps right alignment and the size slider), remove.
+- Formatting bar: floating 64dp pill (16dp margins), B, I, H, list (new `action_insert_list`, `toggleBullet`),
+  picture (primary tint), scan text (`action_scan_text`, new in the bar) first; the other 12 buttons follow by
+  scrolling. Edit/view and "+" FABs 64dp. Same Markdown, no DB change.
+- Tests: new `ToggleBulletTest`; `./gradlew testDebugUnitTest` + `assembleDebug` (see PR). No emulator on the Mac:
+  look checked only on the CI "UI preview" screenshots.
+- Open: with design 2 the "+" FAB and the header "more" open the same sheet (owner may want only one).
