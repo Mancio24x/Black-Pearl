@@ -1441,7 +1441,8 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         if (model.inEditMode) imageHandles.clear()
         editTextContent.isVisible = model.inEditMode && !isList
 
-        val shouldDisplayFAB = data.showFabChangeMode && !isNoteDeleted && !noteHasEmptyContent
+        // Black Pearl: always there (mirror of the "+"), also while the note is still empty
+        val shouldDisplayFAB = data.showFabChangeMode && !isNoteDeleted
         when {
             fabChangeMode.isVisible == shouldDisplayFAB -> { /* FAB is already like it should be, no reason to animate */
             }
