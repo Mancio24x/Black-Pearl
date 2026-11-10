@@ -128,7 +128,13 @@
             android:layout="@layout/fragment_settings">
         <action android:id="@+id/action_main_settings_to_sync" app:destination="@id/fragment_sync_settings"/>
         <action android:id="@+id/action_settings_to_appearance" app:destination="@id/fragment_appearance"/>
+        <action android:id="@+id/action_settings_to_app_lock" app:destination="@id/fragment_app_lock"/>
     </fragment>
+
+    <fragment
+        android:id="@+id/fragment_app_lock"
+        android:name="org.qosp.notes.ui.lock.AppLockFragment"
+        android:layout="@layout/fragment_appearance"/>
 
     <fragment
         android:id="@+id/fragment_appearance"

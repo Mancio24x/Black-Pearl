@@ -88,6 +88,7 @@ class MainActivity : BaseActivity() {
         R.id.fragment_sync_settings,
         R.id.fragment_settings,
         R.id.fragment_appearance,
+        R.id.fragment_app_lock,
         R.id.fragment_tags,
     )
 

@@ -1,5 +1,13 @@
 package org.qosp.notes
 
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ProcessLifecycleOwner
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import org.koin.android.ext.android.get
+import org.qosp.notes.preferences.PreferenceRepository
+import org.qosp.notes.ui.lock.AppLock
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -89,6 +97,18 @@ class App : Application(), ImageLoaderFactory {
 
         createNotificationChannels()
         enqueueWorkers()
+        startAppLock()
+    }
+
+    // Black Pearl: locked at start when a PIN is set, and again after some time in the background
+    private fun startAppLock() {
+        val appLock: AppLock = get()
+        val preferences: PreferenceRepository = get()
+        appLock.start(runBlocking { preferences.getAppLock().first() })
+        ProcessLifecycleOwner.get().lifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onStart(owner: LifecycleOwner) = appLock.onAppForeground()
+            override fun onStop(owner: LifecycleOwner) = appLock.onAppBackground()
+        })
     }
 
     override fun attachBaseContext(base: Context?) {

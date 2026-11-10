@@ -34,6 +34,7 @@ Tests: `app/src/test/java/org/qosp/notes/` (unit, JVM/Robolectric) and `app/src/
 | Sync core | `J/data/sync/core/*` (`SynchronizeNotes.kt`), `J/components/workers/SyncWorker.kt` |
 | Sync: Nextcloud Notes | `J/data/sync/nextcloud/*`, `J/ui/sync/nextcloud/*` |
 | Sync: local folder (SAF, .md/.txt files) | `J/data/sync/fs/StorageBackend.kt`, `StorageConfig.kt` |
+| App lock (PIN 4–6 digits, biometrics) | `J/ui/lock/AppLock.kt` (state, timeout, attempts; pure), `PinHasher.kt`, `LockScreen.kt` (number pad), `AppLockFragment.kt` (Settings > App lock); overlay + biometric prompt in `J/ui/BaseActivity.kt`; started in `J/App.kt`; settings `PreferenceRepository.getAppLock()`; tests `ui/lock/AppLockTest`, device `AppLockScreenTest` |
 | Settings / preferences | `J/ui/settings/*`, `J/preferences/*` |
 | Theme (Material 3, light/dark/AMOLED) | `R/values*/themes.xml` (app attrs → M3 roles), `J/ui/BaseActivity.kt` (applies overlays), `J/ui/theme/Theme.kt` (Compose reads View theme) |
 | Themes (21 palettes, groups, descriptions) | generated `R/values*/palettes.xml` ← `tools/palette-gen/GenPalettes.java` (table) + `J/ui/theme/ThemeRoles.java` (role math, shared with the app); enum `ColorScheme`/`ThemeGroup` in `J/preferences/PreferenceEnums.kt` |
