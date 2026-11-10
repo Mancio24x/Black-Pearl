@@ -157,4 +157,7 @@
     </plurals>
     <string name="lock_notification_hidden">Open Black Pearl to see it</string>
     <string name="lock_widget_hidden">Notes are hidden while the app lock is on</string>
+    <!-- Note editor, design 2 -->
+    <string name="action_insert_list">Bulleted list</string>
+    <string name="image_size_percent">%1$d%%</string>
 </resources>

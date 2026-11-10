@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Black Pearl design 2: round 48dp translucent button of the note editor header (back, colour, more), centred in
+     the toolbar button whatever its size -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android" android:color="?attr/colorControlHighlight">
+    <item android:id="@android:id/mask" android:width="48dp" android:height="48dp" android:gravity="center">
+        <shape android:shape="oval">
+            <solid android:color="@android:color/white"/>
+        </shape>
+    </item>
+    <item android:width="48dp" android:height="48dp" android:gravity="center">
+        <shape android:shape="oval">
+            <solid android:color="@color/bp_editor_header_button"/>
+        </shape>
+    </item>
+</ripple>

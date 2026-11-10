@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Black Pearl design 2: the active button (current alignment) in the dark picture bar -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android" android:color="?attr/colorControlHighlight">
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="?android:attr/colorBackground"/>
+        </shape>
+    </item>
+</ripple>

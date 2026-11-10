@@ -28,8 +28,15 @@
             android:icon="@drawable/ic_restore"
             android:visible="false"
             app:showAsAction="ifRoom"/>
-    <!-- Black Pearl: every other note action is in one sheet (NoteOptionsSheet), opened by the "+" button at the
-         bottom left. This item is only shown for a note in the bin, which has no "+" button. -->
+    <!-- Black Pearl design 2: round button with the note colour (icon set in EditorFragment.setupMenuItems) -->
+    <item
+            android:id="@+id/action_change_color"
+            android:icon="@drawable/ic_color"
+            android:title="@string/sheet_color"
+            android:visible="false"
+            app:showAsAction="always"/>
+    <!-- Black Pearl: every other note action is in one sheet (NoteOptionsSheet), opened from here (design 2) and from
+         the "+" button at the bottom left. -->
     <item
             android:id="@+id/action_note_options"
             android:icon="@drawable/ic_more_vert"

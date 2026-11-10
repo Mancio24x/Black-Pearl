@@ -159,4 +159,7 @@
     </plurals>
     <string name="lock_notification_hidden">Apri Black Pearl per vederlo</string>
     <string name="lock_widget_hidden">Le note sono nascoste perché il blocco app è attivo</string>
+    <!-- Note editor, design 2 -->
+    <string name="action_insert_list">Elenco puntato</string>
+    <string name="image_size_percent">%1$d%%</string>
 </resources>

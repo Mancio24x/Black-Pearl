@@ -8,5 +8,7 @@
     <dimen name="list_toolbar_height">64dp</dimen>
     <!-- Room below the last note for the floating quick-action bar and the "+" button -->
     <dimen name="list_bottom_space">104dp</dimen>
+    <!-- Note editor (design 2): room below the text for the floating formatting pill (64dp + 16dp margin) -->
+    <dimen name="editor_format_bar_space">80dp</dimen>
 
 </resources>
