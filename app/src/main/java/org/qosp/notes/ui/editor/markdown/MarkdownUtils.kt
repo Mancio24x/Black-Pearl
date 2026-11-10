@@ -76,6 +76,20 @@ fun ExtendedEditText.toggleCheckmarkCurrentLine() {
     setSelection(lineStart + line.length)
 }
 
+/** Black Pearl design 2 "list" button: adds or removes a "- " bullet at the start of the line. */
+fun toggleBullet(line: String): String {
+    val bullet = Regex("^(\\s*)[-+*] (?!\\[[ xX]] )")
+    return if (bullet.containsMatchIn(line)) line.replaceFirst(bullet, "$1") else "- $line"
+}
+
+fun ExtendedEditText.toggleBulletCurrentLine() {
+    val line = text?.lines()?.get(currentLineIndex) ?: return
+    val lineStart = currentLineStartPos
+    val newLine = toggleBullet(line)
+    text?.replace(lineStart, lineStart + line.length, newLine)
+    setSelection(lineStart + newLine.length)
+}
+
 fun hyperlinkMarkdown(url: String, content: String): String {
     return "[$content]($url)"
 }

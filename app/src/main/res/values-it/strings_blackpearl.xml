@@ -159,10 +159,7 @@
     </plurals>
     <string name="lock_notification_hidden">Apri Black Pearl per vederlo</string>
     <string name="lock_widget_hidden">Le note sono nascoste perché il blocco app è attivo</string>
-    <string name="checklist_widget_name">Lista Black Pearl</string>
-    <string name="checklist_widget_description">Una lista da spuntare dalla schermata Home</string>
-    <string name="checklist_widget_choose">Quale lista deve mostrare il widget?</string>
-    <string name="checklist_widget_no_lists">Non hai ancora liste: creane una in Black Pearl (il pulsante con la casella), poi aggiungi di nuovo il widget.</string>
-    <string name="checklist_widget_empty">Questa lista è vuota</string>
-    <string name="checklist_widget_missing">Lista non trovata: tieni premuto il widget per sceglierne un\'altra</string>
+    <!-- Note editor, design 2 -->
+    <string name="action_insert_list">Elenco puntato</string>
+    <string name="image_size_percent">%1$d%%</string>
 </resources>

@@ -18,23 +18,25 @@
         <androidx.appcompat.widget.Toolbar
                 android:background="?attr/colorBackground"
                 android:id="@+id/toolbar"
+                android:theme="@style/ThemeOverlay.BlackPearl.EditorToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                app:buttonGravity="center_vertical"
                 app:titleTextAppearance="@style/TextAppearance.Custom.Title"
                 app:contentInsetStartWithNavigation="0dp">
 
             <androidx.appcompat.widget.AppCompatTextView
-                    android:layout_gravity="start"
+                    android:layout_gravity="start|center_vertical"
                     android:id="@+id/notebook_view"
                     android:text="@string/notebooks_unassigned"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.Custom.Title"
-                    android:textSize="17sp"
-                    android:drawablePadding="8dp"
+                    android:layout_marginStart="8dp"
                     android:clickable="true"
                     android:focusable="true"
-                    style="@style/NotebookChip"/>
+                    style="@style/Widget.BlackPearl.EditorNotebookPill"/>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -67,39 +69,41 @@
 
             <org.qosp.notes.ui.utils.views.ExtendedEditText
                     android:id="@+id/edit_text_title"
-                    android:fontFamily="?attr/noteFontFamily"
-                    android:textAppearance="@style/TextAppearance.Custom.Title"
+                    android:fontFamily="@font/fraunces_semibold"
+                    android:textAppearance="@style/TextAppearance.BlackPearl.EditorTitle"
                     android:hint="@string/editor_hint_title"
                     android:scrollHorizontally="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@null"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginHorizontal="16dp"/>
+                    android:layout_marginTop="8dp"
+                    android:layout_marginHorizontal="24dp"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/text_view_title_preview"
-                    android:fontFamily="?attr/noteFontFamily"
-                    android:textAppearance="@style/TextAppearance.Custom.Title"
+                    android:fontFamily="@font/fraunces_semibold"
+                    android:textAppearance="@style/TextAppearance.BlackPearl.EditorTitle"
                     android:textIsSelectable="true"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
                     android:gravity="top|start"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginHorizontal="16dp"/>
+                    android:layout_marginTop="8dp"
+                    android:layout_marginHorizontal="24dp"/>
 
             <org.qosp.notes.ui.utils.views.ExtendedEditText
                     android:id="@+id/edit_text_content"
-                    android:fontFamily="?attr/noteFontFamily"
-                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    android:fontFamily="@font/inter_font_family"
+                    android:textAppearance="@style/TextAppearance.BlackPearl.EditorBody"
                     android:hint="@string/editor_hint_content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
                     android:gravity="top|start"
                     android:background="@null"
-                    android:padding="16dp"/>
+                    android:lineSpacingExtra="4dp"
+                    android:paddingVertical="14dp"
+                    android:paddingHorizontal="24dp"/>
 
             <!-- Black Pearl: preview + handles to move / resize the pictures in it -->
             <FrameLayout
@@ -108,14 +112,16 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/text_view_content_preview"
-                        android:fontFamily="?attr/noteFontFamily"
-                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                        android:fontFamily="@font/inter_font_family"
+                        android:textAppearance="@style/TextAppearance.BlackPearl.EditorBody"
                         android:textIsSelectable="true"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:visibility="gone"
                         android:gravity="top|start"
-                        android:layout_margin="16dp"/>
+                        android:lineSpacingExtra="4dp"
+                        android:layout_marginVertical="14dp"
+                        android:layout_marginHorizontal="24dp"/>
 
                 <org.qosp.notes.ui.editor.ImageHandlesView
                         android:id="@+id/image_handles"
@@ -170,51 +176,57 @@
             android:id="@+id/fab_note_options"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="16dp"
             android:src="@drawable/ic_add"
             android:contentDescription="@string/sheet_note_options"
             app:layout_constraintBottom_toTopOf="@id/container_bottom_toolbar"
             app:layout_constraintStart_toStartOf="parent"
-            style="@style/Widget.Custom.FloatingActionButton"/>
+            style="@style/Widget.BlackPearl.EditorFab"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_change_mode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="16dp"
             android:src="@drawable/ic_pencil"
             android:contentDescription="@string/action_change_mode"
             app:layout_constraintBottom_toTopOf="@id/container_bottom_toolbar"
             app:layout_constraintEnd_toEndOf="parent"
-            style="@style/Widget.Custom.FloatingActionButton"/>
+            style="@style/Widget.BlackPearl.EditorFab"/>
 
-    <LinearLayout
+    <!-- Black Pearl design 2: formatting bar as a floating pill; the first six buttons are the design's, the others
+         follow when scrolling sideways -->
+    <com.google.android.material.card.MaterialCardView
             android:id="@+id/container_bottom_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
             android:visibility="gone"
-            android:orientation="vertical"
-            android:elevation="8dp"
-            android:background="?attr/colorBottomAppBarBackground"
+            app:cardCornerRadius="32dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="?attr/colorSurfaceContainerLowest"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
-
-        <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?attr/colorOutlineVariant"/>
 
         <HorizontalScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                android:paddingHorizontal="8dp"
+                android:clipToPadding="false"
+                android:scrollbars="none">
             <androidx.appcompat.widget.Toolbar
                     android:id="@+id/bottom_toolbar"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:background="@android:color/transparent"
                     app:contentInsetStart="0dp"
                     app:menu="@menu/editor_bottom"/>
         </HorizontalScrollView>
-    </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
