@@ -47,6 +47,14 @@
                     app:subText="@string/appearance_subtitle"
                     app:iconSrc="@drawable/ic_color"/>
 
+                <org.qosp.notes.ui.utils.views.PreferenceView
+                    android:id="@+id/setting_app_lock"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:text="@string/lock_settings_title"
+                    app:subText="@string/lock_settings_subtitle"
+                    app:iconSrc="@drawable/ic_lock"/>
+
 
 
 

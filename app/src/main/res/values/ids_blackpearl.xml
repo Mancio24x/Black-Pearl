@@ -22,4 +22,6 @@
     <item name="action_share" type="id"/>
     <item name="action_export_note" type="id"/>
     <item name="action_export_options" type="id"/>
+    <!-- The PIN screen that BaseActivity puts over every activity while the app is locked -->
+    <item name="app_lock_overlay" type="id"/>
 </resources>

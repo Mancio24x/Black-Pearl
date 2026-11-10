@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.tfcporciuncula.flow.FlowSharedPreferences
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import me.msoul.datastore.EnumPreference
@@ -127,6 +128,8 @@ class PreferenceRepository(
                 timeoutMinutes = it[APP_LOCK_TIMEOUT] ?: AppLockSettings.DEFAULT_TIMEOUT_MINUTES,
             )
         }
+
+    suspend fun getAppLockOnce(): AppLockSettings = getAppLock().first()
 
     suspend fun setAppLockPin(hash: String?, length: Int) {
         dataStore.edit {

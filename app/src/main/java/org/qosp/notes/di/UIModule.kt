@@ -10,6 +10,7 @@ import org.qosp.notes.ui.attachments.dialog.AttachmentDialogViewModel
 import org.qosp.notes.ui.deleted.DeletedViewModel
 import org.qosp.notes.ui.editor.EditorViewModel
 import org.qosp.notes.ui.launcher.LauncherViewModel
+import org.qosp.notes.ui.lock.AppLock
 import org.qosp.notes.ui.main.MainViewModel
 import org.qosp.notes.ui.notebooks.ManageNotebooksViewModel
 import org.qosp.notes.ui.notebooks.dialog.NotebookDialogViewModel
@@ -22,6 +23,7 @@ import org.qosp.notes.ui.tags.dialog.TagDialogViewModel
 
 object UIModule {
     val uiModule = module {
+        single { AppLock() }
         viewModelOf(::EditorViewModel)
         viewModelOf(::ActivityViewModel)
         viewModelOf(::ArchiveViewModel)
