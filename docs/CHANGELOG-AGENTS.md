@@ -155,3 +155,13 @@ Append one short entry per significant task: files, decisions, tests (with resul
 - App lock on → reminder notifications say "Open Black Pearl to see it" instead of the note title; the home-screen
   widget lists no notes and explains why (`AppLock.hidesNotesOutsideTheApp()`); widgets refresh when the PIN is set
   or removed. Device test added to `AppLockScreenTest`.
+
+## 2026-11-10 — OCR on real photos, edit button always shown (branch fix/editor-fab-and-ocr)
+- Owner: "OCR fa schifo, non rileva nessun testo" on phone photos. Tesseract only applies one global threshold, so
+  a page lit from one side loses whole lines. New `ui/ocr/OcrPreprocess.kt`: grey → 2× upscale when small →
+  adaptive threshold (integral image, Bradley-Roth, window ≈ side/40, 12 %) → inverted when white-on-dark.
+  `OcrEngine`: `user_defined_dpi=300`, PSM_AUTO then PSM_SINGLE_BLOCK fallback, decode up to 3000 px.
+  Tests: `OcrEngineTest.readsAPhotoOfAPageWithShadowsAndNoise` (tilted, gradient-lit, noisy JPEG) and
+  `readsWhiteTextOnADarkSign`.
+- Edit/view FAB stays at the bottom right also while the note is empty (it was hidden until text was typed, which
+  looked like it had gone missing next to the new "+").

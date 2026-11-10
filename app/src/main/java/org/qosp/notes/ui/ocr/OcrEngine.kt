@@ -25,14 +25,22 @@ class OcrEngine(private val context: Context) {
 
     suspend fun recognize(image: Uri, languages: String = "ita+eng"): Result = withContext(Dispatchers.Default) {
         runCatching {
-            val bitmap = decode(image) ?: return@runCatching Result.Error(IllegalArgumentException("Cannot decode image"))
+            val photo = decode(image) ?: return@runCatching Result.Error(IllegalArgumentException("Cannot decode image"))
+            // phone photos: shadows and uneven light make Tesseract's own global threshold drop whole lines
+            val bitmap = OcrPreprocess.binarize(photo).also { photo.recycle() }
             val dataPath = installModels()
             val api = TessBaseAPI()
             try {
                 check(api.init(dataPath.absolutePath, languages)) { "Tesseract init failed" }
-                api.pageSegMode = TessBaseAPI.PageSegMode.PSM_AUTO
+                api.setVariable("user_defined_dpi", "300") // bitmaps carry no DPI; without it page layout analysis can give up
                 api.setImage(bitmap)
-                val text = OcrText.clean(api.utF8Text.orEmpty())
+                // automatic page layout first; a plain block of text (a label, a sign, a single paragraph) as fallback
+                var text = ""
+                for (mode in listOf(TessBaseAPI.PageSegMode.PSM_AUTO, TessBaseAPI.PageSegMode.PSM_SINGLE_BLOCK)) {
+                    api.pageSegMode = mode
+                    text = OcrText.clean(api.utF8Text.orEmpty())
+                    if (!OcrText.isUnreadable(text)) break
+                }
                 if (OcrText.isUnreadable(text)) Result.Unreadable else Result.Text(text)
             } finally {
                 api.recycle()
@@ -58,7 +66,7 @@ class OcrEngine(private val context: Context) {
     }
 
     /** Decodes the image downsampled to at most [maxSide] px and rotated upright using EXIF. */
-    private fun decode(uri: Uri, maxSide: Int = 2400): Bitmap? {
+    private fun decode(uri: Uri, maxSide: Int = 3000): Bitmap? {
         val resolver = context.contentResolver
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         resolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
