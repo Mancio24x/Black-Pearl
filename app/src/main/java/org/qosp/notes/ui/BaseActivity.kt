@@ -1,5 +1,25 @@
 package org.qosp.notes.ui
 
+import android.os.Build
+import android.view.KeyEvent
+import android.view.ViewGroup
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
+import org.qosp.notes.R
+import org.qosp.notes.ui.lock.AppLock
+import org.qosp.notes.ui.lock.LockScreen
+import org.qosp.notes.ui.theme.QuillpadTheme
+import org.qosp.notes.ui.utils.hideKeyboard
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
@@ -27,6 +47,7 @@ open class BaseActivity : AppCompatActivity() {
     private val toaster: Toaster by inject()
 
     private var startPreferences: Pair<AppPreferences, CustomThemeColors>? = null
+    private val appLock: AppLock by inject()
 
     private fun readPreferences() = runBlocking(Dispatchers.IO) {
         preferenceRepository.getAll().first() to preferenceRepository.getCustomTheme().first()
@@ -83,6 +104,76 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
+    // ---------- App lock (Black Pearl): a PIN screen over every activity while the app is locked ----------
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        val overlay = ComposeView(this).apply {
+            id = R.id.app_lock_overlay
+            isVisible = false
+            isClickable = true // nothing below can be touched
+            setContent {
+                QuillpadTheme {
+                    // composed again at every lock, so it always uses the current PIN length and settings
+                    val locked by appLock.locked.collectAsState()
+                    if (locked) {
+                        Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
+                            LockScreen(appLock, onBiometric = if (canUseBiometric()) ::showBiometricPrompt else null)
+                        }
+                    }
+                }
+            }
+        }
+        addContentView(overlay, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        appLock.locked.collect(this) { locked ->
+            overlay.isVisible = locked
+            if (locked) {
+                currentFocus?.hideKeyboard()
+                if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) offerBiometric()
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Android 13+: no preview of the notes in the recent apps while the lock is on
+        if (Build.VERSION.SDK_INT >= 33) setRecentsScreenshotEnabled(!appLock.settings.enabled)
+        if (appLock.locked.value) offerBiometric()
+    }
+
+    // Back does not close the lock screen: it leaves the app
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (appLock.locked.value && event.keyCode == KeyEvent.KEYCODE_BACK) {
+            if (event.action == KeyEvent.ACTION_UP) moveTaskToBack(true)
+            return true
+        }
+        return super.dispatchKeyEvent(event)
+    }
+
+    private fun canUseBiometric() = appLock.settings.biometric &&
+        BiometricManager.from(this).canAuthenticate(LOCK_AUTHENTICATORS) == BiometricManager.BIOMETRIC_SUCCESS
+
+    /** Shows the fingerprint prompt once per lock; later the user can ask for it with the key on the pad. */
+    private fun offerBiometric() {
+        if (!appLock.biometricPending || !canUseBiometric()) return
+        appLock.biometricPending = false
+        showBiometricPrompt()
+    }
+
+    private fun showBiometricPrompt() {
+        val callback = object : BiometricPrompt.AuthenticationCallback() {
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) = appLock.unlock()
+        }
+        runCatching {
+            BiometricPrompt(this, ContextCompat.getMainExecutor(this), callback).authenticate(
+                BiometricPrompt.PromptInfo.Builder()
+                    .setTitle(getString(R.string.lock_title))
+                    .setAllowedAuthenticators(LOCK_AUTHENTICATORS)
+                    .build()
+            )
+        }
+    }
+
     private fun supportedScheme(prefs: AppPreferences) =
         prefs.colorScheme.takeIf { it.isSupported() } ?: ColorScheme.BLACK_PEARL
 
@@ -95,5 +186,11 @@ open class BaseActivity : AppCompatActivity() {
                 if (CustomTheme.isDark(custom)) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
             else -> prefs.themeMode.mode
         }
+    }
+
+    companion object {
+        /** Fingerprint or face, with the phone's own screen lock as a fallback (so a forgotten PIN is not fatal). */
+        const val LOCK_AUTHENTICATORS = BiometricManager.Authenticators.BIOMETRIC_WEAK or
+            BiometricManager.Authenticators.DEVICE_CREDENTIAL
     }
 }

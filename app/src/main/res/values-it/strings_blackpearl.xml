@@ -121,4 +121,40 @@
     <string name="image_size">Dimensione</string>
     <string name="image_resize">Ridimensiona l\'immagine</string>
     <string name="image_move">Sposta l\'immagine</string>
+    <string name="lock_settings_title">Blocco app</string>
+    <string name="lock_settings_subtitle">PIN, impronta o volto</string>
+    <string name="lock_title">Black Pearl è bloccato</string>
+    <string name="lock_enter_pin">Inserisci il PIN</string>
+    <string name="lock_use_biometric">Sblocca con impronta, volto o blocco schermo del telefono</string>
+    <string name="lock_delete">Cancella l\'ultima cifra</string>
+    <string name="lock_confirm">Conferma</string>
+    <string name="lock_enable">Blocca l\'app</string>
+    <string name="lock_change_pin">Cambia PIN</string>
+    <string name="lock_biometric">Impronta, volto o blocco schermo del telefono</string>
+    <string name="lock_after">Blocca dopo essere usciti dall\'app</string>
+    <string name="lock_after_now">Subito</string>
+    <string name="lock_current_pin">PIN attuale</string>
+    <string name="lock_wrong_pin_short">PIN errato</string>
+    <string name="lock_choose_pin">Scegli un PIN</string>
+    <string name="lock_choose_pin_hint">Da 4 a 6 cifre, poi tocca il segno di spunta</string>
+    <string name="lock_confirm_pin">Ripeti il PIN</string>
+    <string name="lock_confirm_pin_hint">Per essere sicuri che sia quello giusto</string>
+    <string name="lock_pins_differ">I due PIN sono diversi: riprova</string>
+    <string name="lock_help_fallback">Se dimentichi il PIN puoi comunque sbloccare con impronta, volto o blocco schermo del telefono. Il widget nella schermata Home e le notifiche dei promemoria possono ancora mostrare le note.</string>
+    <string name="lock_help_no_fallback">Su questo telefono non ci sono impronta, volto o blocco schermo: se dimentichi il PIN, l\'unico modo per rientrare è cancellare i dati dell\'app, e le note vanno perse. Tieni un backup (menu > Importa ed esporta).</string>
+    <plurals name="lock_after_minutes">
+        <item quantity="one">%d min</item>
+        <item quantity="many">%d min</item>
+        <item quantity="other">%d min</item>
+    </plurals>
+    <plurals name="lock_wrong_pin">
+        <item quantity="one">PIN errato: resta %d tentativo</item>
+        <item quantity="many">PIN errato: restano %d tentativi</item>
+        <item quantity="other">PIN errato: restano %d tentativi</item>
+    </plurals>
+    <plurals name="lock_wait">
+        <item quantity="one">Troppi tentativi: aspetta %d secondo</item>
+        <item quantity="many">Troppi tentativi: aspetta %d secondi</item>
+        <item quantity="other">Troppi tentativi: aspetta %d secondi</item>
+    </plurals>
 </resources>

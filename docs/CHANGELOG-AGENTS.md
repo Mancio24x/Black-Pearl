@@ -123,6 +123,13 @@ Append one short entry per significant task: files, decisions, tests (with resul
 - Other sheet actions were checked: they all run at once, while the sheet is still attached.
 - CI: `ui-preview.yml` now fails when `logcat.txt` contains a FATAL EXCEPTION from the screenshot run.
 
+## 2026-11-10 — App lock (branch feature/app-lock)
+- New `ui/lock/*` (AppLock, PinHasher, LockScreen, AppLockFragment), overlay + biometric prompt + recents flag in
+  `BaseActivity`, start + process lifecycle observer in `App`, `single { AppLock() }` in `UIModule`, settings keys in
+  `PreferenceRepository`, Settings row + nav destination, strings EN/IT, 3 icons.
+- Tests: `AppLockTest` (8), device `AppLockScreenTest`; screenshot script sets PIN 2580, restarts, wrong PIN, unlock.
+- Not done: the widget and reminder notifications still show notes while locked (told to the owner in the screen).
+
 ## 2026-11-10 — "+" button for note options, review fixes (branch feature/editor-plus-button)
 - Editor: round "+" FAB bottom-left (`fab_note_options`) opens `NoteOptionsSheet`, mirror of the edit FAB; the "⋮"
   toolbar item stays only for notes in the bin. Scroll area got 88dp bottom padding so the last lines and tags can be

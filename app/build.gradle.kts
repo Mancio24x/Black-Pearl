@@ -173,6 +173,9 @@ dependencies {
     coreLibraryDesugaring(libs.coreLibraryDesugaring)
     // Import from other note apps: HTML / Evernote ENML to Markdown
     implementation(libs.jsoup)
+    // App lock: biometric prompt, and app-in-background detection
+    implementation(libs.biometric)
+    implementation(libs.lifecycleProcess)
 
     // Test
     testImplementation(libs.junit)
