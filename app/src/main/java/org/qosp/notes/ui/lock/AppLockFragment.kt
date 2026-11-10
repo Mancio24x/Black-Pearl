@@ -36,6 +36,7 @@ import org.qosp.notes.ui.common.SheetRow
 import org.qosp.notes.ui.common.SheetSwitch
 import org.qosp.notes.ui.theme.QuillpadTheme
 import org.qosp.notes.ui.utils.viewBinding
+import org.qosp.notes.ui.widget.WidgetUpdateHelper
 
 /**
  * Settings > App lock (Black Pearl): turn the lock on with a 4–6 digit PIN (typed twice), change it, allow
@@ -146,6 +147,7 @@ class AppLockFragment : BaseFragment(R.layout.fragment_appearance) {
         lifecycleScope.launch {
             preferences.setAppLockPin(pin?.let(PinHasher::hash), pin?.length ?: 0)
             appLock.settings = preferences.getAppLockOnce()
+            WidgetUpdateHelper.updateAllWidgets(requireContext()) // show or hide the notes in the widget
             go(null)
         }
     }

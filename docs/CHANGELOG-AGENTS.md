@@ -148,3 +148,10 @@ Append one short entry per significant task: files, decisions, tests (with resul
 - Material 1.14 still has the package-private `ResourcesLoaderUtils.addResourcesLoaderToContext` used by My theme.
 - Palettes regenerated with Material 1.14: only light-mode `colorOn*Container` changed (newer M3 spec, tone 30
   instead of 10); lowest container contrast 4.67 (AA). 136 unit tests, release build with R8 OK.
+
+## 2026-11-10 — Notification icon, notes hidden outside the app when locked (branch feature/notification-icon)
+- `drawable/ic_notification_icon.xml`: Black Pearl logo (from the themed launcher icon), white; the Quillpad PNGs and
+  the `anydpi-v24` vector were removed (minSdk 24: one vector is enough).
+- App lock on → reminder notifications say "Open Black Pearl to see it" instead of the note title; the home-screen
+  widget lists no notes and explains why (`AppLock.hidesNotesOutsideTheApp()`); widgets refresh when the PIN is set
+  or removed. Device test added to `AppLockScreenTest`.

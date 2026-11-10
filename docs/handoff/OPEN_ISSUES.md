@@ -9,8 +9,8 @@
 
 ## Known limits
 
-- App lock: the home-screen widget and reminder notifications still show notes while locked; the database is not
-  encrypted (the lock protects the screens). Biometric unlock never ran in CI (no sensor on the emulator).
+- App lock: the database is not encrypted (the lock protects the screens; widget and reminder notifications hide
+  note content while the lock is on). Biometric unlock never ran in CI (no sensor on the emulator).
 - App lock with timeout "At once": coming back from the camera / file picker / share sheet asks for the PIN again
   (expected; the default is 1 minute).
 
@@ -27,5 +27,5 @@
 
 ## Leftovers from Quillpad
 
-- fastlane store metadata and the notification icon are still Quillpad's.
+- fastlane store metadata is still Quillpad's.
 - Release `v0.1.0` is an old unpublished draft: leave it.

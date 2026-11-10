@@ -12,6 +12,7 @@ import org.koin.core.component.inject
 import org.qosp.notes.R
 import org.qosp.notes.data.model.Note
 import org.qosp.notes.data.repo.NoteRepository
+import org.qosp.notes.ui.lock.AppLock
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -26,6 +27,11 @@ class NotesWidgetViewsFactory(private val context: Context) : RemoteViewsService
 
     override fun onDataSetChanged() {
         // Called when data is updated
+        // Black Pearl: with the app lock on, the widget lists no notes (its empty text says why)
+        if (AppLock.hidesNotesOutsideTheApp()) {
+            notes = emptyList()
+            return
+        }
         runBlocking {
             try {
                 notes = noteRepository.getNonDeletedOrArchived().first()
