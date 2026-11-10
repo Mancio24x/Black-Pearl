@@ -589,20 +589,25 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     private fun showExportSheet() {
         BottomSheet.show(getString(R.string.action_export), parentFragmentManager) {
             action(R.string.pdf_save, R.drawable.ic_export_note) { pdfSaveLauncher.launch(pdfFileName()) }
-            action(R.string.pdf_share, R.drawable.ic_share) {
-                val file = File(File(requireContext().cacheDir, "pdf").apply { mkdirs() }, pdfFileName())
-                exportPdf(onDone = {
-                    val uri = FileProvider.getUriForFile(requireContext(), "${BuildConfig.APPLICATION_ID}.provider", file)
-                    val send = Intent(Intent.ACTION_SEND).apply {
-                        type = "application/pdf"
-                        putExtra(Intent.EXTRA_STREAM, uri)
-                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    }
-                    startActivity(Intent.createChooser(send, getString(R.string.pdf_share)))
-                }) { file.outputStream() }
-            }
+            action(R.string.pdf_share, R.drawable.ic_share) { sharePdf() }
             action(R.string.export_note_backup, R.drawable.ic_file) { runNoteAction(R.id.action_export_note) }
         }
+    }
+
+    // A function of this screen on purpose: inside a sheet action "requireContext()" / "startActivity()" are the
+    // sheet's, and the sheet is already closed when the PDF is ready ("not attached to a context" crash).
+    private fun sharePdf() {
+        val ctx = requireContext()
+        val file = File(File(ctx.cacheDir, "pdf").apply { mkdirs() }, pdfFileName())
+        exportPdf(onDone = {
+            val uri = FileProvider.getUriForFile(ctx, "${BuildConfig.APPLICATION_ID}.provider", file)
+            val send = Intent(Intent.ACTION_SEND).apply {
+                type = "application/pdf"
+                putExtra(Intent.EXTRA_STREAM, uri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            startActivity(Intent.createChooser(send, getString(R.string.pdf_share)))
+        }) { file.outputStream() }
     }
 
     /** Renders the current note off the main thread; [open] gives the destination stream. */

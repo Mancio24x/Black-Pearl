@@ -46,6 +46,7 @@ jobs:
             ./gradlew --no-configuration-cache connectedDebugAndroidTest || echo DEVICE_TESTS_FAILED > device-tests-failed
             scripts/capture-ui.sh
             test ! -f device-tests-failed
+            if grep -A14 "FATAL EXCEPTION" ui-shots/logcat.txt; then echo "The app crashed during the screenshot run"; exit 1; fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
