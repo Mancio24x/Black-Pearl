@@ -5,7 +5,7 @@
         <item name="colorPrimary">#1B4F72</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorPrimaryContainer">#CCE5FF</item>
-        <item name="colorOnPrimaryContainer">#001E31</item>
+        <item name="colorOnPrimaryContainer">#044B71</item>
         <item name="colorPrimaryInverse">#98CCF9</item>
         <item name="colorPrimaryFixed">#CCE5FF</item>
         <item name="colorPrimaryFixedDim">#98CCF9</item>
@@ -14,7 +14,7 @@
         <item name="colorSecondary">#50606F</item>
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorSecondaryContainer">#D4E4F6</item>
-        <item name="colorOnSecondaryContainer">#0D1D2A</item>
+        <item name="colorOnSecondaryContainer">#394856</item>
         <item name="colorSecondaryFixed">#D4E4F6</item>
         <item name="colorSecondaryFixedDim">#B8C8D9</item>
         <item name="colorOnSecondaryFixed">#0D1D2A</item>
@@ -22,7 +22,7 @@
         <item name="colorTertiary">#66587B</item>
         <item name="colorOnTertiary">#FFFFFF</item>
         <item name="colorTertiaryContainer">#ECDCFF</item>
-        <item name="colorOnTertiaryContainer">#211534</item>
+        <item name="colorOnTertiaryContainer">#4E4162</item>
         <item name="colorTertiaryFixed">#ECDCFF</item>
         <item name="colorTertiaryFixedDim">#D1BFE7</item>
         <item name="colorOnTertiaryFixed">#211534</item>
@@ -30,7 +30,7 @@
         <item name="colorError">#BA1A1A</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorErrorContainer">#FFDAD6</item>
-        <item name="colorOnErrorContainer">#410002</item>
+        <item name="colorOnErrorContainer">#93000A</item>
         <item name="android:colorBackground">#F6F3EC</item>
         <item name="colorOnBackground">#16212B</item>
         <item name="colorSurface">#F6F3EC</item>
@@ -55,7 +55,7 @@
         <item name="colorPrimary">#1B4F72</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorPrimaryContainer">#CCE5FF</item>
-        <item name="colorOnPrimaryContainer">#001E31</item>
+        <item name="colorOnPrimaryContainer">#044B71</item>
         <item name="colorPrimaryInverse">#98CCF9</item>
         <item name="colorPrimaryFixed">#CCE5FF</item>
         <item name="colorPrimaryFixedDim">#98CCF9</item>
@@ -64,7 +64,7 @@
         <item name="colorSecondary">#50606F</item>
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorSecondaryContainer">#D4E4F6</item>
-        <item name="colorOnSecondaryContainer">#0D1D2A</item>
+        <item name="colorOnSecondaryContainer">#394856</item>
         <item name="colorSecondaryFixed">#D4E4F6</item>
         <item name="colorSecondaryFixedDim">#B8C8D9</item>
         <item name="colorOnSecondaryFixed">#0D1D2A</item>
@@ -72,7 +72,7 @@
         <item name="colorTertiary">#66587B</item>
         <item name="colorOnTertiary">#FFFFFF</item>
         <item name="colorTertiaryContainer">#ECDCFF</item>
-        <item name="colorOnTertiaryContainer">#211534</item>
+        <item name="colorOnTertiaryContainer">#4E4162</item>
         <item name="colorTertiaryFixed">#ECDCFF</item>
         <item name="colorTertiaryFixedDim">#D1BFE7</item>
         <item name="colorOnTertiaryFixed">#211534</item>
@@ -80,7 +80,7 @@
         <item name="colorError">#BA1A1A</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorErrorContainer">#FFDAD6</item>
-        <item name="colorOnErrorContainer">#410002</item>
+        <item name="colorOnErrorContainer">#93000A</item>
         <item name="android:colorBackground">#F6F3EC</item>
         <item name="colorOnBackground">#16212B</item>
         <item name="colorSurface">#F6F3EC</item>
@@ -105,7 +105,7 @@
         <item name="colorPrimary">#8E2F25</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorPrimaryContainer">#FFDAD5</item>
-        <item name="colorOnPrimaryContainer">#3B0906</item>
+        <item name="colorOnPrimaryContainer">#73342C</item>
         <item name="colorPrimaryInverse">#FFB4A9</item>
         <item name="colorPrimaryFixed">#FFDAD5</item>
         <item name="colorPrimaryFixedDim">#FFB4A9</item>
@@ -114,7 +114,7 @@
         <item name="colorSecondary">#775652</item>
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorSecondaryContainer">#FFDAD5</item>
-        <item name="colorOnSecondaryContainer">#2C1512</item>
+        <item name="colorOnSecondaryContainer">#5D3F3B</item>
         <item name="colorSecondaryFixed">#FFDAD5</item>
         <item name="colorSecondaryFixedDim">#E7BDB7</item>
         <item name="colorOnSecondaryFixed">#2C1512</item>
@@ -122,7 +122,7 @@
         <item name="colorTertiary">#705C2E</item>
         <item name="colorOnTertiary">#FFFFFF</item>
         <item name="colorTertiaryContainer">#FCDFA6</item>
-        <item name="colorOnTertiaryContainer">#251A00</item>
+        <item name="colorOnTertiaryContainer">#574419</item>
         <item name="colorTertiaryFixed">#FCDFA6</item>
         <item name="colorTertiaryFixedDim">#DFC38C</item>
         <item name="colorOnTertiaryFixed">#251A00</item>
@@ -130,7 +130,7 @@
         <item name="colorError">#BA1A1A</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorErrorContainer">#FFDAD6</item>
-        <item name="colorOnErrorContainer">#410002</item>
+        <item name="colorOnErrorContainer">#93000A</item>
         <item name="android:colorBackground">#F4ECDD</item>
         <item name="colorOnBackground">#2E2418</item>
         <item name="colorSurface">#F4ECDD</item>
@@ -155,7 +155,7 @@
         <item name="colorPrimary">#006A8E</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorPrimaryContainer">#C2E8FF</item>
-        <item name="colorOnPrimaryContainer">#001E2C</item>
+        <item name="colorOnPrimaryContainer">#004D68</item>
         <item name="colorPrimaryInverse">#8ECFF2</item>
         <item name="colorPrimaryFixed">#C2E8FF</item>
         <item name="colorPrimaryFixedDim">#8ECFF2</item>
@@ -164,7 +164,7 @@
         <item name="colorSecondary">#4E616D</item>
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorSecondaryContainer">#D1E5F3</item>
-        <item name="colorOnSecondaryContainer">#091E28</item>
+        <item name="colorOnSecondaryContainer">#364954</item>
         <item name="colorSecondaryFixed">#D1E5F3</item>
         <item name="colorSecondaryFixedDim">#B5C9D7</item>
         <item name="colorOnSecondaryFixed">#091E28</item>
@@ -172,7 +172,7 @@
         <item name="colorTertiary">#605A7D</item>
         <item name="colorOnTertiary">#FFFFFF</item>
         <item name="colorTertiaryContainer">#E5DEFF</item>
-        <item name="colorOnTertiaryContainer">#1C1736</item>
+        <item name="colorOnTertiaryContainer">#484264</item>
         <item name="colorTertiaryFixed">#E5DEFF</item>
         <item name="colorTertiaryFixedDim">#C9C1EA</item>
         <item name="colorOnTertiaryFixed">#1C1736</item>
@@ -180,7 +180,7 @@
         <item name="colorError">#BA1A1A</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorErrorContainer">#FFDAD6</item>
-        <item name="colorOnErrorContainer">#410002</item>
+        <item name="colorOnErrorContainer">#93000A</item>
         <item name="android:colorBackground">#EAF3F7</item>
         <item name="colorOnBackground">#12303F</item>
         <item name="colorSurface">#EAF3F7</item>
@@ -205,7 +205,7 @@
         <item name="colorPrimary">#416D53</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorPrimaryContainer">#ADF2C6</item>
-        <item name="colorOnPrimaryContainer">#002111</item>
+        <item name="colorOnPrimaryContainer">#065232</item>
         <item name="colorPrimaryInverse">#92D5AC</item>
         <item name="colorPrimaryFixed">#ADF2C6</item>
         <item name="colorPrimaryFixedDim">#92D5AC</item>
@@ -214,7 +214,7 @@
         <item name="colorSecondary">#4E6355</item>
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorSecondaryContainer">#D1E8D6</item>
-        <item name="colorOnSecondaryContainer">#0B1F14</item>
+        <item name="colorOnSecondaryContainer">#374B3E</item>
         <item name="colorSecondaryFixed">#D1E8D6</item>
         <item name="colorSecondaryFixedDim">#B5CCBB</item>
         <item name="colorOnSecondaryFixed">#0B1F14</item>
@@ -222,7 +222,7 @@
         <item name="colorTertiary">#3B6471</item>
         <item name="colorOnTertiary">#FFFFFF</item>
         <item name="colorTertiaryContainer">#BFE9F9</item>
-        <item name="colorOnTertiaryContainer">#001F27</item>
+        <item name="colorOnTertiaryContainer">#224C59</item>
         <item name="colorTertiaryFixed">#BFE9F9</item>
         <item name="colorTertiaryFixedDim">#A3CDDC</item>
         <item name="colorOnTertiaryFixed">#001F27</item>
@@ -230,7 +230,7 @@
         <item name="colorError">#BA1A1A</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorErrorContainer">#FFDAD6</item>
-        <item name="colorOnErrorContainer">#410002</item>
+        <item name="colorOnErrorContainer">#93000A</item>
         <item name="android:colorBackground">#EFF5EF</item>
         <item name="colorOnBackground">#2B4439</item>
         <item name="colorSurface">#EFF5EF</item>
@@ -255,7 +255,7 @@
         <item name="colorPrimary">#99496C</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorPrimaryContainer">#FFD9E5</item>
-        <item name="colorOnPrimaryContainer">#390721</item>
+        <item name="colorOnPrimaryContainer">#6E334D</item>
         <item name="colorPrimaryInverse">#FFB0CE</item>
         <item name="colorPrimaryFixed">#FFD9E5</item>
         <item name="colorPrimaryFixedDim">#FFB0CE</item>
@@ -264,7 +264,7 @@
         <item name="colorSecondary">#735761</item>
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorSecondaryContainer">#FFD9E5</item>
-        <item name="colorOnSecondaryContainer">#2A151E</item>
+        <item name="colorOnSecondaryContainer">#5A3F49</item>
         <item name="colorSecondaryFixed">#FFD9E5</item>
         <item name="colorSecondaryFixedDim">#E1BDC9</item>
         <item name="colorOnSecondaryFixed">#2A151E</item>
@@ -272,7 +272,7 @@
         <item name="colorTertiary">#7E5537</item>
         <item name="colorOnTertiary">#FFFFFF</item>
         <item name="colorTertiaryContainer">#FFDCC5</item>
-        <item name="colorOnTertiaryContainer">#301400</item>
+        <item name="colorOnTertiaryContainer">#633E22</item>
         <item name="colorTertiaryFixed">#FFDCC5</item>
         <item name="colorTertiaryFixedDim">#F1BC96</item>
         <item name="colorOnTertiaryFixed">#301400</item>
@@ -280,7 +280,7 @@
         <item name="colorError">#BA1A1A</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorErrorContainer">#FFDAD6</item>
-        <item name="colorOnErrorContainer">#410002</item>
+        <item name="colorOnErrorContainer">#93000A</item>
         <item name="android:colorBackground">#FFF3F5</item>
         <item name="colorOnBackground">#4C2939</item>
         <item name="colorSurface">#FFF3F5</item>
@@ -305,7 +305,7 @@
         <item name="colorPrimary">#76539C</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorPrimaryContainer">#EFDBFF</item>
-        <item name="colorOnPrimaryContainer">#270D43</item>
+        <item name="colorOnPrimaryContainer">#553B71</item>
         <item name="colorPrimaryInverse">#DABAFA</item>
         <item name="colorPrimaryFixed">#EFDBFF</item>
         <item name="colorPrimaryFixedDim">#DABAFA</item>
@@ -314,7 +314,7 @@
         <item name="colorSecondary">#655A6F</item>
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorSecondaryContainer">#ECDDF6</item>
-        <item name="colorOnSecondaryContainer">#21182A</item>
+        <item name="colorOnSecondaryContainer">#4D4357</item>
         <item name="colorSecondaryFixed">#ECDDF6</item>
         <item name="colorSecondaryFixedDim">#D0C1DA</item>
         <item name="colorOnSecondaryFixed">#21182A</item>
@@ -322,7 +322,7 @@
         <item name="colorTertiary">#805158</item>
         <item name="colorOnTertiary">#FFFFFF</item>
         <item name="colorTertiaryContainer">#FFD9DD</item>
-        <item name="colorOnTertiaryContainer">#321017</item>
+        <item name="colorOnTertiaryContainer">#653A41</item>
         <item name="colorTertiaryFixed">#FFD9DD</item>
         <item name="colorTertiaryFixedDim">#F3B7BF</item>
         <item name="colorOnTertiaryFixed">#321017</item>
@@ -330,7 +330,7 @@
         <item name="colorError">#BA1A1A</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorErrorContainer">#FFDAD6</item>
-        <item name="colorOnErrorContainer">#410002</item>
+        <item name="colorOnErrorContainer">#93000A</item>
         <item name="android:colorBackground">#F5F1FC</item>
         <item name="colorOnBackground">#362C50</item>
         <item name="colorSurface">#F5F1FC</item>
@@ -355,7 +355,7 @@
         <item name="colorPrimary">#B5472C</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorPrimaryContainer">#FFDAD2</item>
-        <item name="colorOnPrimaryContainer">#3A0A02</item>
+        <item name="colorOnPrimaryContainer">#723425</item>
         <item name="colorPrimaryInverse">#FFB4A2</item>
         <item name="colorPrimaryFixed">#FFDAD2</item>
         <item name="colorPrimaryFixedDim">#FFB4A2</item>
@@ -364,7 +364,7 @@
         <item name="colorSecondary">#77574F</item>
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorSecondaryContainer">#FFDAD2</item>
-        <item name="colorOnSecondaryContainer">#2C1510</item>
+        <item name="colorOnSecondaryContainer">#5D4038</item>
         <item name="colorSecondaryFixed">#FFDAD2</item>
         <item name="colorSecondaryFixedDim">#E7BDB3</item>
         <item name="colorOnSecondaryFixed">#2C1510</item>
@@ -372,7 +372,7 @@
         <item name="colorTertiary">#6D5D2E</item>
         <item name="colorOnTertiary">#FFFFFF</item>
         <item name="colorTertiaryContainer">#F7E1A6</item>
-        <item name="colorOnTertiaryContainer">#241A00</item>
+        <item name="colorOnTertiaryContainer">#544519</item>
         <item name="colorTertiaryFixed">#F7E1A6</item>
         <item name="colorTertiaryFixedDim">#DAC58C</item>
         <item name="colorOnTertiaryFixed">#241A00</item>
@@ -380,7 +380,7 @@
         <item name="colorError">#BA1A1A</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorErrorContainer">#FFDAD6</item>
-        <item name="colorOnErrorContainer">#410002</item>
+        <item name="colorOnErrorContainer">#93000A</item>
         <item name="android:colorBackground">#FFF1EC</item>
         <item name="colorOnBackground">#4A2418</item>
         <item name="colorSurface">#FFF1EC</item>
@@ -405,7 +405,7 @@
         <item name="colorPrimary">#8A5035</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorPrimaryContainer">#FFDBCD</item>
-        <item name="colorOnPrimaryContainer">#360F00</item>
+        <item name="colorOnPrimaryContainer">#713619</item>
         <item name="colorPrimaryInverse">#FFB595</item>
         <item name="colorPrimaryFixed">#FFDBCD</item>
         <item name="colorPrimaryFixedDim">#FFB595</item>
@@ -414,7 +414,7 @@
         <item name="colorSecondary">#77574A</item>
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorSecondaryContainer">#FFDBCD</item>
-        <item name="colorOnSecondaryContainer">#2C160C</item>
+        <item name="colorOnSecondaryContainer">#5D4034</item>
         <item name="colorSecondaryFixed">#FFDBCD</item>
         <item name="colorSecondaryFixedDim">#E6BEAD</item>
         <item name="colorOnSecondaryFixed">#2C160C</item>
@@ -422,7 +422,7 @@
         <item name="colorTertiary">#665F30</item>
         <item name="colorOnTertiary">#FFFFFF</item>
         <item name="colorTertiaryContainer">#EEE3A9</item>
-        <item name="colorOnTertiaryContainer">#201C00</item>
+        <item name="colorOnTertiaryContainer">#4E471B</item>
         <item name="colorTertiaryFixed">#EEE3A9</item>
         <item name="colorTertiaryFixedDim">#D2C78F</item>
         <item name="colorOnTertiaryFixed">#201C00</item>
@@ -430,7 +430,7 @@
         <item name="colorError">#BA1A1A</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorErrorContainer">#FFDAD6</item>
-        <item name="colorOnErrorContainer">#410002</item>
+        <item name="colorOnErrorContainer">#93000A</item>
         <item name="android:colorBackground">#F8F0E5</item>
         <item name="colorOnBackground">#4B382A</item>
         <item name="colorSurface">#F8F0E5</item>
@@ -455,7 +455,7 @@
         <item name="colorPrimary">#365F8C</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorPrimaryContainer">#D2E4FF</item>
-        <item name="colorOnPrimaryContainer">#001C37</item>
+        <item name="colorOnPrimaryContainer">#1B4975</item>
         <item name="colorPrimaryInverse">#A1C9FD</item>
         <item name="colorPrimaryFixed">#D2E4FF</item>
         <item name="colorPrimaryFixedDim">#A1C9FD</item>
@@ -464,7 +464,7 @@
         <item name="colorSecondary">#535F70</item>
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorSecondaryContainer">#D7E3F8</item>
-        <item name="colorOnSecondaryContainer">#101C2B</item>
+        <item name="colorOnSecondaryContainer">#3C4858</item>
         <item name="colorSecondaryFixed">#D7E3F8</item>
         <item name="colorSecondaryFixedDim">#BBC7DB</item>
         <item name="colorOnSecondaryFixed">#101C2B</item>
@@ -472,7 +472,7 @@
         <item name="colorTertiary">#6B5778</item>
         <item name="colorOnTertiary">#FFFFFF</item>
         <item name="colorTertiaryContainer">#F3DAFF</item>
-        <item name="colorOnTertiaryContainer">#251431</item>
+        <item name="colorOnTertiaryContainer">#533F5F</item>
         <item name="colorTertiaryFixed">#F3DAFF</item>
         <item name="colorTertiaryFixedDim">#D7BEE4</item>
         <item name="colorOnTertiaryFixed">#251431</item>
@@ -480,7 +480,7 @@
         <item name="colorError">#BA1A1A</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorErrorContainer">#FFDAD6</item>
-        <item name="colorOnErrorContainer">#410002</item>
+        <item name="colorOnErrorContainer">#93000A</item>
         <item name="android:colorBackground">#EDF3F9</item>
         <item name="colorOnBackground">#24394F</item>
         <item name="colorSurface">#EDF3F9</item>
@@ -655,7 +655,7 @@
         <item name="colorPrimary">#36618E</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorPrimaryContainer">#D1E4FF</item>
-        <item name="colorOnPrimaryContainer">#001D36</item>
+        <item name="colorOnPrimaryContainer">#194975</item>
         <item name="colorPrimaryInverse">#A0CAFD</item>
         <item name="colorPrimaryFixed">#D1E4FF</item>
         <item name="colorPrimaryFixedDim">#A0CAFD</item>
@@ -664,7 +664,7 @@
         <item name="colorSecondary">#535F70</item>
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorSecondaryContainer">#D7E3F7</item>
-        <item name="colorOnSecondaryContainer">#101C2B</item>
+        <item name="colorOnSecondaryContainer">#3B4858</item>
         <item name="colorSecondaryFixed">#D7E3F7</item>
         <item name="colorSecondaryFixedDim">#BBC7DB</item>
         <item name="colorOnSecondaryFixed">#101C2B</item>
@@ -672,7 +672,7 @@
         <item name="colorTertiary">#6B5778</item>
         <item name="colorOnTertiary">#FFFFFF</item>
         <item name="colorTertiaryContainer">#F2DAFF</item>
-        <item name="colorOnTertiaryContainer">#251431</item>
+        <item name="colorOnTertiaryContainer">#523F5F</item>
         <item name="colorTertiaryFixed">#F2DAFF</item>
         <item name="colorTertiaryFixedDim">#D6BEE4</item>
         <item name="colorOnTertiaryFixed">#251431</item>
@@ -680,7 +680,7 @@
         <item name="colorError">#BA1A1A</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorErrorContainer">#FFDAD6</item>
-        <item name="colorOnErrorContainer">#410002</item>
+        <item name="colorOnErrorContainer">#93000A</item>
         <item name="android:colorBackground">#F8F9FF</item>
         <item name="colorOnBackground">#191C20</item>
         <item name="colorSurface">#F8F9FF</item>
@@ -705,7 +705,7 @@
         <item name="colorPrimary">#904A41</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorPrimaryContainer">#FFDAD5</item>
-        <item name="colorOnPrimaryContainer">#3B0905</item>
+        <item name="colorOnPrimaryContainer">#73342B</item>
         <item name="colorPrimaryInverse">#FFB4A9</item>
         <item name="colorPrimaryFixed">#FFDAD5</item>
         <item name="colorPrimaryFixedDim">#FFB4A9</item>
@@ -714,7 +714,7 @@
         <item name="colorSecondary">#775652</item>
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorSecondaryContainer">#FFDAD5</item>
-        <item name="colorOnSecondaryContainer">#2C1512</item>
+        <item name="colorOnSecondaryContainer">#5D3F3B</item>
         <item name="colorSecondaryFixed">#FFDAD5</item>
         <item name="colorSecondaryFixedDim">#E7BDB7</item>
         <item name="colorOnSecondaryFixed">#2C1512</item>
@@ -722,7 +722,7 @@
         <item name="colorTertiary">#705C2E</item>
         <item name="colorOnTertiary">#FFFFFF</item>
         <item name="colorTertiaryContainer">#FCDFA6</item>
-        <item name="colorOnTertiaryContainer">#251A00</item>
+        <item name="colorOnTertiaryContainer">#574419</item>
         <item name="colorTertiaryFixed">#FCDFA6</item>
         <item name="colorTertiaryFixedDim">#DEC38C</item>
         <item name="colorOnTertiaryFixed">#251A00</item>
@@ -730,7 +730,7 @@
         <item name="colorError">#BA1A1A</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorErrorContainer">#FFDAD6</item>
-        <item name="colorOnErrorContainer">#410002</item>
+        <item name="colorOnErrorContainer">#93000A</item>
         <item name="android:colorBackground">#FFF8F7</item>
         <item name="colorOnBackground">#231918</item>
         <item name="colorSurface">#FFF8F7</item>
@@ -755,7 +755,7 @@
         <item name="colorPrimary">#7A590C</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorPrimaryContainer">#FFDEA6</item>
-        <item name="colorOnPrimaryContainer">#271900</item>
+        <item name="colorOnPrimaryContainer">#5D4200</item>
         <item name="colorPrimaryInverse">#ECC06C</item>
         <item name="colorPrimaryFixed">#FFDEA6</item>
         <item name="colorPrimaryFixedDim">#ECC06C</item>
@@ -764,7 +764,7 @@
         <item name="colorSecondary">#6C5C3F</item>
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorSecondaryContainer">#F6E0BB</item>
-        <item name="colorOnSecondaryContainer">#251A04</item>
+        <item name="colorOnSecondaryContainer">#53452A</item>
         <item name="colorSecondaryFixed">#F6E0BB</item>
         <item name="colorSecondaryFixedDim">#D9C4A0</item>
         <item name="colorOnSecondaryFixed">#251A04</item>
@@ -772,7 +772,7 @@
         <item name="colorTertiary">#4C6545</item>
         <item name="colorOnTertiary">#FFFFFF</item>
         <item name="colorTertiaryContainer">#CEEBC2</item>
-        <item name="colorOnTertiaryContainer">#0A2007</item>
+        <item name="colorOnTertiaryContainer">#354D2F</item>
         <item name="colorTertiaryFixed">#CEEBC2</item>
         <item name="colorTertiaryFixedDim">#B2CFA7</item>
         <item name="colorOnTertiaryFixed">#0A2007</item>
@@ -780,7 +780,7 @@
         <item name="colorError">#BA1A1A</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorErrorContainer">#FFDAD6</item>
-        <item name="colorOnErrorContainer">#410002</item>
+        <item name="colorOnErrorContainer">#93000A</item>
         <item name="android:colorBackground">#FFF8F3</item>
         <item name="colorOnBackground">#201B13</item>
         <item name="colorSurface">#FFF8F3</item>
@@ -805,7 +805,7 @@
         <item name="colorPrimary">#4A662D</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorPrimaryContainer">#CBEDA5</item>
-        <item name="colorOnPrimaryContainer">#0E2000</item>
+        <item name="colorOnPrimaryContainer">#334E17</item>
         <item name="colorPrimaryInverse">#B0D18B</item>
         <item name="colorPrimaryFixed">#CBEDA5</item>
         <item name="colorPrimaryFixedDim">#B0D18B</item>
@@ -814,7 +814,7 @@
         <item name="colorSecondary">#57624A</item>
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorSecondaryContainer">#DBE7C8</item>
-        <item name="colorOnSecondaryContainer">#151E0B</item>
+        <item name="colorOnSecondaryContainer">#404A34</item>
         <item name="colorSecondaryFixed">#DBE7C8</item>
         <item name="colorSecondaryFixedDim">#BFCBAD</item>
         <item name="colorOnSecondaryFixed">#151E0B</item>
@@ -822,7 +822,7 @@
         <item name="colorTertiary">#386664</item>
         <item name="colorOnTertiary">#FFFFFF</item>
         <item name="colorTertiaryContainer">#BBECE8</item>
-        <item name="colorOnTertiaryContainer">#00201F</item>
+        <item name="colorOnTertiaryContainer">#1F4E4C</item>
         <item name="colorTertiaryFixed">#BBECE8</item>
         <item name="colorTertiaryFixedDim">#A0CFCC</item>
         <item name="colorOnTertiaryFixed">#00201F</item>
@@ -830,7 +830,7 @@
         <item name="colorError">#BA1A1A</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorErrorContainer">#FFDAD6</item>
-        <item name="colorOnErrorContainer">#410002</item>
+        <item name="colorOnErrorContainer">#93000A</item>
         <item name="android:colorBackground">#F9FAEF</item>
         <item name="colorOnBackground">#1A1C16</item>
         <item name="colorSurface">#F9FAEF</item>
@@ -855,7 +855,7 @@
         <item name="colorPrimary">#8D4A5A</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorPrimaryContainer">#FFD9DF</item>
-        <item name="colorOnPrimaryContainer">#3A0718</item>
+        <item name="colorOnPrimaryContainer">#713343</item>
         <item name="colorPrimaryInverse">#FFB1C2</item>
         <item name="colorPrimaryFixed">#FFD9DF</item>
         <item name="colorPrimaryFixedDim">#FFB1C2</item>
@@ -864,7 +864,7 @@
         <item name="colorSecondary">#75565C</item>
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorSecondaryContainer">#FFD9DF</item>
-        <item name="colorOnSecondaryContainer">#2B151A</item>
+        <item name="colorOnSecondaryContainer">#5B3F45</item>
         <item name="colorSecondaryFixed">#FFD9DF</item>
         <item name="colorSecondaryFixedDim">#E4BDC3</item>
         <item name="colorOnSecondaryFixed">#2B151A</item>
@@ -872,7 +872,7 @@
         <item name="colorTertiary">#7A5733</item>
         <item name="colorOnTertiary">#FFFFFF</item>
         <item name="colorTertiaryContainer">#FFDCBD</item>
-        <item name="colorOnTertiaryContainer">#2C1600</item>
+        <item name="colorOnTertiaryContainer">#60401D</item>
         <item name="colorTertiaryFixed">#FFDCBD</item>
         <item name="colorTertiaryFixedDim">#ECBE91</item>
         <item name="colorOnTertiaryFixed">#2C1600</item>
@@ -880,7 +880,7 @@
         <item name="colorError">#BA1A1A</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorErrorContainer">#FFDAD6</item>
-        <item name="colorOnErrorContainer">#410002</item>
+        <item name="colorOnErrorContainer">#93000A</item>
         <item name="android:colorBackground">#FFF8F7</item>
         <item name="colorOnBackground">#22191B</item>
         <item name="colorSurface">#FFF8F7</item>
@@ -905,7 +905,7 @@
         <item name="colorPrimary">#895020</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorPrimaryContainer">#FFDCC4</item>
-        <item name="colorOnPrimaryContainer">#2F1400</item>
+        <item name="colorOnPrimaryContainer">#6D3A09</item>
         <item name="colorPrimaryInverse">#FFB781</item>
         <item name="colorPrimaryFixed">#FFDCC4</item>
         <item name="colorPrimaryFixedDim">#FFB781</item>
@@ -914,7 +914,7 @@
         <item name="colorSecondary">#745945</item>
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorSecondaryContainer">#FFDCC4</item>
-        <item name="colorOnSecondaryContainer">#2A1707</item>
+        <item name="colorOnSecondaryContainer">#5B412F</item>
         <item name="colorSecondaryFixed">#FFDCC4</item>
         <item name="colorSecondaryFixedDim">#E4BFA7</item>
         <item name="colorOnSecondaryFixed">#2A1707</item>
@@ -922,7 +922,7 @@
         <item name="colorTertiary">#5D6136</item>
         <item name="colorOnTertiary">#FFFFFF</item>
         <item name="colorTertiaryContainer">#E3E7AF</item>
-        <item name="colorOnTertiaryContainer">#1A1D00</item>
+        <item name="colorOnTertiaryContainer">#464A20</item>
         <item name="colorTertiaryFixed">#E3E7AF</item>
         <item name="colorTertiaryFixedDim">#C6CA95</item>
         <item name="colorOnTertiaryFixed">#1A1D00</item>
@@ -930,7 +930,7 @@
         <item name="colorError">#BA1A1A</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorErrorContainer">#FFDAD6</item>
-        <item name="colorOnErrorContainer">#410002</item>
+        <item name="colorOnErrorContainer">#93000A</item>
         <item name="android:colorBackground">#FFF8F5</item>
         <item name="colorOnBackground">#221A14</item>
         <item name="colorSurface">#FFF8F5</item>
@@ -955,7 +955,7 @@
         <item name="colorPrimary">#68548E</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorPrimaryContainer">#EBDDFF</item>
-        <item name="colorOnPrimaryContainer">#230F46</item>
+        <item name="colorOnPrimaryContainer">#4F3D74</item>
         <item name="colorPrimaryInverse">#D2BCFD</item>
         <item name="colorPrimaryFixed">#EBDDFF</item>
         <item name="colorPrimaryFixedDim">#D2BCFD</item>
@@ -964,7 +964,7 @@
         <item name="colorSecondary">#635B70</item>
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorSecondaryContainer">#E9DEF8</item>
-        <item name="colorOnSecondaryContainer">#1F182B</item>
+        <item name="colorOnSecondaryContainer">#4B4358</item>
         <item name="colorSecondaryFixed">#E9DEF8</item>
         <item name="colorSecondaryFixedDim">#CDC2DB</item>
         <item name="colorOnSecondaryFixed">#1F182B</item>
@@ -972,7 +972,7 @@
         <item name="colorTertiary">#7E525E</item>
         <item name="colorOnTertiary">#FFFFFF</item>
         <item name="colorTertiaryContainer">#FFD9E1</item>
-        <item name="colorOnTertiaryContainer">#31101B</item>
+        <item name="colorOnTertiaryContainer">#643B46</item>
         <item name="colorTertiaryFixed">#FFD9E1</item>
         <item name="colorTertiaryFixedDim">#F0B7C5</item>
         <item name="colorOnTertiaryFixed">#31101B</item>
@@ -980,7 +980,7 @@
         <item name="colorError">#BA1A1A</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorErrorContainer">#FFDAD6</item>
-        <item name="colorOnErrorContainer">#410002</item>
+        <item name="colorOnErrorContainer">#93000A</item>
         <item name="android:colorBackground">#FEF7FF</item>
         <item name="colorOnBackground">#1D1B20</item>
         <item name="colorSurface">#FEF7FF</item>
@@ -1005,7 +1005,7 @@
         <item name="colorPrimary">#006B5F</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorPrimaryContainer">#9EF2E3</item>
-        <item name="colorOnPrimaryContainer">#00201C</item>
+        <item name="colorOnPrimaryContainer">#005048</item>
         <item name="colorPrimaryInverse">#82D5C7</item>
         <item name="colorPrimaryFixed">#9EF2E3</item>
         <item name="colorPrimaryFixedDim">#82D5C7</item>
@@ -1014,7 +1014,7 @@
         <item name="colorSecondary">#4A635E</item>
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorSecondaryContainer">#CCE8E2</item>
-        <item name="colorOnSecondaryContainer">#06201C</item>
+        <item name="colorOnSecondaryContainer">#334B47</item>
         <item name="colorSecondaryFixed">#CCE8E2</item>
         <item name="colorSecondaryFixedDim">#B1CCC6</item>
         <item name="colorOnSecondaryFixed">#06201C</item>
@@ -1022,7 +1022,7 @@
         <item name="colorTertiary">#456179</item>
         <item name="colorOnTertiary">#FFFFFF</item>
         <item name="colorTertiaryContainer">#CBE6FF</item>
-        <item name="colorOnTertiaryContainer">#001E31</item>
+        <item name="colorOnTertiaryContainer">#2D4A60</item>
         <item name="colorTertiaryFixed">#CBE6FF</item>
         <item name="colorTertiaryFixedDim">#ADCAE5</item>
         <item name="colorOnTertiaryFixed">#001E31</item>
@@ -1030,7 +1030,7 @@
         <item name="colorError">#BA1A1A</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorErrorContainer">#FFDAD6</item>
-        <item name="colorOnErrorContainer">#410002</item>
+        <item name="colorOnErrorContainer">#93000A</item>
         <item name="android:colorBackground">#F4FBF8</item>
         <item name="colorOnBackground">#161D1B</item>
         <item name="colorSurface">#F4FBF8</item>

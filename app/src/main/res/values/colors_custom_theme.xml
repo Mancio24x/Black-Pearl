@@ -4,7 +4,7 @@
     <color name="bp_custom_colorPrimary">#8E2F25</color>
     <color name="bp_custom_colorOnPrimary">#FFFFFF</color>
     <color name="bp_custom_colorPrimaryContainer">#FFDAD5</color>
-    <color name="bp_custom_colorOnPrimaryContainer">#3B0906</color>
+    <color name="bp_custom_colorOnPrimaryContainer">#73342C</color>
     <color name="bp_custom_colorPrimaryInverse">#FFB4A9</color>
     <color name="bp_custom_colorPrimaryFixed">#FFDAD5</color>
     <color name="bp_custom_colorPrimaryFixedDim">#FFB4A9</color>
@@ -13,7 +13,7 @@
     <color name="bp_custom_colorSecondary">#775652</color>
     <color name="bp_custom_colorOnSecondary">#FFFFFF</color>
     <color name="bp_custom_colorSecondaryContainer">#FFDAD5</color>
-    <color name="bp_custom_colorOnSecondaryContainer">#2C1512</color>
+    <color name="bp_custom_colorOnSecondaryContainer">#5D3F3B</color>
     <color name="bp_custom_colorSecondaryFixed">#FFDAD5</color>
     <color name="bp_custom_colorSecondaryFixedDim">#E7BDB7</color>
     <color name="bp_custom_colorOnSecondaryFixed">#2C1512</color>
@@ -21,7 +21,7 @@
     <color name="bp_custom_colorTertiary">#705C2E</color>
     <color name="bp_custom_colorOnTertiary">#FFFFFF</color>
     <color name="bp_custom_colorTertiaryContainer">#FCDFA6</color>
-    <color name="bp_custom_colorOnTertiaryContainer">#251A00</color>
+    <color name="bp_custom_colorOnTertiaryContainer">#574419</color>
     <color name="bp_custom_colorTertiaryFixed">#FCDFA6</color>
     <color name="bp_custom_colorTertiaryFixedDim">#DFC38C</color>
     <color name="bp_custom_colorOnTertiaryFixed">#251A00</color>
@@ -29,7 +29,7 @@
     <color name="bp_custom_colorError">#BA1A1A</color>
     <color name="bp_custom_colorOnError">#FFFFFF</color>
     <color name="bp_custom_colorErrorContainer">#FFDAD6</color>
-    <color name="bp_custom_colorOnErrorContainer">#410002</color>
+    <color name="bp_custom_colorOnErrorContainer">#93000A</color>
     <color name="bp_custom_colorBackground">#F4ECDD</color>
     <color name="bp_custom_colorOnBackground">#231F16</color>
     <color name="bp_custom_colorSurface">#F4ECDD</color>

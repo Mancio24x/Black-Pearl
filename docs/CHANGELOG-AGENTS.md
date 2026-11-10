@@ -139,3 +139,12 @@ Append one short entry per significant task: files, decisions, tests (with resul
   screen state is already saved (`isStateSaved`); 4 unused size strings removed.
 - Lint errors left: upstream only (MissingTranslation in `values/strings.xml`, MissingQuantity cs/ro,
   FragmentLiveDataObserve false positive).
+
+## 2026-11-10 — Dependency updates (branch chore/dependency-updates)
+- Applied Dependabot #1–#4 (GitHub Actions: setup-java 6, checkout 7, action-gh-release 3, upload-artifact 7) and
+  #6–#10 (AndroidX group incl. Room 2.8.5 / Navigation 2.10.2 / Compose BOM 2026.09, coroutines 1.11, Material 1.14,
+  KSP 2.3.13, OkHttp 5.5.1). Not applied: #5 (gradle/actions 6 fails: configuration-cache error in compileDebugKotlin).
+- `androidx.documentfile` declared explicitly (sync with a folder used it, it was only a transitive dependency).
+- Material 1.14 still has the package-private `ResourcesLoaderUtils.addResourcesLoaderToContext` used by My theme.
+- Palettes regenerated with Material 1.14: only light-mode `colorOn*Container` changed (newer M3 spec, tone 30
+  instead of 10); lowest container contrast 4.67 (AA). 136 unit tests, release build with R8 OK.

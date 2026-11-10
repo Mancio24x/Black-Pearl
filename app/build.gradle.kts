@@ -176,6 +176,8 @@ dependencies {
     // App lock: biometric prompt, and app-in-background detection
     implementation(libs.biometric)
     implementation(libs.lifecycleProcess)
+    // Sync with a phone folder (StorageBackend): was only pulled in by older AndroidX libraries
+    implementation(libs.documentfile)
 
     // Test
     testImplementation(libs.junit)
