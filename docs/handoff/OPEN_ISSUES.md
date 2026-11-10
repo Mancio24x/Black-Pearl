@@ -1,4 +1,4 @@
-# Open issues and unverified points (2026-11-10)
+# Open issues and unverified points (updated 2026-11-10, v0.6.0)
 
 ## Not verified
 
@@ -9,6 +9,11 @@
 
 ## Known limits
 
+- App lock: the home-screen widget and reminder notifications still show notes while locked; the database is not
+  encrypted (the lock protects the screens). Biometric unlock never ran in CI (no sensor on the emulator).
+- App lock with timeout "At once": coming back from the camera / file picker / share sheet asks for the PIN again
+  (expected; the default is 1 minute).
+
 - Moving a picture by drag maps rendered lines to source lines; around fenced code blocks and tables the drop can be
   one line off (it always moves in the right direction). See `ui/editor/markdown/ImageGestures.kt`.
 - The `ImageClickSpan` "standalone" rule and `ImageBlocks.blocks` can disagree for pictures inside list items
@@ -17,7 +22,8 @@
 - `scripts/capture-ui.sh` fails to tap the "#0E1720" preset in the My theme editor (screenshots still useful);
   device tests cover dark My theme.
 - Simple list sheets still in use: `TagsFragment`, `ManageNotebooksFragment`, reminders, attachments, Export, Scan
-  text use `BottomSheet` (M3 look, plain list layout; its background crash is fixed by #25).
+  text use `BottomSheet` (M3 look, plain list layout). Inside its action lambdas `requireContext()` etc. are the
+  sheet's: call a function of the screen for anything asynchronous (#27).
 
 ## Leftovers from Quillpad
 

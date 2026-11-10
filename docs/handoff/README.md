@@ -1,8 +1,8 @@
-# Handoff — start here (written 2026-11-10)
+# Handoff — start here (updated 2026-11-10, after release 0.6.0)
 
 For the next coding agent. Read this folder after `AGENTS.md` and `docs/CODEMAP.md`.
-Files: this README (state + next steps), `APP_LOCK_PLAN.md` (next feature, designed, not started),
-`RELEASE.md` (how to publish), `ENVIRONMENT.md` (tools, CI, gotchas), `OPEN_ISSUES.md` (known limits).
+Files: this README (state + next steps), `APP_LOCK_PLAN.md` (design of the app lock, now implemented — kept as
+background), `RELEASE.md` (how to publish), `ENVIRONMENT.md` (tools, CI, gotchas), `OPEN_ISSUES.md` (known limits).
 
 ## The owner
 
@@ -12,31 +12,33 @@ Files: this README (state + next steps), `APP_LOCK_PLAN.md` (next feature, desig
   (see `RELEASE.md`). Do not publish without his request.
 - He likes: Material 3, rounded UI, few and simple menu items, things tested on the emulator with screenshots.
 
-## Where things are (2026-11-10)
+## Where things are
 
-- Latest release: **v0.5.0** (versionCode 500): notes list "Soft" (1A), import from other apps, My theme fixes,
-  simpler M3 menus/sheets, move/resize pictures by hand. `main` is one commit ahead (#25, Save PDF crash fix).
-- The owner reported on 0.5.0: "Esporta / Condividi PDF crasha" → #25 + #27.
-- Unit tests: 128 (`./gradlew testDebugUnitTest`). Device tests: 36 (run in CI, see `ENVIRONMENT.md`).
+- `main` = **v0.6.0** (published, latest, versionCode 600). Since 0.5.0 it added:
+  - #25 + #27: crash on Export → Save PDF / Share PDF fixed (old `BottomSheet` kept lambdas in saved arguments;
+    the share action used the closed sheet's context). The UI preview job now fails on any `FATAL EXCEPTION`.
+  - #28: in a note, the options sheet opens from a round **+** FAB at the bottom left (mirror of the edit FAB);
+    the "⋮" toolbar item is only shown for notes in the bin. Review fixes (scroll padding, API 30 check for
+    My theme, picture "100 %" = full width, sheets not shown after state is saved).
+  - #29: **app lock** (PIN 4–6 digits, fingerprint / face / phone screen lock, lock after 0/1/5/15 min) —
+    see CODEMAP row "App lock" and DECISIONS #21.
+- Unit tests: 136 (`./gradlew testDebugUnitTest`). Device tests: 37 (run in CI, see `ENVIRONMENT.md`).
 
 ## Open pull requests
 
-| PR | What | State | Next step |
-|---|---|---|---|
-| #25 `fix/pdf-export-crash` | Crash on "Save PDF" (old `BottomSheet` saved its actions when the app went to the background) | **Merged** into `main` (not released yet). Emulator log confirmed Save PDF no longer crashes | — |
-| **#27** `fix/pdf-share-crash` | "Share PDF" still crashed for a second reason (`requireContext()` inside the sheet action = the closed sheet: "Fragment BottomSheet not attached to a context"); also makes the UI preview job fail on any `FATAL EXCEPTION` | Fix pushed, unit tests OK; CI emulator run was in progress | Check `gh pr checks 27 --repo Mancio24x/Black-Pearl` (the job itself now fails on a crash) and the `pdf-share*` screenshots. Then ask the owner to merge and offer release **0.5.1** (contains #25 + #27) |
-| #26 `docs/handoff` | This folder | Open, docs only | Owner merges when he wants |
-| #1–#10 | Dependabot updates | Untouched | Not requested. Careful with **#8 (Material 1.12 → 1.14)**: `com/google/android/material/color/BlackPearlColorResources.kt` calls Material's package-private `ResourcesLoaderUtils`; check it still exists, run the device tests (`CustomThemeTest`, `CustomThemeActivityTest`) and `tools/palette-gen` (pinned to 1.12) |
+| PR | What | Next step |
+|---|---|---|
+| #26 `docs/handoff` | This folder | Owner merges when he wants |
+| #1–#10 | Dependabot updates, untouched | Not requested. Careful with **#8 (Material 1.12 → 1.14)**: `com/google/android/material/color/BlackPearlColorResources.kt` calls Material's package-private `ResourcesLoaderUtils`; check it still exists, run the device tests (`CustomThemeTest`, `CustomThemeActivityTest`) and `tools/palette-gen` (pinned to 1.12) |
 
-## Next work, in order
+## Next work
 
-1. **Finish #27** (above), then release 0.5.1 if the owner asks.
-2. **App lock** — requested by the owner: lock the app with biometrics or a 4–6 digit PIN. Fully designed in
-   `APP_LOCK_PLAN.md`; nothing written yet (no branch). Start a branch `feature/app-lock` from updated `main`.
-3. Release after each merged feature when the owner asks ("pubblica").
-
-Smaller leftovers (not requested now): fastlane store texts and the notification icon are still Quillpad's;
-release v0.1.0 is an old unpublished draft (leave it).
+Nothing requested is pending. Ask the owner; useful candidates:
+1. **Check 0.6.0 on his phone**: fingerprint unlock (the CI emulator has no sensor, so it was never exercised),
+   Export / Share PDF, moving pictures.
+2. App lock follow-up: hide note content in the home-screen widget and reminder notifications while locked.
+3. Smaller leftovers: fastlane store texts and the notification icon are still Quillpad's; release v0.1.0 is an
+   old unpublished draft (leave it).
 
 ## How work is done here (summary of AGENTS.md + what proved useful)
 

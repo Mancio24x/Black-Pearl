@@ -1,4 +1,8 @@
-# App lock — plan (not started)
+# App lock — design (implemented in #29, released in 0.6.0)
+
+> Kept as background. What was built follows this plan; differences: settings are stored as `app_lock_pin`
+> (hash) + `app_lock_pin_length` + `app_lock_biometric` + `app_lock_timeout_minutes` (an int, not an enum),
+> and the lock is enabled when a PIN hash exists. Code: `ui/lock/*`, `ui/BaseActivity.kt`, `App.kt`.
 
 Owner's request (Italian): "aggiungi la possibilità di bloccare l'app con dati biometrici o pin di 4-6 cifre".
 What was proposed to him (he did not object): Settings → **Blocco app**; PIN of 4–6 digits entered twice;
