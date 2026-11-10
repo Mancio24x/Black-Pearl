@@ -11,7 +11,7 @@ Black Pearl is an Android note-taking app, a GPL-3.0 fork of [Quillpad](https://
 
 ## Where to look (read in this order, stop as soon as you know enough)
 
-1. This file.
+1. This file, then `docs/handoff/README.md` (current state, open PRs, next task) if it exists.
 2. `docs/CODEMAP.md` — feature → file paths. **Start every task here.**
 3. Only the files CODEMAP points to.
 4. `docs/ARCHITECTURE.md` / `docs/DECISIONS.md` only when changing structure, data model, sync or backup.
