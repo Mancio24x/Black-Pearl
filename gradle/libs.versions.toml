@@ -28,6 +28,7 @@ kotlin = "2.2.10"
 kotlinSerialization = "2.2.0"
 kotlinSerializationJson = "1.9.0"
 jsoup = "1.21.1"
+biometric = "1.1.0"
 kotlinxCoroutines = "1.10.2"
 ksp = "2.3.6"
 leakcanaryAndroid = "2.14"
@@ -109,6 +110,8 @@ lifecycleCommonJava8 = { module = "androidx.lifecycle:lifecycle-common-java8", v
 lifecycleLiveDataKtx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
 lifecycleRuntimeKtx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 lifecycleService = { module = "androidx.lifecycle:lifecycle-service", version.ref = "lifecycle" }
+lifecycleProcess = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycle" }
+biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
 lifecycleViewModelKtx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 markwon = { module = "io.noties.markwon:core", version.ref = "markwon" }
 markwonEditor = { module = "io.noties.markwon:editor", version.ref = "markwon" }
