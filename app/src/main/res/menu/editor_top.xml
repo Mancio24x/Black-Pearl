@@ -9,38 +9,30 @@
         android:icon="@drawable/ic_show"
         android:title="@string/action_change_mode"
         android:visible="false"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
     <item
             android:id="@+id/action_pin_note"
             android:icon="@drawable/ic_pin"
             android:title="@string/action_pin"
             android:visible="false"
-            app:showAsAction="ifRoom"/>
+            app:showAsAction="always"/>
     <item
             android:id="@+id/action_view_reminders"
             android:icon="@drawable/ic_bell"
             android:title="@string/reminders"
             android:visible="false"
-            app:showAsAction="ifRoom"/>
+            app:showAsAction="always"/>
     <item
             android:id="@+id/action_restore_note"
             android:title="@string/action_restore"
             android:icon="@drawable/ic_restore"
             android:visible="false"
-            app:showAsAction="ifRoom"/>
+            app:showAsAction="always"/>
     <!-- Black Pearl design 2: round button with the note colour (icon set in EditorFragment.setupMenuItems) -->
     <item
             android:id="@+id/action_change_color"
             android:icon="@drawable/ic_color"
             android:title="@string/sheet_color"
-            android:visible="false"
-            app:showAsAction="always"/>
-    <!-- Black Pearl: every other note action is in one sheet (NoteOptionsSheet), opened from here (design 2) and from
-         the "+" button at the bottom left. -->
-    <item
-            android:id="@+id/action_note_options"
-            android:icon="@drawable/ic_more_vert"
-            android:title="@string/sheet_note_options"
             android:visible="false"
             app:showAsAction="always"/>
 </menu>

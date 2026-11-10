@@ -381,6 +381,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
             updateEditMode(!model.inEditMode)
             if (model.inEditMode) requestFocusForFields(true) else view.hideKeyboard()
         }
+        // Note options stay reachable through the bottom-left "+", including in the bin.
         binding.fabNoteOptions.setOnClickListener { showNoteOptions() }
     }
 
@@ -396,7 +397,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_note_options) showNoteOptions() else runNoteAction(item.itemId)
+        runNoteAction(item.itemId)
         return super.onOptionsItemSelected(item)
     }
 
@@ -969,8 +970,6 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
     private fun setupMenuItems(note: Note, hasReminders: Boolean) = mainMenu?.run {
         findItem(R.id.action_restore_note)?.isVisible = note.isDeleted
-        // Black Pearl design 2: "more" (note options) is always in the header, next to the note colour dot
-        findItem(R.id.action_note_options)?.isVisible = true
         findItem(R.id.action_change_color)?.apply {
             isVisible = !note.isDeleted
             icon = noteColorDot(note)
@@ -1484,10 +1483,6 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         }
 
         fabChangeMode.setImageResource(if (model.inEditMode) R.drawable.ic_show else R.drawable.ic_pencil)
-        // "+" (note options) at the bottom left; a note in the bin uses the toolbar instead
-        if (fabNoteOptions.isVisible == isNoteDeleted) {
-            if (isNoteDeleted) fabNoteOptions.hide() else fabNoteOptions.show()
-        }
         setMarkdownToolbarVisibility(note)
     }
 

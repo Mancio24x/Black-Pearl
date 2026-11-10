@@ -192,3 +192,13 @@ Append one short entry per significant task: files, decisions, tests (with resul
 - Tests: new `ToggleBulletTest`; `./gradlew testDebugUnitTest` + `assembleDebug` (see PR). No emulator on the Mac:
   look checked only on the CI "UI preview" screenshots.
 - Open: with design 2 the "+" FAB and the header "more" open the same sheet (owner may want only one).
+
+## 2026-11-10 — Remove redundant note menus; omit the checklist widget (PR #34)
+- Rebased the final file tree on current main (`277db9fe`), preserving the design-2 editor and sample note.
+  The proposed checklist widget and its provider/service/test/resources are excluded at the owner's request.
+- `editor_top.xml`: remove the duplicate three-dot options entry and keep the remaining actions as direct icons.
+  `EditorFragment.kt`: note options use the bottom-left "+", also in the bin (restore/permanent delete stay reachable).
+  `CODEMAP.md` updated. Existing pinned-notes widget unchanged.
+- Validation: 143 unit tests passed; `assembleDebug` passed; XML/widget-absence checks and `git diff --check` passed.
+  `lintDebug` failed with 243 pre-existing errors in unchanged files (FragmentLiveDataObserve, MissingQuantity,
+  MissingTranslation); no errors in either edited application file. Lint is report-only in CI. Device checks run in CI.
