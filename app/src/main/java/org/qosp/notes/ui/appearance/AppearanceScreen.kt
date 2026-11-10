@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -179,7 +180,7 @@ private fun <T> ChoiceRow(title: String, options: List<T>, selected: T, onPick: 
     }
 }
 
-/** Ready-made theme: a small picture of the app in its colors, name and description. */
+/** Ready-made theme: a small picture of the app in its colors (search bar, two notes, + button), name and description. */
 @Composable
 private fun ThemeCard(item: ColorScheme, s: ThemeSwatch, selected: Boolean, modifier: Modifier, onClick: () -> Unit) {
     val scheme = MaterialTheme.colorScheme
@@ -188,25 +189,64 @@ private fun ThemeCard(item: ColorScheme, s: ThemeSwatch, selected: Boolean, modi
         onClick = onClick,
         modifier = modifier.semantics { contentDescription = name; this.selected = selected; role = Role.RadioButton },
         shape = RoundedCornerShape(24.dp),
-        color = scheme.surfaceContainerLow,
+        color = if (selected) scheme.secondaryContainer else scheme.surfaceContainerLow,
         border = BorderStroke(if (selected) 2.dp else 1.dp, if (selected) scheme.primary else scheme.outlineVariant),
     ) {
         Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Box(Modifier.fillMaxWidth().height(84.dp).clip(RoundedCornerShape(18.dp)).background(s.paper)) {
-                Box(Modifier.padding(start = 10.dp, top = 10.dp, end = 34.dp).fillMaxWidth().height(36.dp).clip(RoundedCornerShape(12.dp)).background(s.surface)) {
-                    Box(Modifier.padding(10.dp).width(54.dp).height(7.dp).clip(RoundedCornerShape(4.dp)).background(s.ink))
-                    Box(Modifier.padding(start = 10.dp, top = 22.dp).width(36.dp).height(5.dp).clip(RoundedCornerShape(3.dp)).background(s.muted))
-                }
-                Box(Modifier.align(Alignment.BottomEnd).padding(10.dp).size(26.dp).clip(CircleShape).background(s.accent))
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(name, Modifier.weight(1f).padding(start = 4.dp), style = MaterialTheme.typography.titleSmall, maxLines = 1)
-                if (selected) Box(Modifier.size(10.dp).clip(CircleShape).background(scheme.primary))
-            }
+            ThemePreview(s, selected)
+            Text(name, Modifier.padding(start = 4.dp), style = MaterialTheme.typography.titleSmall, maxLines = 1)
             Text(
                 stringResource(item.descriptionResource), Modifier.padding(start = 4.dp, bottom = 4.dp),
                 style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant, maxLines = 2,
             )
+        }
+    }
+}
+
+@Composable
+private fun ThemePreview(s: ThemeSwatch, selected: Boolean) {
+    val line = s.muted.copy(alpha = 0.55f)
+    Box(Modifier.fillMaxWidth().height(100.dp).clip(RoundedCornerShape(18.dp)).background(s.paper)) {
+        Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            // search bar
+            Row(
+                Modifier.fillMaxWidth().height(14.dp).clip(RoundedCornerShape(7.dp)).background(s.surface).padding(horizontal = 5.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box(Modifier.size(5.dp).clip(CircleShape).background(s.muted))
+                Spacer(Modifier.width(4.dp))
+                Box(Modifier.width(28.dp).height(3.dp).clip(RoundedCornerShape(2.dp)).background(line))
+            }
+            // two note cards
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                listOf(true, false).forEach { first ->
+                    Column(
+                        Modifier.weight(1f).height(56.dp).clip(RoundedCornerShape(10.dp)).background(s.surface).padding(6.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        Box(Modifier.fillMaxWidth(if (first) 0.8f else 0.6f).height(5.dp).clip(RoundedCornerShape(3.dp)).background(s.ink))
+                        Box(Modifier.fillMaxWidth().height(3.dp).clip(RoundedCornerShape(2.dp)).background(line))
+                        Box(Modifier.fillMaxWidth(0.7f).height(3.dp).clip(RoundedCornerShape(2.dp)).background(line))
+                        if (first) Box(Modifier.width(22.dp).height(7.dp).clip(RoundedCornerShape(4.dp)).background(s.accent.copy(alpha = 0.22f)))
+                    }
+                }
+            }
+        }
+        // the "+" button in the accent color
+        Box(
+            Modifier.align(Alignment.BottomEnd).padding(6.dp).size(24.dp).clip(RoundedCornerShape(8.dp)).background(s.accent),
+            contentAlignment = Alignment.Center,
+        ) {
+            val plus = if (s.accent.luminance() < 0.45f) Color.White else s.ink
+            Box(Modifier.width(10.dp).height(2.dp).background(plus))
+            Box(Modifier.width(2.dp).height(10.dp).background(plus))
+        }
+        if (selected) {
+            Box(
+                Modifier.align(Alignment.TopEnd).padding(4.dp).size(20.dp).clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary).border(2.dp, s.paper, CircleShape),
+                contentAlignment = Alignment.Center,
+            ) { Text("✓", color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.labelSmall) }
         }
     }
 }

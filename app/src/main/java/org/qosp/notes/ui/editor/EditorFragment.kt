@@ -97,6 +97,9 @@ import org.qosp.notes.ui.editor.dialog.InsertHyperlinkDialog
 import org.qosp.notes.ui.editor.dialog.InsertImageDialog
 import org.qosp.notes.ui.editor.dialog.InsertTableDialog
 import org.qosp.notes.ui.editor.markdown.MarkdownSpan
+import org.qosp.notes.ui.editor.markdown.TaskBoxColors
+import org.qosp.notes.ui.editor.markdown.TaskBoxTextWatcher
+import org.qosp.notes.ui.editor.markdown.enableTaskBoxTaps
 import org.qosp.notes.ui.editor.markdown.applyTo
 import org.qosp.notes.ui.editor.markdown.ImageBlocks
 import org.qosp.notes.ui.editor.markdown.ImageGestures
@@ -1181,9 +1184,46 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     }
 
     private fun setupListeners() = with(binding) {
-        bottomToolbar.setOnMenuItemClickListener {
+        bottomToolbar.setOnMenuItemClickListener { onFormatAction(it.itemId) }
 
-            val span = when (it.itemId) {
+        notebookView.setOnClickListener {
+            data.note?.let { showMoveToNotebookDialog(it) }
+        }
+
+        actionAddTask.setOnClickListener {
+            // Always add new tasks at the top (position 0)
+            addTask(0)
+        }
+    }
+
+    /** Black Pearl: the formatting actions that do not fit in the pill, with plain names. */
+    private fun showMoreFormattingSheet() {
+        BottomSheet.show(getString(R.string.fmt_more), parentFragmentManager) {
+            val canRedo = binding.bottomToolbar.menu?.findItem(R.id.action_redo)?.isEnabled == true
+            listOf(
+                R.id.action_scan_text to (R.string.ocr_scan_text to R.drawable.ic_scan_text),
+                R.id.action_insert_strikethrough to (R.string.fmt_strikethrough to R.drawable.ic_strikethrough),
+                R.id.action_insert_highlight to (R.string.fmt_highlight to R.drawable.ic_highlight),
+                R.id.action_insert_quote to (R.string.fmt_quote to R.drawable.ic_quote),
+                R.id.action_insert_link to (R.string.fmt_link to R.drawable.ic_link),
+                R.id.action_insert_table to (R.string.fmt_table to R.drawable.ic_table),
+                R.id.action_insert_code to (R.string.fmt_code to R.drawable.ic_code),
+                R.id.action_redo to (R.string.fmt_redo to R.drawable.ic_redo),
+                R.id.action_scroll_to_top to (R.string.fmt_top to R.drawable.ic_up),
+                R.id.action_scroll_to_bottom to (R.string.fmt_bottom to R.drawable.ic_down),
+            ).forEach { (id, label) ->
+                action(label.first, label.second, condition = id != R.id.action_redo || canRedo) {
+                    // the sheet closes first; then the text field gets the change
+                    val root = this@EditorFragment.view ?: return@action
+                    root.post { if (this@EditorFragment.view === root) onFormatAction(id) }
+                }
+            }
+        }
+    }
+
+    private fun onFormatAction(itemId: Int): Boolean = with(binding) {
+        run {
+            val span = when (itemId) {
                 R.id.action_insert_bold -> MarkdownSpan.BOLD
                 R.id.action_insert_italics -> MarkdownSpan.ITALICS
                 R.id.action_insert_strikethrough -> MarkdownSpan.STRIKETHROUGH
@@ -1228,6 +1268,11 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                     null
                 }
 
+                R.id.action_more_formatting -> {
+                    showMoreFormattingSheet()
+                    null
+                }
+
                 R.id.action_scroll_to_top -> {
                     scrollView.smoothScrollTo(0, 0)
                     editTextContent.setSelection(0)
@@ -1253,27 +1298,29 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                     null
                 }
 
-                else -> return@setOnMenuItemClickListener false
+                else -> return@run false
             }
-            editTextContent.insertMarkdown(span ?: return@setOnMenuItemClickListener false)
+            editTextContent.insertMarkdown(span ?: return@run false)
             true
-        }
-
-        notebookView.setOnClickListener {
-            data.note?.let { showMoveToNotebookDialog(it) }
-        }
-
-        actionAddTask.setOnClickListener {
-            // Always add new tasks at the top (position 0)
-            addTask(0)
         }
     }
 
     private fun setupMarkdown() {
-        markwonTextWatcher = MarkwonEditorTextWatcher.withPreRender(
-            markwonEditor, Executors.newCachedThreadPool(),
-            binding.editTextContent
-        )
+        val content = binding.editTextContent
+        // Black Pearl: "- [ ]" / "- [x]" are drawn as tappable squares while Markdown is on
+        val boxColors by lazy {
+            fun c(attr: Int) = MaterialColors.getColor(content, attr)
+            TaskBoxColors(
+                outline = c(R.attr.colorOnSurfaceVariant),
+                fill = c(R.attr.colorPrimary),
+                check = c(R.attr.colorOnPrimary),
+                doneText = c(R.attr.colorOnSurfaceVariant),
+            )
+        }
+        markwonTextWatcher = TaskBoxTextWatcher(
+            MarkwonEditorTextWatcher.withPreRender(markwonEditor, Executors.newCachedThreadPool(), content)
+        ) { boxColors }
+        content.enableTaskBoxTaps { content.isMarkdownEnabled }
     }
 
     private fun enableMarkdownTextWatcher() = with(binding) {

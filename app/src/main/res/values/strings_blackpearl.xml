@@ -69,7 +69,14 @@
     <string name="theme_desc_night_violet">Dark · lavender and indigo</string>
     <string name="theme_desc_system">Colors from your wallpaper</string>
     <string name="theme_desc_custom">You choose background, cards and accent</string>
-    <string name="theme_desc_vivid">Generated Material colors</string>
+    <string name="theme_desc_blue">Bright · sky and cobalt</string>
+    <string name="theme_desc_red">Bright · cherry and blush</string>
+    <string name="theme_desc_yellow">Bright · sunflower and honey</string>
+    <string name="theme_desc_green">Bright · meadow and leaf</string>
+    <string name="theme_desc_pink">Bright · fuchsia and petal</string>
+    <string name="theme_desc_orange">Bright · tangerine and apricot</string>
+    <string name="theme_desc_purple">Bright · amethyst and wisteria</string>
+    <string name="theme_desc_teal">Bright · lagoon and mint</string>
     <string name="theme_desc_monochrome">Black, white and greys</string>
     <string name="preferences_card_shape_pill">Pill</string>
     <string name="preferences_fab_size">\"+\" button</string>
@@ -160,4 +167,22 @@
     <!-- Note editor, design 2 -->
     <string name="action_insert_list">Bulleted list</string>
     <string name="image_size_percent">%1$d%%</string>
+    <!-- Formatting bar (simple) -->
+    <string name="fmt_bold">Bold</string>
+    <string name="fmt_italic">Italic</string>
+    <string name="fmt_heading">Title</string>
+    <string name="fmt_bullets">Bulleted list</string>
+    <string name="fmt_checkbox">Checkbox (tap to tick)</string>
+    <string name="fmt_picture">Picture</string>
+    <string name="fmt_undo">Undo</string>
+    <string name="fmt_redo">Redo</string>
+    <string name="fmt_more">More formatting</string>
+    <string name="fmt_strikethrough">Strikethrough</string>
+    <string name="fmt_highlight">Highlight</string>
+    <string name="fmt_quote">Quote</string>
+    <string name="fmt_code">Code</string>
+    <string name="fmt_link">Link</string>
+    <string name="fmt_table">Table</string>
+    <string name="fmt_top">Go to the top</string>
+    <string name="fmt_bottom">Go to the end</string>
 </resources>
