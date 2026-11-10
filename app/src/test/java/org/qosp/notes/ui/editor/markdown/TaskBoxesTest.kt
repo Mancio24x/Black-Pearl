@@ -23,7 +23,7 @@ class TaskBoxesTest {
     @Test
     fun boxJustCreatedByEnterIsFound() {
         // the editor continues a task list with "- [ ] " and the cursor at the end
-        assertEquals(1, findTaskBoxes("- [ ] milk\n- [ ] ").size)
+        assertEquals(2, findTaskBoxes("- [ ] milk\n- [ ] ").size)
         assertEquals(1, findTaskBoxes("- [ ]").size)
     }
 
