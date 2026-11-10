@@ -16,6 +16,7 @@ import org.qosp.notes.R
 import org.qosp.notes.data.repo.NoteRepository
 import org.qosp.notes.data.repo.ReminderRepository
 import org.qosp.notes.ui.MainActivity
+import org.qosp.notes.ui.lock.AppLock
 
 
 class ReminderManager(
@@ -110,6 +111,8 @@ class ReminderManager(
         if (notificationTitle.isEmpty()) {
             noteRepository.getById(noteId).first()?.let { notificationTitle = it.title }
         }
+        // Black Pearl: with the app lock on, the notification does not say what the note is about
+        if (AppLock.hidesNotesOutsideTheApp()) notificationTitle = context.getString(R.string.lock_notification_hidden)
 
         val pendingIntent = NavDeepLinkBuilder(context)
             .setGraph(R.navigation.nav_graph)

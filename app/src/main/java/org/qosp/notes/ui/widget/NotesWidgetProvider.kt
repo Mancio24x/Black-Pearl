@@ -10,6 +10,7 @@ import android.widget.RemoteViews
 import androidx.core.net.toUri
 import org.qosp.notes.R
 import org.qosp.notes.ui.MainActivity
+import org.qosp.notes.ui.lock.AppLock
 
 class NotesWidgetProvider : AppWidgetProvider() {
 
@@ -41,8 +42,12 @@ class NotesWidgetProvider : AppWidgetProvider() {
             val clickPendingIntent = PendingIntent.getActivity(context, 0, clickIntent, flags)
             views.setPendingIntentTemplate(R.id.widget_notes_list, clickPendingIntent)
 
-            // Show an informative empty state when there are no pinned notes
+            // Show an informative empty state when there are no pinned notes (or they are hidden by the app lock)
             views.setEmptyView(R.id.widget_notes_list, R.id.widget_empty_view)
+            views.setTextViewText(
+                R.id.widget_empty_view,
+                context.getString(if (AppLock.hidesNotesOutsideTheApp()) R.string.lock_widget_hidden else R.string.widget_no_pinned_notes),
+            )
             // Allow tapping the empty state to open the app
             views.setOnClickPendingIntent(R.id.widget_empty_view, clickPendingIntent)
 

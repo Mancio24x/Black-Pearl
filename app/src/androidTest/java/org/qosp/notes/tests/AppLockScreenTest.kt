@@ -16,6 +16,7 @@ import org.qosp.notes.preferences.AppLockSettings
 import org.qosp.notes.ui.MainActivity
 import org.qosp.notes.ui.lock.AppLock
 import org.qosp.notes.ui.lock.PinHasher
+import org.qosp.notes.ui.widget.NotesWidgetViewsFactory
 
 /** App lock in the real app: the PIN screen covers the activity while locked and goes away with the right PIN. */
 class AppLockScreenTest : KoinComponent {
@@ -43,5 +44,16 @@ class AppLockScreenTest : KoinComponent {
             InstrumentationRegistry.getInstrumentation().waitForIdleSync()
             assertFalse(overlayVisible())
         }
+    }
+
+    @Test
+    fun widgetAndRemindersHideNotesWhileTheLockIsOn() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val widget = NotesWidgetViewsFactory(context)
+        assertFalse(AppLock.hidesNotesOutsideTheApp())
+        appLock.start(AppLockSettings(pinHash = PinHasher.hash("2580"), pinLength = 4))
+        assertTrue(AppLock.hidesNotesOutsideTheApp())
+        widget.onDataSetChanged()
+        assertEquals(0, widget.count)
     }
 }

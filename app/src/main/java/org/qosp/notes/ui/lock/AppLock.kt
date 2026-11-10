@@ -2,6 +2,7 @@ package org.qosp.notes.ui.lock
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import org.koin.core.context.GlobalContext
 import org.qosp.notes.preferences.AppLockSettings
 
 /**
@@ -79,5 +80,12 @@ class AppLock(private val clock: () -> Long = { android.os.SystemClock.elapsedRe
     companion object {
         const val MAX_ATTEMPTS = 5
         const val BLOCK_SECONDS = 30
+
+        /**
+         * With the lock on, places outside the app (home-screen widget, reminder notifications) do not show what
+         * the notes say. Read from anywhere in the app process; false if the app is not set up (some tests).
+         */
+        fun hidesNotesOutsideTheApp(): Boolean =
+            runCatching { GlobalContext.get().get<AppLock>().settings.enabled }.getOrDefault(false)
     }
 }
