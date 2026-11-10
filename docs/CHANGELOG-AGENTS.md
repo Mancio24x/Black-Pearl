@@ -107,3 +107,35 @@ Append one short entry per significant task: files, decisions, tests (with resul
 - Tests: `ImageGesturesTest` (4); all unit tests and 36 device tests pass; screenshot script creates a note with a web
   picture, selects it, resizes it with the corner handle and drags it below the last line.
 - Open: line↔unit mapping can be off around fenced code blocks and tables (moves still go the right way).
+
+## 2026-11-10 — Crash on "Save PDF" / "Share PDF" (branch fix/pdf-export-crash)
+- Cause: `BottomSheet` kept its actions (lambdas) in the fragment arguments; when the app went to the background with
+  a sheet open (file picker, share sheet, camera, home) Android saved them → "Parcelable encountered IOException
+  writing serializable object" → crash. Affected Export, Scan text, attachment, reminder, tag and notebook sheets.
+- Fix: actions kept in memory, only the header in the arguments; a sheet recreated by Android closes itself.
+- Tests: `BottomSheetStateTest` (Robolectric; reproduced the crash before the fix), 128 unit tests OK; the screenshot
+  run now goes through Export → Save PDF and → Share PDF.
+
+## 2026-11-10 — Second crash on "Share PDF" (branch fix/pdf-share-crash)
+- Found by the emulator run of #25 (after it was merged): the Share PDF action called `requireContext()` /
+  `startActivity()` inside the sheet action, where they belong to the `BottomSheet`; the sheet is closed when the PDF
+  is ready → "Fragment BottomSheet not attached to a context". Moved to `EditorFragment.sharePdf()`.
+- Other sheet actions were checked: they all run at once, while the sheet is still attached.
+- CI: `ui-preview.yml` now fails when `logcat.txt` contains a FATAL EXCEPTION from the screenshot run.
+
+## 2026-11-10 — App lock (branch feature/app-lock)
+- New `ui/lock/*` (AppLock, PinHasher, LockScreen, AppLockFragment), overlay + biometric prompt + recents flag in
+  `BaseActivity`, start + process lifecycle observer in `App`, `single { AppLock() }` in `UIModule`, settings keys in
+  `PreferenceRepository`, Settings row + nav destination, strings EN/IT, 3 icons.
+- Tests: `AppLockTest` (8), device `AppLockScreenTest`; screenshot script sets PIN 2580, restarts, wrong PIN, unlock.
+- Not done: the widget and reminder notifications still show notes while locked (told to the owner in the screen).
+
+## 2026-11-10 — "+" button for note options, review fixes (branch feature/editor-plus-button)
+- Editor: round "+" FAB bottom-left (`fab_note_options`) opens `NoteOptionsSheet`, mirror of the edit FAB; the "⋮"
+  toolbar item stays only for notes in the bin. Scroll area got 88dp bottom padding so the last lines and tags can be
+  scrolled above the two buttons; edit FAB has a content description.
+- Review (lint + reading): `BlackPearlColorResources.override` marked `@RequiresApi(30)` with an explicit SDK check;
+  picture sheet "100 %" now stores 100 like the corner handle (was "natural size"); sheets are not shown when the
+  screen state is already saved (`isStateSaved`); 4 unused size strings removed.
+- Lint errors left: upstream only (MissingTranslation in `values/strings.xml`, MissingQuantity cs/ro,
+  FragmentLiveDataObserve false positive).

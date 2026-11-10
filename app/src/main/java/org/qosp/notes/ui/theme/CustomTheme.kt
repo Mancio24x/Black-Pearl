@@ -26,7 +26,7 @@ object CustomTheme {
      */
     @SuppressLint("RestrictedApi")
     fun apply(context: Context, colors: CustomThemeColors): Boolean {
-        if (!isSupported) return false
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return false // same as isSupported
         val overrides = roles(colors).mapNotNull { (attr, color) ->
             CustomThemeResources.byAttribute[attr]?.let { it to color }
         }.toMap()

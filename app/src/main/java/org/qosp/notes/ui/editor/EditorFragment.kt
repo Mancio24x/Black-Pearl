@@ -379,6 +379,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
             updateEditMode(!model.inEditMode)
             if (model.inEditMode) requestFocusForFields(true) else view.hideKeyboard()
         }
+        binding.fabNoteOptions.setOnClickListener { showNoteOptions() }
     }
 
     @Deprecated("Deprecated in Java")
@@ -588,20 +589,25 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     private fun showExportSheet() {
         BottomSheet.show(getString(R.string.action_export), parentFragmentManager) {
             action(R.string.pdf_save, R.drawable.ic_export_note) { pdfSaveLauncher.launch(pdfFileName()) }
-            action(R.string.pdf_share, R.drawable.ic_share) {
-                val file = File(File(requireContext().cacheDir, "pdf").apply { mkdirs() }, pdfFileName())
-                exportPdf(onDone = {
-                    val uri = FileProvider.getUriForFile(requireContext(), "${BuildConfig.APPLICATION_ID}.provider", file)
-                    val send = Intent(Intent.ACTION_SEND).apply {
-                        type = "application/pdf"
-                        putExtra(Intent.EXTRA_STREAM, uri)
-                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    }
-                    startActivity(Intent.createChooser(send, getString(R.string.pdf_share)))
-                }) { file.outputStream() }
-            }
+            action(R.string.pdf_share, R.drawable.ic_share) { sharePdf() }
             action(R.string.export_note_backup, R.drawable.ic_file) { runNoteAction(R.id.action_export_note) }
         }
+    }
+
+    // A function of this screen on purpose: inside a sheet action "requireContext()" / "startActivity()" are the
+    // sheet's, and the sheet is already closed when the PDF is ready ("not attached to a context" crash).
+    private fun sharePdf() {
+        val ctx = requireContext()
+        val file = File(File(ctx.cacheDir, "pdf").apply { mkdirs() }, pdfFileName())
+        exportPdf(onDone = {
+            val uri = FileProvider.getUriForFile(ctx, "${BuildConfig.APPLICATION_ID}.provider", file)
+            val send = Intent(Intent.ACTION_SEND).apply {
+                type = "application/pdf"
+                putExtra(Intent.EXTRA_STREAM, uri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            startActivity(Intent.createChooser(send, getString(R.string.pdf_share)))
+        }) { file.outputStream() }
     }
 
     /** Renders the current note off the main thread; [open] gives the destination stream. */
@@ -961,6 +967,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
     private fun setupMenuItems(note: Note, hasReminders: Boolean) = mainMenu?.run {
         findItem(R.id.action_restore_note)?.isVisible = note.isDeleted
+        findItem(R.id.action_note_options)?.isVisible = note.isDeleted
 
         findItem(R.id.action_change_mode)?.apply {
             // if view/edit mode FAB isn't displayed (user pref) show it in the top menu
@@ -1444,6 +1451,10 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         }
 
         fabChangeMode.setImageResource(if (model.inEditMode) R.drawable.ic_show else R.drawable.ic_pencil)
+        // "+" (note options) at the bottom left; a note in the bin uses the toolbar instead
+        if (fabNoteOptions.isVisible == isNoteDeleted) {
+            if (isNoteDeleted) fabNoteOptions.hide() else fabNoteOptions.show()
+        }
         setMarkdownToolbarVisibility(note)
     }
 

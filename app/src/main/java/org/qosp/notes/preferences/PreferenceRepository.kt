@@ -4,9 +4,12 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.tfcporciuncula.flow.FlowSharedPreferences
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import me.msoul.datastore.EnumPreference
@@ -15,6 +18,21 @@ import me.msoul.datastore.setEnum
 import java.io.IOException
 
 /** The three colors of "My theme". Defaults match tools/palette-gen (CUSTOM_DEFAULT). */
+/** App lock: enabled when a PIN hash is stored. [timeoutMinutes] away from the app before it locks (0 = at once). */
+data class AppLockSettings(
+    val pinHash: String? = null,
+    val pinLength: Int = 0,
+    val biometric: Boolean = true,
+    val timeoutMinutes: Int = DEFAULT_TIMEOUT_MINUTES,
+) {
+    val enabled: Boolean get() = pinHash != null
+
+    companion object {
+        const val DEFAULT_TIMEOUT_MINUTES = 1
+        val TIMEOUTS = listOf(0, 1, 5, 15)
+    }
+}
+
 data class CustomThemeColors(val paper: Int, val surface: Int, val accent: Int) {
     companion object {
         val DEFAULT = CustomThemeColors(0xFFF4ECDD.toInt(), 0xFFFFFBF3.toInt(), 0xFF8E2F25.toInt())
@@ -99,7 +117,39 @@ class PreferenceRepository(
         }
     }
 
+    /** App lock (Black Pearl): the PIN is only stored as a salted hash, see ui/lock/PinHasher. */
+    fun getAppLock(): Flow<AppLockSettings> = dataStore.data
+        .catch { if (it is IOException) emit(emptyPreferences()) else throw it }
+        .map {
+            AppLockSettings(
+                pinHash = it[APP_LOCK_PIN],
+                pinLength = it[APP_LOCK_PIN_LENGTH] ?: 0,
+                biometric = it[APP_LOCK_BIOMETRIC] ?: true,
+                timeoutMinutes = it[APP_LOCK_TIMEOUT] ?: AppLockSettings.DEFAULT_TIMEOUT_MINUTES,
+            )
+        }
+
+    suspend fun getAppLockOnce(): AppLockSettings = getAppLock().first()
+
+    suspend fun setAppLockPin(hash: String?, length: Int) {
+        dataStore.edit {
+            if (hash == null) it.remove(APP_LOCK_PIN) else it[APP_LOCK_PIN] = hash
+            it[APP_LOCK_PIN_LENGTH] = length
+        }
+    }
+
+    suspend fun setAppLockOptions(biometric: Boolean, timeoutMinutes: Int) {
+        dataStore.edit {
+            it[APP_LOCK_BIOMETRIC] = biometric
+            it[APP_LOCK_TIMEOUT] = timeoutMinutes
+        }
+    }
+
     companion object {
+        val APP_LOCK_PIN = stringPreferencesKey("app_lock_pin")
+        val APP_LOCK_PIN_LENGTH = intPreferencesKey("app_lock_pin_length")
+        val APP_LOCK_BIOMETRIC = booleanPreferencesKey("app_lock_biometric")
+        val APP_LOCK_TIMEOUT = intPreferencesKey("app_lock_timeout_minutes")
         const val NEXTCLOUD_INSTANCE_URL = "NEXTCLOUD_INSTANCE_URL"
         const val NEXTCLOUD_USERNAME = "NEXTCLOUD_USERNAME"
         const val NEXTCLOUD_PASSWORD = "NEXTCLOUD_PASSWORD"

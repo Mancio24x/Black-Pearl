@@ -71,3 +71,9 @@ Newest last. Format: date — decision — why.
     spaces). New dependency **jsoup** (MIT) for HTML and Evernote ENML: a hand-written HTML parser would be fragile.
     Evernote files are read one note at a time; Takeout's wrong image extensions are tolerated. Encrypted exports
     (Standard Notes, Joplin E2EE) are not supported.
+21. **2026-11-10 — App lock.** Own PIN (4–6 digits, PBKDF2 salted hash in DataStore) plus `BiometricPrompt` with
+    `BIOMETRIC_WEAK | DEVICE_CREDENTIAL`: the phone's screen lock is a deliberate fallback so a forgotten PIN never
+    costs the notes. The lock is a Compose overlay added by `BaseActivity` to every activity (no separate activity,
+    no back-stack tricks); state in the `AppLock` singleton driven by `ProcessLifecycleOwner`. Default timeout 1 minute
+    so camera / file picker / share do not ask for the PIN again. New dependencies: `androidx.biometric`,
+    `lifecycle-process`. The database is not encrypted: the lock protects the app's screens, not the files.

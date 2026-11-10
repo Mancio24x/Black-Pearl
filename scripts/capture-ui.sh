@@ -80,8 +80,17 @@ for mode in no yes; do
     shot "note-options-night_$mode"
     tap_text "More settings" && shot "note-options-more-night_$mode"
     adb shell input keyevent KEYCODE_BACK; sleep 1
-    tap_text "Export" && shot "note-export-night_$mode"
-    adb shell input keyevent KEYCODE_BACK
+    # Export → Save PDF (the file picker puts the app in the background: it used to crash here)
+    if tap_text "Note options" && tap_text "Export"; then
+      shot "note-export-night_$mode"
+      tap_text "Save PDF…" && sleep 4 && shot "pdf-save-night_$mode"
+      adb shell input keyevent KEYCODE_BACK; sleep 2; shot "after-pdf-save-night_$mode"
+    fi
+    # Export → Share PDF (share sheet)
+    if tap_text "Note options" && tap_text "Export"; then
+      tap_text "Share PDF" && sleep 5 && shot "pdf-share-night_$mode"
+      adb shell input keyevent KEYCODE_BACK; sleep 2; shot "after-pdf-share-night_$mode"
+    fi
   fi
   # Tap the picture: frame, handles and bar; then drag the corner handle to make it smaller
   adb shell am force-stop $PKG
@@ -112,5 +121,20 @@ for mode in no yes; do
     grep -o '<node[^>]*text="Idee racconto"[^>]*>' "$OUT/ui.xml" | head -1 | grep -o 'bounds="[^"]*"' | grep -o '[0-9]\+')
   if [ -n "$b" ]; then set -- $b; adb shell input swipe $(( ($1+$3)/2 )) $(( ($2+$4)/2 )) $(( ($1+$3)/2 )) $(( ($2+$4)/2 )) 800; shot "note-longpress-night_$mode"; fi
 done
+# App lock: set PIN 2580 in Settings, restart, see the lock screen, unlock
+adb shell cmd uimode night no; adb shell am force-stop $PKG
+adb shell am start -W -n $MAIN >/dev/null; sleep 3
+pin() { for d in 2 5 8 0; do tap_text "$d"; done; }
+if tap_text "Open navigation drawer" && tap_text "Settings" && tap_text "App lock"; then
+  shot "lock-settings-off"
+  tap_text "Lock the app" && sleep 1 && shot "lock-choose-pin"
+  pin; tap_text "Confirm"; sleep 1; pin; sleep 2
+  shot "lock-settings-on"
+  adb shell am force-stop $PKG
+  adb shell am start -W -n $MAIN >/dev/null; sleep 3
+  shot "lock-screen"
+  tap_text "1"; tap_text "1"; tap_text "1"; tap_text "1"; sleep 1; shot "lock-wrong-pin"
+  pin; sleep 2; shot "lock-unlocked"
+fi
 # Theme / crash messages of this run, for diagnosis
 adb logcat -d -v time BlackPearlTheme:V ColorResLoaderCreator:V ColorResourcesTableCreator:V AndroidRuntime:E '*:S' > "$OUT/logcat.txt"

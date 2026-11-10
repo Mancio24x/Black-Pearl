@@ -48,6 +48,9 @@ class SettingsFragment : BaseFragment(resId = R.layout.fragment_settings) {
         binding.settingAppearance.setOnClickListener {
             findNavController().navigateSafely(SettingsFragmentDirections.actionSettingsToAppearance())
         }
+        binding.settingAppLock.setOnClickListener {
+            findNavController().navigateSafely(SettingsFragmentDirections.actionSettingsToAppLock())
+        }
         setupLayoutModeListener()
         setupSortMethodListener()
         setupSortTagsMethodListener()

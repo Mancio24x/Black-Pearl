@@ -28,10 +28,6 @@
     <string name="image_align_left">Align left</string>
     <string name="image_align_center">Center</string>
     <string name="image_align_right">Align right</string>
-    <string name="image_size_small">Small (25%)</string>
-    <string name="image_size_medium">Medium (50%)</string>
-    <string name="image_size_large">Large (75%)</string>
-    <string name="image_size_full">Full width</string>
     <string name="image_remove_from_note">Remove from note (keep attachment)</string>
     <string name="note_color_none">No color</string>
     <string name="ocr_scan_text">Scan text</string>
@@ -126,4 +122,37 @@
     <string name="image_size">Size</string>
     <string name="image_resize">Resize the picture</string>
     <string name="image_move">Move the picture</string>
+    <string name="lock_settings_title">App lock</string>
+    <string name="lock_settings_subtitle">PIN, fingerprint or face</string>
+    <string name="lock_title">Black Pearl is locked</string>
+    <string name="lock_enter_pin">Enter your PIN</string>
+    <string name="lock_use_biometric">Unlock with fingerprint, face or the phone\'s screen lock</string>
+    <string name="lock_delete">Delete the last digit</string>
+    <string name="lock_confirm">Confirm</string>
+    <string name="lock_enable">Lock the app</string>
+    <string name="lock_change_pin">Change PIN</string>
+    <string name="lock_biometric">Fingerprint, face or phone screen lock</string>
+    <string name="lock_after">Lock after leaving the app</string>
+    <string name="lock_after_now">At once</string>
+    <string name="lock_current_pin">Current PIN</string>
+    <string name="lock_wrong_pin_short">Wrong PIN</string>
+    <string name="lock_choose_pin">Choose a PIN</string>
+    <string name="lock_choose_pin_hint">4 to 6 digits, then tap the check mark</string>
+    <string name="lock_confirm_pin">Type the PIN again</string>
+    <string name="lock_confirm_pin_hint">To be sure it is the one you want</string>
+    <string name="lock_pins_differ">The two PINs are different: try again</string>
+    <string name="lock_help_fallback">If you forget the PIN you can still unlock with your fingerprint, face or the phone\'s screen lock. The home-screen widget and reminder notifications can still show your notes.</string>
+    <string name="lock_help_no_fallback">This phone has no fingerprint, face or screen lock set up: if you forget the PIN, the only way back in is to clear the app\'s data, which deletes the notes. Keep a backup (menu > Import and export).</string>
+    <plurals name="lock_after_minutes">
+        <item quantity="one">%d min</item>
+        <item quantity="other">%d min</item>
+    </plurals>
+    <plurals name="lock_wrong_pin">
+        <item quantity="one">Wrong PIN: %d attempt left</item>
+        <item quantity="other">Wrong PIN: %d attempts left</item>
+    </plurals>
+    <plurals name="lock_wait">
+        <item quantity="one">Too many attempts: wait %d second</item>
+        <item quantity="other">Too many attempts: wait %d seconds</item>
+    </plurals>
 </resources>

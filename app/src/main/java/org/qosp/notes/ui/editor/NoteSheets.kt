@@ -137,11 +137,11 @@ fun ImageOptionsSheet(
         aligns.indexOf(current.align),
     ) { update(current.copy(align = aligns[it])) }
 
-    val sizes = listOf(25, 50, 75, null)
+    val sizes = listOf(25, 50, 75, 100)
     SheetChoice(
         stringResource(R.string.image_size),
-        sizes.map { (it ?: 100).toString() + "%" to null },
-        sizes.indexOf(current.widthPercent).coerceAtLeast(0),
+        sizes.map { "$it%" to null },
+        sizes.indexOf(current.widthPercent), // none selected for the natural size or a hand-picked one
     ) { update(current.copy(widthPercent = sizes[it])) }
 
     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {

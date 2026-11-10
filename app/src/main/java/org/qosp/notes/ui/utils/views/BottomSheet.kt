@@ -1,7 +1,6 @@
 package org.qosp.notes.ui.utils.views
 
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
@@ -19,17 +18,21 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.bottomsheet.BottomSheetDragHandleView
-import kotlinx.parcelize.Parcelize
 import org.qosp.notes.R
 import org.qosp.notes.ui.utils.dp
 
 class BottomSheet : BottomSheetDialogFragment() {
-    @Suppress("UNCHECKED_CAST")
-    private val actions: Set<Action>? by lazy {
-        arguments?.get(MENU_ACTIONS) as? Set<Action>
-    }
+    // Black Pearl: the actions are code (lambdas), which Android cannot save with the screen state. They used to be
+    // in the arguments, so the app crashed as soon as it went to the background with a sheet open (file picker for
+    // "Save PDF", share sheet, camera…). They are now kept in memory; a sheet recreated by Android just closes.
+    private var actions: Set<Action>? = null
     private val header: String? by lazy { arguments?.getString(MENU_HEADER) }
     private val showPlaceHolderText by lazy { arguments?.getBoolean(SHOW_PLACEHOLDER) }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (actions == null) dismissAllowingStateLoss()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return NestedScrollView(requireContext()).apply {
@@ -70,7 +73,7 @@ class BottomSheet : BottomSheetDialogFragment() {
                                 text = action.title ?: action.titleResId?.let { getString(it) } ?: ""
                                 setOnClickListener {
                                     action.onClick(this@BottomSheet)
-                                    if (action.dismissAfterClick) dismiss()
+                                    if (action.dismissAfterClick) dismissAllowingStateLoss()
                                 }
                                 action.iconResId?.let { iconResId ->
                                     setCompoundDrawablesRelativeWithIntrinsicBounds(iconResId, 0, 0, 0)
@@ -93,14 +96,13 @@ class BottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    @Parcelize
     class Action(
         val titleResId: Int?,
         val title: String?,
         val iconResId: Int?,
         val dismissAfterClick: Boolean = true,
         val onClick: BottomSheet.() -> Unit
-    ) : Parcelable
+    )
 
     class Builder {
         val items = mutableSetOf<Action>()
@@ -128,7 +130,6 @@ class BottomSheet : BottomSheetDialogFragment() {
 
     companion object {
         const val MENU_HEADER = "SHEET_HEADER"
-        const val MENU_ACTIONS = "SHEET_ACTIONS"
         const val SHOW_PLACEHOLDER = "SHOW_PLACEHOLDER"
 
         fun show(
@@ -137,15 +138,20 @@ class BottomSheet : BottomSheetDialogFragment() {
             showPlaceHolderText: Boolean = true,
             itemBuilder: (Builder.() -> Unit)?
         ) {
+            if (fragmentManager.isStateSaved) return
+            create(header, showPlaceHolderText, itemBuilder).show(fragmentManager, null)
+        }
+
+        /** The sheet before it is shown; only the header goes in the arguments that Android saves. */
+        fun create(header: String?, showPlaceHolderText: Boolean = true, itemBuilder: (Builder.() -> Unit)?): BottomSheet {
             val builder = Builder()
             itemBuilder?.invoke(builder)
-            BottomSheet().apply {
+            return BottomSheet().apply {
                 arguments = bundleOf(
                     MENU_HEADER to header,
-                    MENU_ACTIONS to builder.items,
                     SHOW_PLACEHOLDER to showPlaceHolderText
                 )
-                show(fragmentManager, null)
+                actions = builder.items
             }
         }
     }
