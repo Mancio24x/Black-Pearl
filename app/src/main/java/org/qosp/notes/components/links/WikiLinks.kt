@@ -33,7 +33,10 @@ object WikiLinks {
             .trim()
             .lowercase(Locale.ROOT)
 
-    private fun excludedRanges(text: String): List<IntRange> {
+    /** Ranges of every `[[...]]` link (embeds excluded), used to keep `#` inside links out of tag parsing. */
+    internal fun linkRanges(text: String): List<IntRange> = LINK.findAll(text).map { it.range }.toList()
+
+    internal fun excludedRanges(text: String): List<IntRange> {
         val fences = fencedRanges(text)
         val result = ArrayList<IntRange>(fences)
         var i = 0
