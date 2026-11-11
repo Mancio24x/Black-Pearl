@@ -152,7 +152,15 @@ class PreferenceRepository(
         dataStore.edit { it[SAMPLE_NOTE_ADDED] = true }
     }
 
+    /** Black Pearl: the demo note "The Bible" is added only once (see components/DemoLinksNote). */
+    suspend fun isDemoLinksNoteAdded(): Boolean = dataStore.data.first()[DEMO_LINKS_NOTE_ADDED] ?: false
+
+    suspend fun setDemoLinksNoteAdded() {
+        dataStore.edit { it[DEMO_LINKS_NOTE_ADDED] = true }
+    }
+
     companion object {
+        val DEMO_LINKS_NOTE_ADDED = booleanPreferencesKey("demo_links_note_added")
         val SAMPLE_NOTE_ADDED = booleanPreferencesKey("sample_note_added")
         val APP_LOCK_PIN = stringPreferencesKey("app_lock_pin")
         val APP_LOCK_PIN_LENGTH = intPreferencesKey("app_lock_pin_length")
