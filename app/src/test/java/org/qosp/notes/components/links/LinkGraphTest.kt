@@ -69,7 +69,9 @@ class LinkGraphTest {
     fun selfLinkNoEdge() {
         val index = LinkIndex(listOf(note(1, "A", "[[A]] [[B]] [[b]]"), note(2, "B")))
         val (nodes, edges) = LinkGraph.build(index)
-        assertEquals(listOf(GraphEdge("a", "b")), edges)
+        val source = nodes.single { it.noteId == 1L }
+        val target = nodes.single { it.noteId == 2L }
+        assertEquals(listOf(GraphEdge(source.key, target.key)), edges)
         assertEquals(2, nodes.size)
         assertNull(nodes.firstOrNull { it.degree == 0 })
     }
