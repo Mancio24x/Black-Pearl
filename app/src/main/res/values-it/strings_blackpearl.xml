@@ -67,7 +67,14 @@
     <string name="theme_desc_night_violet">Scuro · lavanda e indaco</string>
     <string name="theme_desc_system">Colori dallo sfondo del telefono</string>
     <string name="theme_desc_custom">Scegli tu sfondo, schede e accento</string>
-    <string name="theme_desc_vivid">Colori Material generati</string>
+    <string name="theme_desc_blue">Vivace · cielo e cobalto</string>
+    <string name="theme_desc_red">Vivace · ciliegia e cipria</string>
+    <string name="theme_desc_yellow">Vivace · girasole e miele</string>
+    <string name="theme_desc_green">Vivace · prato e foglia</string>
+    <string name="theme_desc_pink">Vivace · fucsia e petalo</string>
+    <string name="theme_desc_orange">Vivace · mandarino e albicocca</string>
+    <string name="theme_desc_purple">Vivace · ametista e glicine</string>
+    <string name="theme_desc_teal">Vivace · laguna e menta</string>
     <string name="theme_desc_monochrome">Bianco, nero e grigi</string>
     <string name="preferences_card_shape_pill">Pillola</string>
     <string name="preferences_fab_size">Pulsante «+»</string>
@@ -186,4 +193,22 @@
     <string name="network_exists">Esiste già una nota con questo titolo.</string>
     <string name="network_no_result">Nessuna nota trovata</string>
     <string name="network_results">Risultati della ricerca</string>
+    <!-- Formatting bar (simple) -->
+    <string name="fmt_bold">Grassetto</string>
+    <string name="fmt_italic">Corsivo</string>
+    <string name="fmt_heading">Titolo</string>
+    <string name="fmt_bullets">Elenco puntato</string>
+    <string name="fmt_checkbox">Casella (tocca per spuntare)</string>
+    <string name="fmt_picture">Immagine</string>
+    <string name="fmt_undo">Annulla</string>
+    <string name="fmt_redo">Ripeti</string>
+    <string name="fmt_more">Altre formattazioni</string>
+    <string name="fmt_strikethrough">Barrato</string>
+    <string name="fmt_highlight">Evidenzia</string>
+    <string name="fmt_quote">Citazione</string>
+    <string name="fmt_code">Codice</string>
+    <string name="fmt_link">Link</string>
+    <string name="fmt_table">Tabella</string>
+    <string name="fmt_top">Vai all\'inizio</string>
+    <string name="fmt_bottom">Vai alla fine</string>
 </resources>

@@ -61,16 +61,16 @@ enum class ColorScheme(
         // "My theme": 3 colors (PreferenceRepository.getCustomTheme), applied by CustomTheme (needs Android 11)
         override fun isSupported(): Boolean = Build.VERSION.SDK_INT >= 30
     },
-    BLUE(R.string.preferences_color_scheme_blue, R.style.Palette_Blue, R.string.theme_desc_vivid, ThemeGroup.VIVID),
+    BLUE(R.string.preferences_color_scheme_blue, R.style.Palette_Blue, R.string.theme_desc_blue, ThemeGroup.VIVID),
     // These two lines below are correct, but must be prefixed due to already existing lines
-    TRUE_RED(R.string.preferences_color_scheme_red, R.style.Palette_Red, R.string.theme_desc_vivid, ThemeGroup.VIVID),
-    TRUE_YELLOW(R.string.preferences_color_scheme_yellow, R.style.Palette_Yellow, R.string.theme_desc_vivid, ThemeGroup.VIVID),
-    GREEN(R.string.preferences_color_scheme_green, R.style.Palette_Green, R.string.theme_desc_vivid, ThemeGroup.VIVID),
-    PINK(R.string.preferences_color_scheme_pink, R.style.Palette_Pink, R.string.theme_desc_vivid, ThemeGroup.VIVID),
+    TRUE_RED(R.string.preferences_color_scheme_red, R.style.Palette_Red, R.string.theme_desc_red, ThemeGroup.VIVID),
+    TRUE_YELLOW(R.string.preferences_color_scheme_yellow, R.style.Palette_Yellow, R.string.theme_desc_yellow, ThemeGroup.VIVID),
+    GREEN(R.string.preferences_color_scheme_green, R.style.Palette_Green, R.string.theme_desc_green, ThemeGroup.VIVID),
+    PINK(R.string.preferences_color_scheme_pink, R.style.Palette_Pink, R.string.theme_desc_pink, ThemeGroup.VIVID),
     // These two lines here are labeled incorrectly (should be labelled as ORANGE, PURPLE respectively)
-    YELLOW(R.string.preferences_color_scheme_orange, R.style.Palette_Orange, R.string.theme_desc_vivid, ThemeGroup.VIVID),
-    RED(R.string.preferences_color_scheme_purple, R.style.Palette_Purple, R.string.theme_desc_vivid, ThemeGroup.VIVID),
-    TEAL(R.string.preferences_color_scheme_teal, R.style.Palette_Teal, R.string.theme_desc_vivid, ThemeGroup.VIVID),
+    YELLOW(R.string.preferences_color_scheme_orange, R.style.Palette_Orange, R.string.theme_desc_orange, ThemeGroup.VIVID),
+    RED(R.string.preferences_color_scheme_purple, R.style.Palette_Purple, R.string.theme_desc_purple, ThemeGroup.VIVID),
+    TEAL(R.string.preferences_color_scheme_teal, R.style.Palette_Teal, R.string.theme_desc_teal, ThemeGroup.VIVID),
     MONOCHROME(R.string.preferences_color_scheme_monochrome, R.style.Palette_Monochrome, R.string.theme_desc_monochrome, ThemeGroup.VIVID),
 }
 
