@@ -225,3 +225,21 @@ Append one short entry per significant task: files, decisions, tests (with resul
 - Owner's standing approval: publish every version that passes CI without asking (`docs/handoff/RELEASE.md`, README).
 - Checks: YAML parses; the workflow itself only runs on GitHub (first real run = v0.7.2 after merge).
 
+## 2026-11-10 — Clickable task squares, simpler formatting bar, refreshed vivid themes (scheduled run)
+- Task squares: new `ui/editor/markdown/TaskBoxes.kt`. In the editor (Markdown on) `- [ ]` / `- [x]` are drawn as a
+  rounded square (`TaskBoxSpan`, ReplacementSpan); ticked lines are struck through and muted. A tap on the square
+  changes only the character between the brackets (note text stays plain Markdown, sync/backup unchanged).
+  `TaskBoxTextWatcher` wraps Markwon's watcher (so it also runs inside `withOnlyTextWatcher<MarkwonEditorTextWatcher>`);
+  span subclasses so Markwon's StrikethroughHandler does not remove them. Not done: taps in view mode (preview).
+- Formatting pill: B, I, Title, bulleted list, checkbox, picture, undo, "More" (`ic_more_horiz`). "More" opens a
+  BottomSheet with named actions (scan text, strikethrough, highlight, quote, link, table, code, redo when possible,
+  go to top/end). Hidden menu items keep their ids; click handling moved to `EditorFragment.onFormatAction`.
+  Plain-word titles `fmt_*` (EN + IT) used as tooltips.
+- Themes: the 8 "Vivid" palettes now have designed light colors (tinted paper, white-ish cards, deep ink, accents
+  tuned to ≥4.5:1 on paper and with white text); dark mode unchanged (generated from seed). Each has its own
+  description (`theme_desc_blue` … `theme_desc_teal`, replaces `theme_desc_vivid`). Gallery card redesigned: mini
+  app preview (search bar, two notes, accent "+" button), check badge and tinted card when selected.
+- Palettes regenerated with `tools/palette-gen` compiled against the Material 1.14.0 color-utilities sources (the
+  Google Maven host was blocked in the cloud session); night palettes came out byte-identical except comments, so
+  the output matches the library.
+- Tests: new `TaskBoxesTest`. No Android SDK in the cloud session: build/unit tests only via CI on the branch.

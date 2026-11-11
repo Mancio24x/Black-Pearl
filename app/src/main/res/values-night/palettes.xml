@@ -650,7 +650,7 @@
         <item name="colorOutlineVariant">#493D5B</item>
     </style>
 
-    <!-- seed #2196F3, TONAL_SPOT from seed -->
+    <!-- seed #2196F3, designed light, generated dark -->
     <style name="Palette.Blue" parent="">
         <item name="colorPrimary">#A0CAFD</item>
         <item name="colorOnPrimary">#003258</item>
@@ -700,7 +700,7 @@
         <item name="colorOutlineVariant">#43474E</item>
     </style>
 
-    <!-- seed #EB4132, TONAL_SPOT from seed -->
+    <!-- seed #EB4132, designed light, generated dark -->
     <style name="Palette.Red" parent="">
         <item name="colorPrimary">#FFB4A9</item>
         <item name="colorOnPrimary">#561E17</item>
@@ -750,7 +750,7 @@
         <item name="colorOutlineVariant">#534341</item>
     </style>
 
-    <!-- seed #FFBA00, TONAL_SPOT from seed -->
+    <!-- seed #FFBA00, designed light, generated dark -->
     <style name="Palette.Yellow" parent="">
         <item name="colorPrimary">#ECC06C</item>
         <item name="colorOnPrimary">#412D00</item>
@@ -800,7 +800,7 @@
         <item name="colorOutlineVariant">#4E4639</item>
     </style>
 
-    <!-- seed #7CB342, TONAL_SPOT from seed -->
+    <!-- seed #7CB342, designed light, generated dark -->
     <style name="Palette.Green" parent="">
         <item name="colorPrimary">#B0D18B</item>
         <item name="colorOnPrimary">#1E3702</item>
@@ -850,7 +850,7 @@
         <item name="colorOutlineVariant">#44483D</item>
     </style>
 
-    <!-- seed #C2185B, TONAL_SPOT from seed -->
+    <!-- seed #C2185B, designed light, generated dark -->
     <style name="Palette.Pink" parent="">
         <item name="colorPrimary">#FFB1C2</item>
         <item name="colorOnPrimary">#551D2D</item>
@@ -900,7 +900,7 @@
         <item name="colorOutlineVariant">#524346</item>
     </style>
 
-    <!-- seed #FF8800, TONAL_SPOT from seed -->
+    <!-- seed #FF8800, designed light, generated dark -->
     <style name="Palette.Orange" parent="">
         <item name="colorPrimary">#FFB781</item>
         <item name="colorOnPrimary">#4E2600</item>
@@ -950,7 +950,7 @@
         <item name="colorOutlineVariant">#52443B</item>
     </style>
 
-    <!-- seed #8249E8, TONAL_SPOT from seed -->
+    <!-- seed #8249E8, designed light, generated dark -->
     <style name="Palette.Purple" parent="">
         <item name="colorPrimary">#D2BCFD</item>
         <item name="colorOnPrimary">#38265C</item>
@@ -1000,7 +1000,7 @@
         <item name="colorOutlineVariant">#49454E</item>
     </style>
 
-    <!-- seed #00897B, TONAL_SPOT from seed -->
+    <!-- seed #00897B, designed light, generated dark -->
     <style name="Palette.Teal" parent="">
         <item name="colorPrimary">#82D5C7</item>
         <item name="colorOnPrimary">#003731</item>
