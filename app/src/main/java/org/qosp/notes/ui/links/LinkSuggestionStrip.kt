@@ -28,7 +28,7 @@ class LinkSuggestionStrip(
         editor.setOnKeyListener { _, key, event ->
             if (key == KeyEvent.KEYCODE_ESCAPE && event.action == KeyEvent.ACTION_DOWN && scroller.isVisible) {
                 val cursor = editor.selectionStart
-                dismissedAt = cursor to LinkSuggestions.query(editor.text.orEmpty(), cursor).orEmpty()
+                dismissedAt = cursor to LinkSuggestions.query(editor.text ?: "", cursor).orEmpty()
                 refresh(enabled)
                 true
             } else false
@@ -39,7 +39,7 @@ class LinkSuggestionStrip(
         enabled = showToolbar
         val cursor = editor.selectionStart
         val query = if (enabled && cursor == editor.selectionEnd)
-            LinkSuggestions.query(editor.text.orEmpty(), cursor) else null
+            LinkSuggestions.query(editor.text ?: "", cursor) else null
         if (query == null || dismissedAt != (cursor to query)) dismissedAt = null
         val choices = if (query != null && dismissedAt == null)
             LinkSuggestions.suggest(query, index(), noteId()) else emptyList()

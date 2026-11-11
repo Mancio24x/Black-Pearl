@@ -7,7 +7,8 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
-import com.google.android.material.navigation.NavigationView
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.core.view.GravityCompat
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -32,8 +33,9 @@ class NetworkNavigationTest : KoinComponent {
         try {
             ActivityScenario.launch(MainActivity::class.java).use { scenario ->
                 scenario.onActivity {
-                    it.findViewById<NavigationView>(R.id.navigation_view).menu.performIdentifierAction(R.id.fragment_network, 0)
+                    it.findViewById<DrawerLayout>(R.id.drawer).openDrawer(GravityCompat.START, false)
                 }
+                onView(withText(R.string.nav_network)).perform(click())
                 onView(withId(R.id.graph)).check(matches(isDisplayed()))
                 // The application rebuilds its index asynchronously after a short debounce.
                 val index = getKoin().get<org.qosp.notes.components.links.LinkIndexRepository>()

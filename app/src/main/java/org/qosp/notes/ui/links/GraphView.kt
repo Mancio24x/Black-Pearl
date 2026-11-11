@@ -21,7 +21,7 @@ import kotlin.math.sqrt
 class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
     private val density = resources.displayMetrics.density
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val primary = MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimary)
+    private val primary = MaterialColors.getColor(this, org.qosp.notes.R.attr.colorPrimary)
     private val ink = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurface)
     private val outline = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOutline)
     private val dashed = DashPathEffect(floatArrayOf(3 * density, 2 * density), 0f)
