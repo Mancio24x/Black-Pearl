@@ -21,8 +21,18 @@
             <com.google.android.material.chip.Chip android:id="@+id/network_unlinked_chip" android:checkable="true"
                 style="@style/Widget.Material3.Chip.Filter" android:text="@string/network_unlinked"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            <com.google.android.material.chip.Chip android:id="@+id/network_tags_chip" android:checkable="true"
+                style="@style/Widget.Material3.Chip.Filter" android:text="@string/network_tags"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            <com.google.android.material.chip.Chip android:id="@+id/network_files_chip" android:checkable="true"
+                style="@style/Widget.Material3.Chip.Filter" android:text="@string/network_files"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"/>
             <com.google.android.material.chip.Chip android:id="@+id/network_focus_chip" android:visibility="gone"
                 android:text="@string/network_show_all" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            <com.google.android.material.slider.Slider android:id="@+id/network_depth" android:visibility="gone"
+                android:valueFrom="1" android:valueTo="5" android:stepSize="1" android:value="1"
+                android:contentDescription="@string/network_depth"
+                android:layout_width="160dp" android:layout_height="wrap_content"/>
             <com.google.android.material.chip.Chip android:id="@+id/network_recenter_chip" android:text="@string/network_recenter"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"/>
         </LinearLayout>

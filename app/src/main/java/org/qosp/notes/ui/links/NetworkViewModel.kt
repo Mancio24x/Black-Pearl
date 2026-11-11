@@ -21,13 +21,28 @@ data class NetworkGraph(
     val positions: Map<String, PointF2> = emptyMap(),
 )
 
+private data class GraphOptions(
+    val unlinked: Boolean,
+    val focus: String?,
+    val tags: Boolean,
+    val attachments: Boolean,
+    val depth: Int,
+)
+
 class NetworkViewModel(repository: LinkIndexRepository) : ViewModel() {
     val index = repository.index
     val showUnlinked = MutableStateFlow(true)
     val focus = MutableStateFlow<String?>(null)
+    val showTags = MutableStateFlow(false)
+    val showAttachments = MutableStateFlow(false)
+    val depth = MutableStateFlow(1)
 
-    val graph = combine(index, showUnlinked, focus) { current, unlinked, focused ->
-        val (nodes, edges) = LinkGraph.build(current, unlinked, focused)
+    private val options = combine(showUnlinked, focus, showTags, showAttachments, depth) { unlinked, focused, tags, files, levels ->
+        GraphOptions(unlinked, focused, tags, files, levels)
+    }
+
+    val graph = combine(index, options) { current, o ->
+        val (nodes, edges) = LinkGraph.build(current, o.unlinked, o.focus, o.depth, o.tags, o.attachments)
         val iterations = (12_000 / nodes.size.coerceAtLeast(1)).coerceIn(2, 180)
         NetworkGraph(nodes, edges, GraphLayout.layout(nodes, edges, iterations))
     }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NetworkGraph())

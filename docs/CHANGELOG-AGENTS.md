@@ -277,3 +277,8 @@ Completed the editor suggestion strip and the Network destination, including gra
   sheet is open, `highlighted`) and its neighbours stay bright, their links in the theme colour, the rest dims.
 - Tests: `GraphPhysicsTest` (rest, held node, neighbours follow, settles, edge cases), `GraphViewTest` (highlight,
   drag pulls the linked note). Forces tuned in a JVM prototype; Android tests run on CI.
+
+## 2026-11-11 — Network screen: tag/attachment chips, levels slider, timelapse
+- `fragment_network.xml`: chips `network_tags_chip`, `network_files_chip`; Material `Slider` `network_depth` (1..5, only visible while focused). `NetworkViewModel`: `showTags`, `showAttachments`, `depth` combined into `graph`.
+- `NetworkFragment`: play item in the toolbar (`hasMenu = true`, added in `onCreateOptionsMenu`, so BaseFragment's menu invalidation cannot clear it). Every chip, Recenter, Show all, the slider and play-while-playing stop the timelapse. Tag tap/hold opens a sheet listing its notes; attachment tap opens its note, hold shows the owner note's sheet. `displayTitle` gives blank attachments a type label. Strings in EN and IT.
+- Tests: not run (no Android SDK in this environment); CI to compile. Open: `NetworkNavigationTest` not touched, verify on device.

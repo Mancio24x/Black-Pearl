@@ -23,12 +23,22 @@ import org.qosp.notes.components.links.GraphNode
 import org.qosp.notes.components.links.GraphPhysics
 import org.qosp.notes.components.links.NodeKind
 import org.qosp.notes.components.links.PointF2
+import org.qosp.notes.data.model.Attachment
 import kotlin.math.abs
 import kotlin.math.hypot
 import kotlin.math.min
 import kotlin.math.sqrt
 
-internal fun GraphNode.displayTitle(context: Context): String = title.ifBlank { context.getString(R.string.indicator_untitled) }
+internal fun GraphNode.displayTitle(context: Context): String {
+    if (title.isNotBlank()) return title
+    if (kind != NodeKind.ATTACHMENT) return context.getString(R.string.indicator_untitled)
+    return context.getString(when (attachmentType) {
+        Attachment.Type.IMAGE -> R.string.network_file_photo
+        Attachment.Type.AUDIO -> R.string.network_file_audio
+        Attachment.Type.VIDEO -> R.string.network_file_video
+        else -> R.string.network_file_other
+    })
+}
 
 class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
     private val density = resources.displayMetrics.density

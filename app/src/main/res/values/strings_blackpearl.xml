@@ -192,6 +192,15 @@
     <string name="network_exists">A note with this title already exists.</string>
     <string name="network_no_result">No matching notes</string>
     <string name="network_results">Search results</string>
+    <string name="network_tags">Tags</string>
+    <string name="network_files">Attachments</string>
+    <string name="network_depth">Levels</string>
+    <string name="network_timelapse">Timelapse</string>
+    <string name="network_tag_notes">Notes with %1$s</string>
+    <string name="network_file_photo">Photo</string>
+    <string name="network_file_audio">Audio</string>
+    <string name="network_file_video">Video</string>
+    <string name="network_file_other">File</string>
     <!-- Formatting bar (simple) -->
     <string name="fmt_bold">Bold</string>
     <string name="fmt_italic">Italic</string>

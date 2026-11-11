@@ -193,6 +193,15 @@
     <string name="network_exists">Esiste già una nota con questo titolo.</string>
     <string name="network_no_result">Nessuna nota trovata</string>
     <string name="network_results">Risultati della ricerca</string>
+    <string name="network_tags">Tag</string>
+    <string name="network_files">Allegati</string>
+    <string name="network_depth">Livelli</string>
+    <string name="network_timelapse">Timelapse</string>
+    <string name="network_tag_notes">Note con %1$s</string>
+    <string name="network_file_photo">Foto</string>
+    <string name="network_file_audio">Audio</string>
+    <string name="network_file_video">Video</string>
+    <string name="network_file_other">File</string>
     <!-- Formatting bar (simple) -->
     <string name="fmt_bold">Grassetto</string>
     <string name="fmt_italic">Corsivo</string>
