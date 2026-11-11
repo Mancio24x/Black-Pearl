@@ -1,7 +1,8 @@
 # Linked notes and "Network" view — design (base version)
 
 Status: approved by the owner in chat on 2026-11-11 (option "1 base", entry point "A"). Not implemented yet.
-Visual design: Claude Design canvas "Black Pearl — Note collegate" (link in `docs/handoff/README.md` once created).
+Visual design: Claude Design canvas "Black Pearl — Note collegate", https://claude.ai/artifact/QNAmdLWMrpWjKYuYC5Ap48
+(11 screens: drawer, Network + node sheets, linked note, create dialog, backlinks, `[[` suggestions, dark variants).
 
 ## Goal
 
@@ -55,7 +56,8 @@ connected dots. Nothing else in existing screens changes.
 - **"Linked from (N)"** card list at the bottom of the note, only if N > 0: title + the line containing the link.
 
 **In a note, writing (edit mode):** after typing `[[`, a suggestion strip above the keyboard lists matching note
-titles as the user types (case-insensitive, prefix first, then contains; max 8; last item "Create «typed text»").
+titles as the user types, then link targets that do not exist yet ("cited in …"), case-insensitive, prefix first,
+then contains; max 8; last item "Create «typed text»". The strip takes the place of the formatting pill while open.
 Tap → completes `[[Title]]` and puts the cursor after it. Typing `]]`, Escape or moving the cursor away closes it.
 No toolbar button is added.
 
