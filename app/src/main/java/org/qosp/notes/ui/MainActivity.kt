@@ -78,6 +78,7 @@ class MainActivity : BaseActivity() {
         R.id.fragment_main,
         R.id.fragment_archive,
         R.id.fragment_deleted,
+        R.id.fragment_network,
         R.id.fragment_notebook
     )
     private val secondaryDestinations = setOf(

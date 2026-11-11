@@ -13,6 +13,12 @@ plugins {
 // Do not use build-in kotlin until this issue is resolved:
 // https://github.com/google/ksp/issues/3053
 android {
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+
     compileSdk = 37
     namespace = "org.qosp.notes"
 

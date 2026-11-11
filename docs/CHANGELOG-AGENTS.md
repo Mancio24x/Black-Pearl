@@ -243,3 +243,7 @@ Append one short entry per significant task: files, decisions, tests (with resul
   Google Maven host was blocked in the cloud session); night palettes came out byte-identical except comments, so
   the output matches the library.
 - Tests: new `TaskBoxesTest`. No Android SDK in the cloud session: build/unit tests only via CI on the branch.
+
+## 2026-11-11 — Linked notes and Network
+
+Completed the editor suggestion strip and the Network destination, including graph gestures, note actions and searching. Added graph and on-device navigation tests and screenshot capture. The earlier test report showed four Robolectric initialisation failures because the app targets API 37 and the runner supports up to 36. Pinned the default JVM test SDK to 35; the app retains its target SDK.

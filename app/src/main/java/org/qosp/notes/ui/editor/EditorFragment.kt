@@ -23,6 +23,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.text.Editable
 import android.text.InputType
+import android.text.Spanned
 import android.text.TextWatcher
 import android.util.Log
 import android.view.ContextThemeWrapper
@@ -64,6 +65,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialSharedAxis
 import io.noties.markwon.Markwon
+import io.noties.markwon.core.spans.HeadingSpan
 import io.noties.markwon.editor.MarkwonEditor
 import io.noties.markwon.editor.MarkwonEditorTextWatcher
 import kotlinx.coroutines.flow.first
@@ -75,13 +77,18 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import com.google.android.material.color.MaterialColors
 import org.qosp.notes.R
+import org.qosp.notes.components.links.LinkIndex
+import org.qosp.notes.components.links.LinkIndexRepository
 import org.qosp.notes.data.model.Attachment
 import org.qosp.notes.data.model.Note
 import org.qosp.notes.data.model.NoteColor
 import org.qosp.notes.data.model.NoteTask
+import org.qosp.notes.data.repo.NoteRepository
 import org.qosp.notes.databinding.FragmentEditorBinding
 import org.qosp.notes.databinding.LayoutAttachmentBinding
 import org.qosp.notes.preferences.DefaultEditorMode
+import org.qosp.notes.preferences.NewNotesSyncable
+import org.qosp.notes.preferences.PreferenceRepository
 import org.qosp.notes.ui.attachments.dialog.EditAttachmentDialog
 import org.qosp.notes.ui.attachments.fromUri
 import org.qosp.notes.ui.attachments.recycler.AttachmentRecyclerListener
@@ -107,6 +114,8 @@ import org.qosp.notes.ui.editor.markdown.ImageLayoutPlugin
 import org.qosp.notes.ui.editor.markdown.insertMarkdown
 import org.qosp.notes.ui.editor.markdown.toggleBulletCurrentLine
 import org.qosp.notes.ui.editor.markdown.toggleCheckmarkCurrentLine
+import org.qosp.notes.ui.editor.markdown.WikiLinkPlugin
+import org.qosp.notes.ui.links.LinkActions
 import org.qosp.notes.ui.media.MediaActivity
 import org.qosp.notes.ui.recorder.RECORDED_ATTACHMENT
 import org.qosp.notes.ui.recorder.RECORD_CODE
@@ -169,6 +178,13 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     val markwon: Markwon by inject()
 
     val markwonEditor: MarkwonEditor by inject()
+
+    private val linkIndexRepository: LinkIndexRepository by inject()
+    private val noteRepository: NoteRepository by inject()
+    private val preferenceRepository: PreferenceRepository by inject()
+    private var suggestionStrip: org.qosp.notes.ui.links.LinkSuggestionStrip? = null
+    private var headingScrollDone = false
+    private var renderedLinkIndex: LinkIndex? = null
 
     override val hasDefaultAnimation = false
     override val toolbar: Toolbar
@@ -356,6 +372,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         setupEditTexts()
         setupMarkdown()
         setupImageLayout()
+        setupWikiLinks()
         setupListeners()
 
         toolbar.setTitleTextColor(Color.TRANSPARENT)
@@ -540,6 +557,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     }
 
     override fun onDestroyView() {
+        suggestionStrip = null
         // Dismiss the snackbar which is shown for deleted notes
         snackbar?.dismiss()
         itemTouchHelper.attachToRecyclerView(null)
@@ -744,6 +762,104 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         )
     }
 
+    // --- Black Pearl: linked notes, tap a [[link]] pill in the preview ---
+
+    private fun setupWikiLinks() {
+        suggestionStrip = org.qosp.notes.ui.links.LinkSuggestionStrip(
+            binding.editTextContent, binding.suggestionScroll, binding.suggestionButtons, binding.formatScroll,
+            { linkIndexRepository.index.value }, { data.note?.id }
+        )
+        binding.textViewContentPreview.setTag(
+            R.id.wiki_link_listener,
+            WikiLinkPlugin.WikiLinkClick { target, heading -> openWikiLink(target, heading) }
+        )
+        // pills show whether their note exists: redraw them when the link index changes
+        linkIndexRepository.index.collect(viewLifecycleOwner) { index ->
+            val note = data.note ?: return@collect
+            if (index !== renderedLinkIndex && note.isMarkdownEnabled) renderContentPreview(note)
+            updateBacklinks(note)
+            setMarkdownToolbarVisibility(note)
+        }
+    }
+
+    /** "Linked from · N": preview mode only, not for list notes and not for notes in the bin. */
+    private fun updateBacklinks(note: Note?) {
+        val backlinks = binding.backlinks
+        if (note == null || note.isList || note.isDeleted || model.inEditMode) {
+            backlinks.show(emptyList()) {}
+            return
+        }
+        backlinks.show(linkIndexRepository.index.value.backlinks(note.id)) { openLinkedNote(it.from.id, null) }
+    }
+
+    private fun renderContentPreview(note: Note) {
+        val preview = binding.textViewContentPreview
+        if (note.isMarkdownEnabled) {
+            renderedLinkIndex = linkIndexRepository.index.value
+            // Seems to be crashing often without wrapping it in a post { } call
+            preview.post {
+                markwon.applyTo(preview, note.content) {
+                    tableReplacement = { Code(getString(R.string.message_cannot_preview_table)) }
+                    maximumTableColumns = 15
+                }
+                scrollToHeadingOnce()
+            }
+        } else {
+            preview.text = note.content
+        }
+    }
+
+    private fun openWikiLink(target: String, heading: String?) {
+        val existing = linkIndexRepository.index.value.resolve(target)
+        if (existing != null) return openLinkedNote(existing.id, heading)
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.link_create_title, target))
+            .setMessage(R.string.link_create_message)
+            .setPositiveButton(R.string.link_create_open) { _, _ ->
+                val notebookId = data.note?.notebookId
+                viewLifecycleOwner.lifecycleScope.launch {
+                    // fresh index: the shared one lags a moment behind changes and must not cause a duplicate note
+                    val index = withContext(Dispatchers.Default) { LinkIndex(noteRepository.getNonDeleted().first()) }
+                    val localOnly = preferenceRepository.get<NewNotesSyncable>().first() == NewNotesSyncable.NO
+                    openLinkedNote(LinkActions.createOrOpen(target, notebookId, localOnly, noteRepository, index), heading)
+                }
+            }
+            .setNegativeButton(R.string.action_cancel, null)
+            .show()
+    }
+
+    private fun openLinkedNote(id: Long, heading: String?) {
+        findNavController().navigate(
+            R.id.fragment_editor,
+            bundleOf("transitionName" to "editor_$id", "noteId" to id, "scrollToHeading" to (heading ?: ""))
+        )
+    }
+
+    /** Opened from a `[[Note#Heading]]` link: scroll the preview once to the first heading with that text. */
+    private fun scrollToHeadingOnce() {
+        val heading = args.scrollToHeading.trim()
+        if (headingScrollDone || heading.isEmpty()) return
+        headingScrollDone = true
+        val preview = binding.textViewContentPreview
+        val scrollView = binding.scrollView
+        preview.post {
+            val layout = preview.layout ?: return@post
+            val text = preview.text as? Spanned ?: return@post
+            val start = text.getSpans(0, text.length, HeadingSpan::class.java)
+                .map { text.getSpanStart(it) to text.getSpanEnd(it) }
+                .sortedBy { it.first }
+                .firstOrNull { (s, e) -> s in 0 until e && text.substring(s, e).trim().equals(heading, ignoreCase = true) }
+                ?.first ?: return@post
+            var y = preview.totalPaddingTop + layout.getLineTop(layout.getLineForOffset(start))
+            var view: View = preview
+            while (view !== scrollView) {
+                y += view.top
+                view = view.parent as? View ?: return@post
+            }
+            scrollView.smoothScrollTo(0, y)
+        }
+    }
+
     private fun imageLayout(ref: ImageBlocks.Ref) = ImageBlocks.blocks(currentContent().orEmpty())
         .filter { it.destination == ref.destination }.getOrNull(ref.occurrence)?.layout ?: ImageBlocks.Layout()
 
@@ -862,6 +978,8 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         if (note == null) return@with
 
         containerBottomToolbar.isVisible = !isList && note.isMarkdownEnabled && model.inEditMode && contentHasFocus
+
+        suggestionStrip?.refresh(containerBottomToolbar.isVisible)
 
         scrollView.updateLayoutParams<ConstraintLayout.LayoutParams> {
             // the floating formatting pill (64dp + 16dp margin) must not cover the last lines
@@ -1095,17 +1213,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
             // Also set text of preview textviews
             textViewTitlePreview.text = data.note.title.ifEmpty { getString(R.string.indicator_untitled) }
 
-            if (isMarkdownEnabled) {
-                // Seems to be crashing often without wrapping it in a post { } call
-                textViewContentPreview.post {
-                    markwon.applyTo(textViewContentPreview, data.note.content) {
-                        tableReplacement = { Code(getString(R.string.message_cannot_preview_table)) }
-                        maximumTableColumns = 15
-                    }
-                }
-            } else {
-                textViewContentPreview.text = data.note.content
-            }
+            renderContentPreview(data.note)
 
             setupMenuItems(data.note, data.note.reminders.isNotEmpty())
 
@@ -1531,6 +1639,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
         fabChangeMode.setImageResource(if (model.inEditMode) R.drawable.ic_show else R.drawable.ic_pencil)
         setMarkdownToolbarVisibility(note)
+        updateBacklinks(note)
     }
 
     private fun hasNoteEmptyContent(note: Note? = data.note): Boolean {

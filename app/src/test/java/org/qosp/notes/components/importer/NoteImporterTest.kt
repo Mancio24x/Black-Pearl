@@ -211,7 +211,7 @@ class NoteImporterTest {
         assertEquals(listOf("scuola", "storia"), history.tags)
         assertEquals(java.time.LocalDateTime.parse("2023-02-01T10:00").atZone(java.time.ZoneId.systemDefault()).toEpochSecond(), history.created)
         assertEquals(
-            "Firenze e i Medici.\n\n![mappa.png](bp-import:0)\n\nVedi il diario e ![schema](bp-import:1)\n\nsource: libro di testo",
+            "Firenze e i Medici.\n\n![mappa.png](bp-import:0)\n\nVedi [[Diario|il diario]] e ![schema](bp-import:1)\n\nsource: libro di testo",
             history.content,
         )
         assertEquals(listOf("mappa.png", "schema uno.png"), history.files.map { it.name })

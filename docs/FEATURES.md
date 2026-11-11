@@ -35,3 +35,7 @@ Status legend: **Existing** (inherited from Quillpad, untouched) · **To improve
 | 7 | Simpler Material 3 menus: note options and note long-press in one rounded sheet (round buttons, short group, switches under "More settings", Delete last), picture options as segmented choices, rounded sheets and popup menus everywhere | Completed — emulator screenshots in CI, phone check pending | `feature/editor-menus` |
 | 8 | Move and resize pictures by hand: tap a picture → frame with a corner handle (live size, snaps to 25/50/75/100 %) and a move handle / drag the picture (drop line, auto-scroll), small bar (align, more, remove); pictures between two text lines tappable | Completed — emulator screenshots in CI, phone check pending | `feature/photo-handles` |
 | 9 | App lock: PIN of 4–6 digits (stored as a salted hash), fingerprint / face / phone screen lock, lock after 0/1/5/15 min in the background, 30 s wait after 5 wrong PINs, recents preview hidden on Android 13+ | Completed — unit tests + device test + emulator screenshots, phone check pending | `feature/app-lock` |
+
+## Linked notes
+
+Type `[[` in a Markdown note to choose a title. Tap a link in the preview to open or create its target. The backlinks section shows where the note is cited. Open Network in the drawer to explore, search, drag and zoom. From a node, create a new note linking back to it.

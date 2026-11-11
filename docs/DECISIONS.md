@@ -77,3 +77,7 @@ Newest last. Format: date — decision — why.
     no back-stack tricks); state in the `AppLock` singleton driven by `ProcessLifecycleOwner`. Default timeout 1 minute
     so camera / file picker / share do not ask for the PIN again. New dependencies: `androidx.biometric`,
     `lifecycle-process`. The database is not encrypted: the lock protects the app's screens, not the files.
+
+## Linked notes and the Network
+
+Keep Obsidian wiki links in Markdown. Derive the graph in memory without changing the database or backup format. Exclude hidden and deleted notes. When titles coincide, choose the most recently modified note.

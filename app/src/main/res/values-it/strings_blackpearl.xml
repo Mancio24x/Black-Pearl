@@ -169,6 +169,30 @@
     <!-- Note editor, design 2 -->
     <string name="action_insert_list">Elenco puntato</string>
     <string name="image_size_percent">%1$d%%</string>
+    <!-- Linked notes: tapping a [[link]] to a note that does not exist yet -->
+    <string name="link_create_title">Creare «%1$s»?</string>
+    <string name="link_create_message">Verrà creata una nota con questo titolo, nello stesso taccuino. Il collegamento funzionerà subito, anche in Obsidian.</string>
+    <string name="link_create_open">Crea e apri</string>
+    <string name="link_backlinks_header">Collegata da · %1$d</string>
+    <string name="link_suggest_create">Crea «%1$s»</string>
+    <string name="link_suggest_missing">%1$s (citata)</string>
+    <string name="nav_network">Rete</string>
+    <string name="network_search">Cerca nella rete</string>
+    <string name="network_unlinked">Note senza collegamenti</string>
+    <string name="network_show_all">Mostra tutti</string>
+    <string name="network_recenter">Ricentra</string>
+    <string name="network_empty">Scrivi [[ in una nota per collegarla a un’altra</string>
+    <string name="network_open">Apri</string>
+    <string name="network_new_linked">Nuova nota collegata</string>
+    <string name="network_only_its_links">Solo i suoi collegamenti</string>
+    <string name="network_ghost_message">Questa nota non esiste ancora. È citata in %1$s.</string>
+    <string name="network_create">Crea nota</string>
+    <string name="network_counts">%1$d collegamenti · citata da %2$d</string>
+    <string name="network_source">Scegli la nota di partenza</string>
+    <string name="network_title">Titolo della nuova nota</string>
+    <string name="network_exists">Esiste già una nota con questo titolo.</string>
+    <string name="network_no_result">Nessuna nota trovata</string>
+    <string name="network_results">Risultati della ricerca</string>
     <!-- Formatting bar (simple) -->
     <string name="fmt_bold">Grassetto</string>
     <string name="fmt_italic">Corsivo</string>

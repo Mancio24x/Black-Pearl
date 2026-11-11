@@ -71,7 +71,6 @@ object TextFormats {
 object MarkdownLinks {
     private val wikiEmbed = Regex("""!\[\[([^\]]+)]]""")
     private val image = Regex("""!\[([^\]]*)]\(\s*<?([^)<>\s]+)>?(?:\s+["'][^"']*["'])?\s*\)""")
-    private val wikiLink = Regex("""(?<!!)\[\[([^\]|#]+)(?:#[^\]|]*)?(?:\|([^\]]+))?]]""")
     private val fileLink = Regex("""(?<!!)\[([^\]]*)]\(\s*<?([^)<>\s]+)>?\s*\)""")
     private val scheme = Regex("""^[a-zA-Z][a-zA-Z0-9+.-]*:""")
 
@@ -93,7 +92,6 @@ object MarkdownLinks {
                 else -> context.resolve(entry, url)?.let { files.image(ImportedFile.of(it), alt) } ?: m.value
             }
         }
-        out = wikiLink.replace(out) { m -> m.groupValues[2].ifBlank { m.groupValues[1] }.trim() } // [[Note|alias]] → alias
         out = fileLink.replace(out) { m -> // links to other notes or to files of the export
             val (label, url) = m.destructured
             if (scheme.containsMatchIn(url) || url.startsWith("#")) return@replace m.value

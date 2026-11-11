@@ -167,6 +167,31 @@
     <!-- Note editor, design 2 -->
     <string name="action_insert_list">Bulleted list</string>
     <string name="image_size_percent">%1$d%%</string>
+    <!-- Linked notes: tapping a [[link]] to a note that does not exist yet -->
+    <string name="link_create_title">Create «%1$s»?</string>
+    <string name="link_create_message">A note with this title will be created, in the same notebook. The link will work right away, in Obsidian too.</string>
+    <string name="link_create_open">Create and open</string>
+    <!-- Linked notes: notes that link to the open note -->
+    <string name="link_backlinks_header">Linked from · %1$d</string>
+    <string name="link_suggest_create">Create «%1$s»</string>
+    <string name="link_suggest_missing">%1$s (cited)</string>
+    <string name="nav_network">Network</string>
+    <string name="network_search">Search the network</string>
+    <string name="network_unlinked">Notes without links</string>
+    <string name="network_show_all">Show all</string>
+    <string name="network_recenter">Recenter</string>
+    <string name="network_empty">Write [[ in a note to link it to another one</string>
+    <string name="network_open">Open</string>
+    <string name="network_new_linked">New linked note</string>
+    <string name="network_only_its_links">Only its links</string>
+    <string name="network_ghost_message">This note does not exist yet. Cited in %1$s.</string>
+    <string name="network_create">Create note</string>
+    <string name="network_counts">%1$d links · linked from %2$d</string>
+    <string name="network_source">Choose the source note</string>
+    <string name="network_title">New note title</string>
+    <string name="network_exists">A note with this title already exists.</string>
+    <string name="network_no_result">No matching notes</string>
+    <string name="network_results">Search results</string>
     <!-- Formatting bar (simple) -->
     <string name="fmt_bold">Bold</string>
     <string name="fmt_italic">Italic</string>
