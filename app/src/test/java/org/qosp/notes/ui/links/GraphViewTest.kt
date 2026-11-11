@@ -138,10 +138,10 @@ class GraphViewTest {
 
     private var now = 0L
 
-    /** Moves the fake timelapse clock and lets a few frames run so the view reads it. */
+    /** Moves the fake timelapse clock and runs one tick directly (no looper: it would re-post forever at a frozen time). */
     private fun advance(ms: Long) {
         now += ms
-        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(50))
+        graph.timelapseTick()
     }
 
     @Test fun timelapseShowsNotesInCreationOrder() {

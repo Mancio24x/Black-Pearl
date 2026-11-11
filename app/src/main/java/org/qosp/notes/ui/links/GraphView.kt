@@ -87,7 +87,11 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
     private var timelapseQueued = false
     private val timelapseFrame = Choreographer.FrameCallback {
         timelapseQueued = false
-        val plan = schedule ?: return@FrameCallback
+        timelapseTick()
+    }
+
+    internal fun timelapseTick() {
+        val plan = schedule ?: return
         val elapsed = clock() - startedAt
         if (elapsed >= plan.duration) {
             stopTimelapse()
