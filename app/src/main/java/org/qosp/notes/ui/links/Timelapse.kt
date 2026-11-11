@@ -18,8 +18,10 @@ internal object Timelapse {
         val duration = duration(count)
         val times = appearAt.values.sorted()
         val result = HashMap<String, Long>()
+        val firstRank = HashMap<Long, Int>()
+        times.forEachIndexed { i, t -> firstRank.putIfAbsent(t, i) }
         for ((key, created) in appearAt) {
-            val rank = times.indexOf(created)
+            val rank = firstRank.getValue(created)
             result[key] = duration * (rank + 1) / (count + 1)
         }
         for (key in others) {

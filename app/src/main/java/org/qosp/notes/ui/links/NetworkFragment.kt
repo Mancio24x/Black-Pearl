@@ -109,6 +109,7 @@ class NetworkFragment : BaseFragment(R.layout.fragment_network) {
                     ui.graph.setGraph(graph.nodes, graph.edges, graph.positions)
                     ui.networkFocusChip.isVisible = model.focus.value != null
                     ui.networkDepth.isVisible = model.focus.value != null
+                    ui.networkDepthLabel.isVisible = model.focus.value != null
                     ui.networkEmptyView.isVisible = graph.nodes.isEmpty()
                     ui.networkAdd.isEnabled = model.index.value.titles.isNotEmpty()
                 }

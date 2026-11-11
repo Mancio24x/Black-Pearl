@@ -278,7 +278,13 @@ Completed the editor suggestion strip and the Network destination, including gra
 - Tests: `GraphPhysicsTest` (rest, held node, neighbours follow, settles, edge cases), `GraphViewTest` (highlight,
   drag pulls the linked note). Forces tuned in a JVM prototype; Android tests run on CI.
 
-## 2026-11-11 — Network screen: tag/attachment chips, levels slider, timelapse
+## 2026-11-11 — Network: depth levels, tags/attachments, timelapse (Tasks 1-4)
+- Task 1: `InlineTags.kt` (inline `#tag` parser); `WikiLinks` code-range helpers made `internal`.
+- Task 2: `LinkGraph.kt`: `NodeKind`, `GraphNode.kind` + `attachmentType`; `LinkIndex.tagsOf` (app + inline tags merged case-insensitively, inline tags parsed once per note); `LinkGraph` depth BFS from the focus, edges among kept nodes, tag and attachment nodes.
+- Task 3: `Timelapse.kt` (rank schedule, first rank precomputed per time) and `GraphView` node shapes + `playTimelapse` (needs at least 2 dated notes).
+- Final review fixes: `GraphViewTest` tap TAG/ATTACHMENT and `displayTitle` tests; visible "Levels" label (`network_depth_label`) beside the slider.
+- Tests added/changed: `InlineTagsTest`, `LinkGraphTest`, `GraphViewTest`. Not run locally (no Android SDK); CI.
+- Task 4 details below.
 - `fragment_network.xml`: chips `network_tags_chip`, `network_files_chip`; Material `Slider` `network_depth` (1..5, only visible while focused). `NetworkViewModel`: `showTags`, `showAttachments`, `depth` combined into `graph`.
 - `NetworkFragment`: play item in the toolbar (`hasMenu = true`, added in `onCreateOptionsMenu`, so BaseFragment's menu invalidation cannot clear it). Every chip, Recenter, Show all, the slider and play-while-playing stop the timelapse. Tag tap/hold opens a sheet listing its notes; attachment tap opens its note, hold shows the owner note's sheet. `displayTitle` gives blank attachments a type label. Strings in EN and IT.
 - Tests: not run (no Android SDK in this environment); CI to compile. Open: `NetworkNavigationTest` not touched, verify on device.

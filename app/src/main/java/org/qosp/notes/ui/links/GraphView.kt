@@ -136,7 +136,7 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
         stopAnimation()
         val noteKeys = nodes.filter { it.kind == NodeKind.NOTE }.map { it.key }.toSet()
         val dated = appearAt.filterKeys { it in noteKeys }
-        if (dated.isEmpty()) return
+        if (dated.size < 2) return
         val others = nodes.filter { it.kind != NodeKind.NOTE }.map { it.key }
         val plan = Timelapse.schedule(dated, others, neighbours)
         schedule = plan

@@ -29,6 +29,10 @@
                 android:layout_width="wrap_content" android:layout_height="wrap_content"/>
             <com.google.android.material.chip.Chip android:id="@+id/network_focus_chip" android:visibility="gone"
                 android:text="@string/network_show_all" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            <TextView android:id="@+id/network_depth_label" android:visibility="gone"
+                android:text="@string/network_depth" android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"/>
             <com.google.android.material.slider.Slider android:id="@+id/network_depth" android:visibility="gone"
                 android:valueFrom="1" android:valueTo="5" android:stepSize="1" android:value="1"
                 android:contentDescription="@string/network_depth"
