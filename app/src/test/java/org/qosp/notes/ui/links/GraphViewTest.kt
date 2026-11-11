@@ -2,19 +2,25 @@ package org.qosp.notes.ui.links
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.os.Looper
 import android.view.ContextThemeWrapper
 import android.view.MotionEvent
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.qosp.notes.R
+import org.qosp.notes.components.links.GraphEdge
 import org.qosp.notes.components.links.GraphNode
 import org.qosp.notes.components.links.PointF2
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import java.time.Duration
+import kotlin.math.abs
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
@@ -84,5 +90,36 @@ class GraphViewTest {
         graph.layout(0, 0, 600, 420) // the keyboard opens
         tap(400f, 400f)
         assertEquals(node, tapped)
+    }
+
+    // on screen a(380,300) is linked to b(460,300); c(140,300) has no link
+    private val a = GraphNode("a", "A", 1, 1)
+    private val b = GraphNode("b", "B", 2, 1)
+    private val c = GraphNode("c", "C", 3, 0)
+
+    private fun threeNodes() = graph.setGraph(listOf(a, b, c), listOf(GraphEdge("a", "b")),
+        mapOf("a" to PointF2(0f, 0f), "b" to PointF2(40f, 0f), "c" to PointF2(-120f, 0f)))
+
+    @Test fun pressingANodeHighlightsItAndItsLinkedNotes() {
+        threeNodes()
+        touch(MotionEvent.ACTION_DOWN, 380f, 300f)
+        assertEquals(setOf("a", "b"), graph.highlightedKeys)
+        touch(MotionEvent.ACTION_UP, 380f, 300f)
+        assertEquals(emptySet<String>(), graph.highlightedKeys)
+        graph.highlighted = c
+        assertEquals(setOf("c"), graph.highlightedKeys)
+    }
+
+    @Test fun draggingANodePullsItsLinkedNote() {
+        threeNodes()
+        touch(MotionEvent.ACTION_DOWN, 380f, 300f)
+        touch(MotionEvent.ACTION_MOVE, 380f, 360f)
+        touch(MotionEvent.ACTION_MOVE, 380f, 420f)
+        touch(MotionEvent.ACTION_UP, 380f, 420f)
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofSeconds(4))
+        val linked = graph.positionOf("b")!!.y
+        val unlinked = abs(graph.positionOf("c")!!.y)
+        assertTrue("linked note moved $linked, unlinked $unlinked", linked > 8f && linked > 3 * unlinked)
+        assertEquals(null, tapped)
     }
 }

@@ -10,6 +10,7 @@ import android.graphics.Region
 import android.text.TextPaint
 import android.text.TextUtils
 import android.util.AttributeSet
+import android.view.Choreographer
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
@@ -18,6 +19,7 @@ import com.google.android.material.color.MaterialColors
 import org.qosp.notes.R
 import org.qosp.notes.components.links.GraphEdge
 import org.qosp.notes.components.links.GraphNode
+import org.qosp.notes.components.links.GraphPhysics
 import org.qosp.notes.components.links.PointF2
 import kotlin.math.abs
 import kotlin.math.hypot
@@ -52,6 +54,17 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
     private var edges = emptyList<GraphEdge>()
     private var original = emptyMap<String, PointF2>()
     private val positions = mutableMapOf<String, PointF2>()
+    private var neighbours = emptyMap<String, Set<String>>()
+    private var physics: GraphPhysics? = null
+    private var animating = false
+    private val frame = Choreographer.FrameCallback {
+        animating = false
+        val sim = physics ?: return@FrameCallback
+        val moving = sim.step()
+        for (key in original.keys) sim.position(key)?.let { positions[key] = it }
+        invalidate()
+        if (moving) runPhysics()
+    }
     private var scale = 1f
     private var dx = 0f
     private var dy = 0f
@@ -67,6 +80,19 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
     private val hold = Runnable { if (!dragged && !pinched && pressedNode != null) performLongClick() }
     var onNodeLongPress: (GraphNode) -> Unit = {}
     var onNodeTap: (GraphNode) -> Unit = {}
+
+    /** Node kept highlighted with its neighbours while no finger is on the graph (its action sheet is open). */
+    var highlighted: GraphNode? = null
+        set(value) { field = value; invalidate() }
+
+    /** The node whose links are highlighted (the one under the finger, else [highlighted]) and its neighbours. */
+    internal val highlightedKeys: Set<String>
+        get() {
+            val key = (pressedNode ?: highlighted)?.key ?: return emptySet()
+            return neighbours[key].orEmpty() + key
+        }
+
+    internal fun positionOf(key: String): PointF2? = positions[key]
     var query: String = ""
         set(value) { field = value.trim(); invalidate() }
 
@@ -97,12 +123,21 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
         nodes = newNodes
         edges = newEdges
         original = layout
+        neighbours = HashMap<String, MutableSet<String>>().also { map ->
+            for (e in newEdges) {
+                map.getOrPut(e.from) { HashSet() }.add(e.to)
+                map.getOrPut(e.to) { HashSet() }.add(e.from)
+            }
+        }
+        if (highlighted?.let { h -> newNodes.none { it.key == h.key } } == true) highlighted = null
         recenter()
     }
 
     fun recenter() {
+        stopAnimation()
         positions.clear()
         positions.putAll(original)
+        physics = if (original.size in 2..GraphPhysics.MAX_LIVE_NODES) GraphPhysics(original, edges) else null
         val points = positions.values
         val left = points.minOfOrNull { it.x } ?: 0f
         val right = points.maxOfOrNull { it.x } ?: 0f
@@ -124,13 +159,26 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         paint.pathEffect = null
+        val focus = (pressedNode ?: highlighted)?.key
+        val lit = highlightedKeys
         paint.color = outline
-        paint.alpha = 215
+        paint.alpha = if (focus == null) 215 else 48
         paint.strokeWidth = 1.5f * density
         for (edge in edges) {
+            if (edge.from == focus || edge.to == focus) continue
             val a = positions[edge.from] ?: continue
             val b = positions[edge.to] ?: continue
             canvas.drawLine(dx + a.x * scale, dy + a.y * scale, dx + b.x * scale, dy + b.y * scale, paint)
+        }
+        if (focus != null) {
+            paint.color = primary
+            paint.strokeWidth = 2.5f * density
+            for (edge in edges) {
+                if (edge.from != focus && edge.to != focus) continue
+                val a = positions[edge.from] ?: continue
+                val b = positions[edge.to] ?: continue
+                canvas.drawLine(dx + a.x * scale, dy + a.y * scale, dx + b.x * scale, dy + b.y * scale, paint)
+            }
         }
         labels.clear()
         occupiedLabels.setEmpty()
@@ -139,7 +187,8 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
             val x = dx + p.x * scale
             val y = dy + p.y * scale
             val r = (4f + 1.8f * sqrt(node.degree.toFloat())).coerceAtMost(18f) * density
-            val matches = node.displayTitle(context).contains(query, ignoreCase = true)
+            val matches = (focus == null || node.key in lit) &&
+                (focus != null || node.displayTitle(context).contains(query, ignoreCase = true))
             paint.style = if (node.noteId == null) Paint.Style.STROKE else Paint.Style.FILL
             paint.color = if (node.noteId == null) outline else primary
             paint.alpha = if (matches) 255 else 64
@@ -207,8 +256,21 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
         return true
     }
 
+    private fun runPhysics() {
+        if (animating) return
+        animating = true
+        Choreographer.getInstance().postFrameCallback(frame)
+    }
+
+    private fun stopAnimation() {
+        if (animating) Choreographer.getInstance().removeFrameCallback(frame)
+        animating = false
+        physics?.stop()
+    }
+
     override fun onDetachedFromWindow() {
         removeCallbacks(hold)
+        stopAnimation()
         super.onDetachedFromWindow()
     }
 
@@ -226,13 +288,18 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
                 pressX = lastX; pressY = lastY
                 pinched = false; dragged = false; held = false
                 pressedNode = hit(lastX, lastY)
-                if (pressedNode != null) postDelayed(hold, ViewConfiguration.getLongPressTimeout().toLong())
+                if (pressedNode != null) {
+                    postDelayed(hold, ViewConfiguration.getLongPressTimeout().toLong())
+                    invalidate()
+                }
                 parent?.requestDisallowInterceptTouchEvent(true)
             }
             MotionEvent.ACTION_POINTER_DOWN -> {
                 removeCallbacks(hold)
                 pinched = true
+                if (pressedNode != null) physics?.release()
                 pressedNode = null
+                invalidate()
             }
             MotionEvent.ACTION_POINTER_UP -> if (event.pointerCount == 2) {
                 val remaining = 1 - event.actionIndex
@@ -248,8 +315,11 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
                     val pos = positions[key]
                     val sx = event.x - lastX
                     val sy = event.y - lastY
-                    if (pos != null && key != null) positions[key] = PointF2(pos.x + sx / scale, pos.y + sy / scale)
-                    else { dx += sx; dy += sy }
+                    if (pos != null && key != null) {
+                        val moved = PointF2(pos.x + sx / scale, pos.y + sy / scale)
+                        positions[key] = moved
+                        physics?.let { it.drag(key, moved); runPhysics() }
+                    } else { dx += sx; dy += sy }
                     lastX = event.x; lastY = event.y
                     invalidate()
                 }
@@ -257,7 +327,12 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 removeCallbacks(hold)
                 if (event.actionMasked == MotionEvent.ACTION_UP && !dragged && !pinched && !held) performClick()
+                if (pressedNode != null && physics?.isActive == true) {
+                    physics?.release()
+                    runPhysics()
+                }
                 pressedNode = null
+                invalidate()
                 parent?.requestDisallowInterceptTouchEvent(false)
             }
         }

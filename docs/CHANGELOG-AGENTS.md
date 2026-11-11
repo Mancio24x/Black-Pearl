@@ -268,3 +268,12 @@ Completed the editor suggestion strip and the Network destination, including gra
 - GraphView draws and hit-tests visible labels, strengthens edges and accepts a drag from a label. Tap opens an existing note by ID. Hold opens its available actions. Unresolved references offer explicit creation.
 - LinkGraph keeps duplicate and untitled notes separate and the global view includes unlinked notes by default. Hidden and deleted notes remain excluded. WikiLinkPlugin measures plain labels when drawing pills.
 - Added regression coverage for duplicates, untitled sources, large-graph labels, rendered pill text, and dragging then opening a note on the device. Build, lint, and emulator results are tracked on the PR.
+
+## 2026-11-11 — Network: live dragging and neighbour highlight
+- New `components/links/GraphPhysics.kt`: per-frame version of GraphLayout's forces. Start positions are the resting
+  state (leftover force subtracted), so nothing moves until a node is dragged; linked notes follow, then it settles
+  (~1.5 s) and stops. Off above 300 nodes (only the dragged node moves, as before).
+- `GraphView`: runs it with Choreographer while a node is dragged/settling; the node under the finger (or the one whose
+  sheet is open, `highlighted`) and its neighbours stay bright, their links in the theme colour, the rest dims.
+- Tests: `GraphPhysicsTest` (rest, held node, neighbours follow, settles, edge cases), `GraphViewTest` (highlight,
+  drag pulls the linked note). Forces tuned in a JVM prototype; Android tests run on CI.
