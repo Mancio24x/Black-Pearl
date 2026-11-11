@@ -81,13 +81,14 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
         if (moving) runPhysics()
     }
     private var schedule: TimelapseSchedule? = null
+    internal var clock: () -> Long = { SystemClock.uptimeMillis() }
     private var startedAt = 0L
     private var shown: Set<String>? = null
     private var timelapseQueued = false
     private val timelapseFrame = Choreographer.FrameCallback {
         timelapseQueued = false
         val plan = schedule ?: return@FrameCallback
-        val elapsed = SystemClock.uptimeMillis() - startedAt
+        val elapsed = clock() - startedAt
         if (elapsed >= plan.duration) {
             stopTimelapse()
         } else {
@@ -140,7 +141,7 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
         val others = nodes.filter { it.kind != NodeKind.NOTE }.map { it.key }
         val plan = Timelapse.schedule(dated, others, neighbours)
         schedule = plan
-        startedAt = SystemClock.uptimeMillis()
+        startedAt = clock()
         shown = plan.visibleAt(0)
         invalidate()
         queueTimelapse()

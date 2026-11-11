@@ -136,21 +136,32 @@ class GraphViewTest {
         listOf(GraphEdge("note:1", "note:2"), GraphEdge("note:2", "note:3"), GraphEdge("note:3", "tag:x")),
         mapOf("note:1" to PointF2(-60f, 0f), "note:2" to PointF2(0f, 0f), "note:3" to PointF2(60f, 0f), "tag:x" to PointF2(120f, 0f)))
 
+    private var now = 0L
+
+    /** Moves the fake timelapse clock and lets a few frames run so the view reads it. */
+    private fun advance(ms: Long) {
+        now += ms
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(50))
+    }
+
     @Test fun timelapseShowsNotesInCreationOrder() {
         timelapseGraph()
+        graph.clock = { now }
         graph.playTimelapse(created)
         assertTrue(graph.isPlayingTimelapse)
         assertEquals(emptySet<String>(), graph.visibleKeys)
-        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(1600))
+        advance(1600)
         assertEquals(setOf("note:1", "note:2"), graph.visibleKeys)
-        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(1900))
+        advance(1900)
         assertFalse(graph.isPlayingTimelapse)
         assertNull(graph.visibleKeys)
     }
 
     @Test fun touchStopsTimelapse() {
         timelapseGraph()
+        graph.clock = { now }
         graph.playTimelapse(created)
+        assertTrue(graph.isPlayingTimelapse)
         touch(MotionEvent.ACTION_DOWN, 20f, 20f)
         assertNull(graph.visibleKeys)
         assertFalse(graph.isPlayingTimelapse)
@@ -158,8 +169,9 @@ class GraphViewTest {
 
     @Test fun nodesAppearWithTheirFirstNote() {
         timelapseGraph()
+        graph.clock = { now }
         graph.playTimelapse(created)
-        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(1600))
+        advance(1600)
         assertFalse("tag:x" in graph.visibleKeys!!)
     }
 
