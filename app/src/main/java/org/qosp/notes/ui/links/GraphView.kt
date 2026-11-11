@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Region
+import android.os.SystemClock
 import android.text.TextPaint
 import android.text.TextUtils
 import android.util.AttributeSet
@@ -36,6 +37,9 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
     private val ink = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurface)
     private val outline = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOutline)
     private val surface = MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurface)
+    private val tertiary = MaterialColors.getColor(this, com.google.android.material.R.attr.colorTertiary, primary)
+    private val muted = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurfaceVariant, ink)
+    private val square = RectF()
     private val caption = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ink
         textSize = 13 * resources.displayMetrics.scaledDensity
@@ -66,6 +70,22 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
         invalidate()
         if (moving) runPhysics()
     }
+    private var schedule: TimelapseSchedule? = null
+    private var startedAt = 0L
+    private var shown: Set<String>? = null
+    private var timelapseQueued = false
+    private val timelapseFrame = Choreographer.FrameCallback {
+        timelapseQueued = false
+        val plan = schedule ?: return@FrameCallback
+        val elapsed = SystemClock.uptimeMillis() - startedAt
+        if (elapsed >= plan.duration) {
+            stopTimelapse()
+        } else {
+            shown = plan.visibleAt(elapsed)
+            invalidate()
+            queueTimelapse()
+        }
+    }
     private var scale = 1f
     private var dx = 0f
     private var dy = 0f
@@ -94,6 +114,42 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
         }
 
     internal fun positionOf(key: String): PointF2? = positions[key]
+
+    /** Keys of the nodes shown so far while the timelapse plays; null when it is not playing (everything is shown). */
+    internal val visibleKeys: Set<String>? get() = shown
+
+    val isPlayingTimelapse: Boolean get() = schedule != null
+
+    /** Replays the graph growing: notes (key to creation seconds) appear in creation order, other nodes with their first note. */
+    fun playTimelapse(appearAt: Map<String, Long>) {
+        stopTimelapse()
+        stopAnimation()
+        val noteKeys = nodes.filter { it.kind == NodeKind.NOTE }.map { it.key }.toSet()
+        val dated = appearAt.filterKeys { it in noteKeys }
+        if (dated.isEmpty()) return
+        val others = nodes.filter { it.kind != NodeKind.NOTE }.map { it.key }
+        val plan = Timelapse.schedule(dated, others, neighbours)
+        schedule = plan
+        startedAt = SystemClock.uptimeMillis()
+        shown = plan.visibleAt(0)
+        invalidate()
+        queueTimelapse()
+    }
+
+    fun stopTimelapse() {
+        if (timelapseQueued) Choreographer.getInstance().removeFrameCallback(timelapseFrame)
+        timelapseQueued = false
+        val wasPlaying = schedule != null
+        schedule = null
+        shown = null
+        if (wasPlaying) invalidate()
+    }
+
+    private fun queueTimelapse() {
+        if (timelapseQueued) return
+        timelapseQueued = true
+        Choreographer.getInstance().postFrameCallback(timelapseFrame)
+    }
     var query: String = ""
         set(value) { field = value.trim(); invalidate() }
 
@@ -135,6 +191,7 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
     }
 
     fun recenter() {
+        stopTimelapse()
         stopAnimation()
         positions.clear()
         positions.putAll(original)
@@ -167,6 +224,7 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
         paint.strokeWidth = 1.5f * density
         for (edge in edges) {
             if (edge.from == focus || edge.to == focus) continue
+            if (shown?.let { edge.from !in it || edge.to !in it } == true) continue
             val a = positions[edge.from] ?: continue
             val b = positions[edge.to] ?: continue
             canvas.drawLine(dx + a.x * scale, dy + a.y * scale, dx + b.x * scale, dy + b.y * scale, paint)
@@ -176,6 +234,7 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
             paint.strokeWidth = 2.5f * density
             for (edge in edges) {
                 if (edge.from != focus && edge.to != focus) continue
+                if (shown?.let { edge.from !in it || edge.to !in it } == true) continue
                 val a = positions[edge.from] ?: continue
                 val b = positions[edge.to] ?: continue
                 canvas.drawLine(dx + a.x * scale, dy + a.y * scale, dx + b.x * scale, dy + b.y * scale, paint)
@@ -184,6 +243,7 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
         labels.clear()
         occupiedLabels.setEmpty()
         for (node in nodes) {
+            if (shown?.let { node.key !in it } == true) continue
             val p = positions[node.key] ?: continue
             val x = dx + p.x * scale
             val y = dy + p.y * scale
@@ -191,16 +251,32 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
             val matches = (focus == null || node.key in lit) &&
                 (focus != null || node.displayTitle(context).contains(query, ignoreCase = true))
             val ghost = node.kind == NodeKind.MISSING
-            paint.style = if (ghost) Paint.Style.STROKE else Paint.Style.FILL
-            paint.color = if (ghost) outline else primary
+            val file = node.kind == NodeKind.ATTACHMENT
+            paint.style = if (ghost || file) Paint.Style.STROKE else Paint.Style.FILL
+            paint.color = when (node.kind) {
+                NodeKind.MISSING -> outline
+                NodeKind.TAG -> tertiary
+                NodeKind.ATTACHMENT -> muted
+                NodeKind.NOTE -> primary
+            }
             paint.alpha = if (matches) 255 else 64
             paint.pathEffect = if (ghost) dashed else null
             paint.strokeWidth = 1.5f * density
-            canvas.drawCircle(x, y, r, paint)
+            when (node.kind) {
+                NodeKind.TAG -> {
+                    square.set(x - r, y - r, x + r, y + r)
+                    canvas.drawRoundRect(square, r * 0.3f, r * 0.3f, paint)
+                }
+                NodeKind.ATTACHMENT -> {
+                    val half = 2.5f * density
+                    canvas.drawRect(x - half, y - half, x + half, y + half, paint)
+                }
+                else -> canvas.drawCircle(x, y, r, paint)
+            }
             paint.style = Paint.Style.FILL
             paint.pathEffect = null
             if (matches && x in 0f..width.toFloat() && y in 0f..height.toFloat()) {
-                drawLabel(canvas, node, x, y, r)
+                drawLabel(canvas, node, x, y, if (file) 2.5f * density else r)
             }
         }
     }
@@ -272,6 +348,7 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
 
     override fun onDetachedFromWindow() {
         removeCallbacks(hold)
+        stopTimelapse()
         stopAnimation()
         super.onDetachedFromWindow()
     }
@@ -286,6 +363,7 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
         zoom.onTouchEvent(event)
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
+                stopTimelapse()
                 lastX = event.x; lastY = event.y
                 pressX = lastX; pressY = lastY
                 pinched = false; dragged = false; held = false
