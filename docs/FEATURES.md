@@ -38,4 +38,4 @@ Status legend: **Existing** (inherited from Quillpad, untouched) · **To improve
 
 ## Linked notes
 
-Type `[[` in a Markdown note to choose a title. Tap a link in the preview to open or create its target. The backlinks section shows where the note is cited. Open Network in the drawer to explore, search, drag and zoom. From a node, create a new note linking back to it.
+Type `[[` in a Markdown note to choose a title. Tap a link in the preview to open or create its target. The backlinks section shows where the note is cited. Open Network in the drawer to explore, search, drag and zoom. Dragging a note pulls its linked notes, like Obsidian; holding a finger on a note highlights it and its links. From a node, create a new note linking back to it.

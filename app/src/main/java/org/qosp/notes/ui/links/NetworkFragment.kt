@@ -115,6 +115,8 @@ class NetworkFragment : BaseFragment(R.layout.fragment_network) {
         sheet.setContentView(body)
         sheet.behavior.isDraggable = false
         sheet.behavior.state = com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+        binding.graph.highlighted = node
+        sheet.setOnDismissListener { view?.let { FragmentNetworkBinding.bind(it).graph.highlighted = null } }
         dialog = sheet
         sheet.show()
     }
