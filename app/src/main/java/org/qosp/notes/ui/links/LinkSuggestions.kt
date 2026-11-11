@@ -55,7 +55,7 @@ object LinkSuggestions {
     }
 
     private fun openStart(text: CharSequence, cursor: Int): Int? {
-        if (cursor < 2 || cursor > text.length) return null
+        if (cursor !in 2..text.length) return null
         val lineStart = text.lastIndexOf('\n', cursor - 1) + 1
         val open = text.lastIndexOf("[[", cursor - 2)
         if (open < lineStart) return null

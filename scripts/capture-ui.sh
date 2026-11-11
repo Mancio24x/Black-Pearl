@@ -52,6 +52,14 @@ for mode in no yes; do
   shot "whatsnew-night_$mode"
   tap_text "Continue" && sleep 3
   shot "main-night_$mode"
+  if tap_text "Open navigation drawer" && tap_text "Network"; then
+    if [ "$mode" = no ]; then shot "network"; else shot "network-dark"; fi
+    adb shell input keyevent KEYCODE_BACK; sleep 1
+  fi
+  if [ "$mode" = no ] && tap_text "The Bible"; then
+    shot "linked-note"
+    adb shell input keyevent KEYCODE_BACK; sleep 1
+  fi
   # Settings > Appearance, starting from the notes list
   tap_text "Open navigation drawer"; shot "drawer-night_$mode"
   if tap_text "Settings"; then

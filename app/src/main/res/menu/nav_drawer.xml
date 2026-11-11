@@ -18,6 +18,7 @@
                 android:icon="@drawable/ic_bin"
                 android:title="@string/nav_deleted"
                 android:orderInCategory="0"/>
+        <item android:id="@+id/fragment_network" android:icon="@drawable/ic_network" android:title="@string/nav_network"/>
     </group>
 
     <item

@@ -29,3 +29,7 @@
 
 - fastlane store metadata is still Quillpad's.
 - Release `v0.1.0` is an old unpublished draft: leave it.
+
+## Linked notes
+
+Renaming a note leaves its existing references untouched. Duplicate titles resolve to the most recently modified matching note. Embeds, block links and front-matter aliases are outside this release.

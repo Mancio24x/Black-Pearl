@@ -18,6 +18,9 @@
                 app:destination="@id/fragment_search"/>
     </fragment>
 
+    <fragment android:id="@+id/fragment_network" android:name="org.qosp.notes.ui.links.NetworkFragment"
+            android:label="@string/nav_network" android:layout="@layout/fragment_network"/>
+
     <fragment
             android:id="@+id/fragment_archive"
             android:name="org.qosp.notes.ui.archive.ArchiveFragment"

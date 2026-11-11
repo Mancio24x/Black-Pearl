@@ -225,3 +225,6 @@ Append one short entry per significant task: files, decisions, tests (with resul
 - Owner's standing approval: publish every version that passes CI without asking (`docs/handoff/RELEASE.md`, README).
 - Checks: YAML parses; the workflow itself only runs on GitHub (first real run = v0.7.2 after merge).
 
+## 2026-11-11 — Linked notes and Network
+
+Completed the editor suggestion strip and the Network destination, including graph gestures, note actions and searching. Added graph and on-device navigation tests and screenshot capture. The earlier test report showed four Robolectric initialisation failures because the app targets API 37 and the runner supports up to 36. Pinned the default JVM test SDK to 35; the app retains its target SDK.

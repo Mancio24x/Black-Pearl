@@ -179,6 +179,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     private val linkIndexRepository: LinkIndexRepository by inject()
     private val noteRepository: NoteRepository by inject()
     private val preferenceRepository: PreferenceRepository by inject()
+    private var suggestionStrip: org.qosp.notes.ui.links.LinkSuggestionStrip? = null
     private var headingScrollDone = false
     private var renderedLinkIndex: LinkIndex? = null
 
@@ -553,6 +554,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     }
 
     override fun onDestroyView() {
+        suggestionStrip = null
         // Dismiss the snackbar which is shown for deleted notes
         snackbar?.dismiss()
         itemTouchHelper.attachToRecyclerView(null)
@@ -760,6 +762,10 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     // --- Black Pearl: linked notes, tap a [[link]] pill in the preview ---
 
     private fun setupWikiLinks() {
+        suggestionStrip = org.qosp.notes.ui.links.LinkSuggestionStrip(
+            binding.editTextContent, binding.suggestionScroll, binding.suggestionButtons, binding.formatScroll,
+            { linkIndexRepository.index.value }, { data.note?.id }
+        )
         binding.textViewContentPreview.setTag(
             R.id.wiki_link_listener,
             WikiLinkPlugin.WikiLinkClick { target, heading -> openWikiLink(target, heading) }
@@ -769,6 +775,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
             val note = data.note ?: return@collect
             if (index !== renderedLinkIndex && note.isMarkdownEnabled) renderContentPreview(note)
             updateBacklinks(note)
+            setMarkdownToolbarVisibility(note)
         }
     }
 
@@ -968,6 +975,8 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         if (note == null) return@with
 
         containerBottomToolbar.isVisible = !isList && note.isMarkdownEnabled && model.inEditMode && contentHasFocus
+
+        suggestionStrip?.refresh(containerBottomToolbar.isVisible)
 
         scrollView.updateLayoutParams<ConstraintLayout.LayoutParams> {
             // the floating formatting pill (64dp + 16dp margin) must not cover the last lines

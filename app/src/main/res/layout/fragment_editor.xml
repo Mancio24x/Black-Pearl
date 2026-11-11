@@ -220,6 +220,7 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
         <HorizontalScrollView
+                android:id="@+id/format_scroll"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingHorizontal="8dp"
@@ -232,6 +233,14 @@
                     android:background="@android:color/transparent"
                     app:contentInsetStart="0dp"
                     app:menu="@menu/editor_bottom"/>
+        </HorizontalScrollView>
+        <HorizontalScrollView
+                android:id="@+id/suggestion_scroll" android:visibility="gone"
+                android:layout_width="match_parent" android:layout_height="match_parent"
+                android:paddingHorizontal="8dp" android:scrollbars="none">
+            <LinearLayout android:id="@+id/suggestion_buttons" android:orientation="horizontal"
+                    android:gravity="center_vertical" android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
         </HorizontalScrollView>
     </com.google.android.material.card.MaterialCardView>
 

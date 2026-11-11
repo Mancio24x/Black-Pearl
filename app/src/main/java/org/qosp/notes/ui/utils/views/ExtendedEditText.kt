@@ -20,6 +20,13 @@ class ExtendedEditText : AppCompatEditText {
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
+    var onCaretChanged: (() -> Unit)? = null
+
+    override fun onSelectionChanged(selStart: Int, selEnd: Int) {
+        super.onSelectionChanged(selStart, selEnd)
+        onCaretChanged?.invoke()
+    }
+
     val textWatchers: MutableList<TextWatcher> = mutableListOf()
 
     private var registry: SavedStateRegistry? = null
