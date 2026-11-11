@@ -41,4 +41,24 @@ class WikiLinksTest {
         val text = File("../docs/superpowers/specs/linked-notes/The Bible.md").readText()
         assertEquals(69, WikiLinks.find(text).size)
     }
+
+    @Test
+    fun strayBacktickDoesNotHideLaterParagraphs() {
+        assertEquals(listOf("X"), WikiLinks.find("use ` with care\n\n[[X]]\n\nand ` again").map { it.target })
+        assertEquals(emptyList<String>(), WikiLinks.find("`code\n[[X]] still code`").map { it.target })
+    }
+
+    @Test
+    fun fenceRules() {
+        // a ``` block is not closed by ~~~
+        assertEquals(emptyList<String>(), WikiLinks.find("```\n~~~\n[[A]]\n```").map { it.target })
+        // four spaces before ``` is not a fence, so nothing is opened and the link counts
+        assertEquals(listOf("B"), WikiLinks.find("    ```\n[[B]]").map { it.target })
+    }
+
+    @Test
+    fun keyIgnoresTheCaseOfTheExtension() {
+        assertEquals("note", WikiLinks.key("Note.Md"))
+        assertEquals("note", WikiLinks.key("Note.MD"))
+    }
 }

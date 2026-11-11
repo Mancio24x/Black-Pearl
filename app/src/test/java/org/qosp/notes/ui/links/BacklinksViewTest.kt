@@ -1,5 +1,6 @@
 package org.qosp.notes.ui.links
 
+import org.junit.Assert.assertSame
 import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.TextView
@@ -50,5 +51,14 @@ class BacklinksViewTest {
         view.show(items()) { clicked = it }
         view.getChildAt(2).performClick()
         assertEquals(2L, clicked?.from?.id)
+    }
+
+    @Test
+    fun sameListKeepsTheCards() {
+        val view = BacklinksView(context)
+        view.show(items()) {}
+        val card = view.getChildAt(1)
+        view.show(items()) {}
+        assertSame(card, view.getChildAt(1))
     }
 }

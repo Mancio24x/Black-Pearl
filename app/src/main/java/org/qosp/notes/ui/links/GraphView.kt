@@ -79,7 +79,10 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
         invalidate()
     }
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) { recenter() }
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        // first layout only: a later resize (the keyboard opening for the search) keeps zoom, position and moved nodes
+        if (oldw == 0 || oldh == 0) recenter()
+    }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)

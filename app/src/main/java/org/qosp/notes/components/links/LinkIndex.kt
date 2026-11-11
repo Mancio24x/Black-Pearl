@@ -6,13 +6,13 @@ data class Backlink(val from: Note, val line: String)
 
 /**
  * Link lookup built once from a snapshot of notes. Only notes that are not in the bin, not hidden and have a
- * non-blank title take part (as link sources and as link targets).
+ * title a link can point to (not blank, not just "/" or ".md") take part, as link sources and as link targets.
  */
 class LinkIndex(notes: List<Note>) {
 
     /** Participating notes, most recently modified first. */
     val titles: List<Note> = notes
-        .filter { !it.isDeleted && !it.isHidden && it.title.isNotBlank() }
+        .filter { !it.isDeleted && !it.isHidden && WikiLinks.key(it.title).isNotEmpty() }
         .sortedWith(compareByDescending<Note> { it.modifiedDate }.thenByDescending { it.id })
 
     private val byKey: Map<String, Note>

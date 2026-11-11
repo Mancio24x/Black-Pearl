@@ -247,3 +247,19 @@ Append one short entry per significant task: files, decisions, tests (with resul
 ## 2026-11-11 — Linked notes and Network
 
 Completed the editor suggestion strip and the Network destination, including graph gestures, note actions and searching. Added graph and on-device navigation tests and screenshot capture. The earlier test report showed four Robolectric initialisation failures because the app targets API 37 and the runner supports up to 36. Pinned the default JVM test SDK to 35; the app retains its target SDK.
+
+## 2026-11-11 — Linked notes: review fixes after 0.8.0
+- Review of the linked-notes code (the planned whole-branch review had not run before the merge). Fixed:
+  two notes linking to each other were drawn with two edges (`LinkGraph`, one edge per pair); one stray backtick
+  hid every link after it (`WikiLinks`: a code span stops at a blank line; a ``` fence is closed only by ```; 4+
+  spaces before a fence = not a fence); `Note.Md` not matched; titles like "/" indexed under an empty key;
+  the Network lost zoom, position and moved nodes when the keyboard opened (`GraphView.onSizeChanged`); the index
+  stopped updating for good after one failed build (`LinkIndexRepository`); a `[[link]]` in a note in the bin could
+  create notes; double tap opened two "Create?" dialogs; a link to the note itself stacked a second editor;
+  `[[Note#Heading]]` did not scroll when the note opened in edit mode; titles containing `[ ] | #` were suggested
+  after `[[` (they cannot be linked); "Linked from" cards rebuilt on every change of the note.
+- Tests added for each (`WikiLinksTest`, `LinkIndexTest`, `LinkGraphTest`, `LinkSuggestionsTest`, `GraphViewTest`,
+  `BacklinksViewTest`); `LinkGraphTest.demoHub` had an assertion that could not fail. Run on CI only.
+- Not changed (owner to see on the phone): labels in the Network show only for nodes with 2+ links or when zoomed;
+  the node sheet uses plain stacked buttons, simpler than the design canvas. Handoff README brought up to 0.8.0.
+

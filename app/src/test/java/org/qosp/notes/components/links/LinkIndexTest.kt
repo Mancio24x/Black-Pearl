@@ -67,4 +67,12 @@ class LinkIndexTest {
         assertTrue("took $ms ms", ms < 1000)
         assertEquals(2000, index.titles.size)
     }
+
+    @Test
+    fun titleThatNoLinkCanNameIsNeverATarget() {
+        val index = LinkIndex(listOf(Note(id = 1, title = "/", modifiedDate = 1), Note(id = 2, title = ".md", modifiedDate = 2)))
+        assertEquals(emptyList<Note>(), index.titles)
+        assertEquals(null, index.resolve(""))
+        assertEquals(null, index.resolve("/"))
+    }
 }

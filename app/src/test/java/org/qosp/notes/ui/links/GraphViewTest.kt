@@ -59,4 +59,13 @@ class GraphViewTest {
         tap(300f, 300f)
         assertEquals(node, tapped)
     }
+
+    @Test fun resizeKeepsWhereTheGraphWasMoved() {
+        touch(MotionEvent.ACTION_DOWN, 20f, 20f)
+        touch(MotionEvent.ACTION_MOVE, 120f, 120f)
+        touch(MotionEvent.ACTION_UP, 120f, 120f)
+        graph.layout(0, 0, 600, 420) // the keyboard opens
+        tap(400f, 400f)
+        assertEquals(node, tapped)
+    }
 }

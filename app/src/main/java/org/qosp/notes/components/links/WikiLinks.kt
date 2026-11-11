@@ -28,7 +28,7 @@ object WikiLinks {
     /** Normalized match key: trimmed, no trailing ".md", last "/" segment, lowercase. */
     fun key(title: String): String =
         title.trim()
-            .removeSuffix(".md").removeSuffix(".MD")
+            .let { if (it.endsWith(".md", ignoreCase = true)) it.dropLast(3) else it }
             .substringAfterLast('/')
             .trim()
             .lowercase(Locale.ROOT)
@@ -60,10 +60,18 @@ object WikiLinks {
         return result
     }
 
-    /** Index of the next run of exactly [n] backticks at or after [from], or -1. */
+    /**
+     * Index of the next run of exactly [n] backticks at or after [from], or -1. A code span cannot go past a blank
+     * line, so one stray backtick does not hide the links of the following paragraphs.
+     */
     private fun findBacktickRun(text: String, from: Int, n: Int): Int {
         var j = from
         while (j < text.length) {
+            if (text[j] == '\n') {
+                var k = j + 1
+                while (k < text.length && (text[k] == ' ' || text[k] == '\t')) k++
+                if (k < text.length && text[k] == '\n') return -1
+            }
             if (text[j] != '`') {
                 j++
                 continue
@@ -76,20 +84,31 @@ object WikiLinks {
         return -1
     }
 
-    /** Fenced code blocks: a line starting with ``` or ~~~ opens, the next such line closes (or end of text). */
+    /**
+     * Fenced code blocks: a line starting with ``` or ~~~ (at most 3 spaces before it) opens, the next line starting
+     * with the same fence closes (or end of text).
+     */
     private fun fencedRanges(text: String): List<IntRange> {
         val ranges = ArrayList<IntRange>()
         var lineStart = 0
         var openAt = -1
+        var openChar = ' '
         while (lineStart <= text.length) {
             var lineEnd = text.indexOf('\n', lineStart)
             if (lineEnd < 0) lineEnd = text.length
-            val trimmed = text.substring(lineStart, lineEnd).trimStart()
-            val isFence = trimmed.startsWith("```") || trimmed.startsWith("~~~")
-            if (isFence) {
+            val line = text.substring(lineStart, lineEnd)
+            val trimmed = line.trimStart(' ')
+            val fenceChar = when {
+                line.length - trimmed.length > 3 -> null // indented code, not a fence
+                trimmed.startsWith("```") -> '`'
+                trimmed.startsWith("~~~") -> '~'
+                else -> null
+            }
+            if (fenceChar != null) {
                 if (openAt < 0) {
                     openAt = lineStart
-                } else {
+                    openChar = fenceChar
+                } else if (fenceChar == openChar) {
                     ranges.add(openAt until lineEnd)
                     openAt = -1
                 }
