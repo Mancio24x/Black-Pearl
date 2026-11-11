@@ -4,16 +4,11 @@ import org.qosp.notes.data.model.Note
 
 data class Backlink(val from: Note, val line: String)
 
-/**
- * Link lookup built once from a snapshot of notes. Only notes that are not in the bin, not hidden and have a
- * title a link can point to (not blank, not just "/" or ".md") take part, as link sources and as link targets.
- */
+/** Indexes visible notes. Only notes with a linkable title can be wiki-link targets. */
 class LinkIndex(notes: List<Note>) {
-
-    /** Participating notes, most recently modified first. */
-    val titles: List<Note> = notes
-        .filter { !it.isDeleted && !it.isHidden && WikiLinks.key(it.title).isNotEmpty() }
+    val visibleNotes = notes.filter { !it.isDeleted && !it.isHidden }
         .sortedWith(compareByDescending<Note> { it.modifiedDate }.thenByDescending { it.id })
+    val titles = visibleNotes.filter { WikiLinks.key(it.title).isNotEmpty() }
 
     private val byKey: Map<String, Note>
     private val outMap = HashMap<Long, List<WikiLink>>()
@@ -27,7 +22,7 @@ class LinkIndex(notes: List<Note>) {
         for (n in titles) map.putIfAbsent(WikiLinks.key(n.title), n)
         byKey = map
 
-        for (note in titles) {
+        for (note in visibleNotes) {
             val links = WikiLinks.find(note.content)
             outMap[note.id] = links
             val seenLines = HashSet<Pair<Long, String>>()

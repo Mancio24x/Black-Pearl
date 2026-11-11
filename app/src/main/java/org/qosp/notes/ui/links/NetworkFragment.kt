@@ -55,14 +55,15 @@ class NetworkFragment : BaseFragment(R.layout.fragment_network) {
         ui.networkSearchField.doAfterTextChanged { ui.graph.query = it.toString() }
         ui.networkSearchField.setOnEditorActionListener { _, action, _ ->
             if (action != EditorInfo.IME_ACTION_SEARCH) return@setOnEditorActionListener false
-            val matches = model.graph.value.nodes.filter { it.title.contains(ui.graph.query, true) }
+            val matches = model.graph.value.nodes.filter { it.displayTitle(requireContext()).contains(ui.graph.query, true) }
             val builder = MaterialAlertDialogBuilder(requireContext()).setTitle(R.string.network_results)
             if (matches.isEmpty()) builder.setMessage(R.string.network_no_result)
-            else builder.setItems(matches.map { it.title }.toTypedArray()) { _, i -> showNode(matches[i]) }
+            else builder.setItems(matches.map { it.displayTitle(requireContext()) }.toTypedArray()) { _, i -> openNode(matches[i]) }
             dialog = builder.setNegativeButton(R.string.action_cancel, null).show()
             true
         }
-        ui.graph.onNodeTap = ::showNode
+        ui.graph.onNodeTap = ::openNode
+        ui.graph.onNodeLongPress = ::showNode
         ui.networkAdd.setOnClickListener { chooseSource() }
         ui.networkEmptyView.setOnClickListener { model.index.value.resolve("The Bible")?.let { open(it.id) } }
         viewLifecycleOwner.lifecycleScope.launch {
@@ -77,9 +78,13 @@ class NetworkFragment : BaseFragment(R.layout.fragment_network) {
         }
     }
 
+    private fun openNode(node: GraphNode) {
+        node.noteId?.let(::open) ?: showNode(node)
+    }
+
     private fun showNode(node: GraphNode) {
         val index = model.index.value
-        val note = index.resolve(node.title)
+        val note = index.visibleNotes.firstOrNull { it.id == node.noteId }
         val ctx = requireContext()
         val sheet = BottomSheetDialog(ctx)
         val pad = (20 * resources.displayMetrics.density).toInt()
@@ -93,7 +98,7 @@ class NetworkFragment : BaseFragment(R.layout.fragment_network) {
                 setOnClickListener { sheet.dismiss(); click() }
             })
         }
-        label(node.title, 24f)
+        label(node.displayTitle(ctx), 24f)
         if (note == null) {
             val citers = index.ghostCitedBy(node.title)
             label(getString(R.string.network_ghost_message, citers.joinToString { it.title }), 16f)
@@ -103,7 +108,7 @@ class NetworkFragment : BaseFragment(R.layout.fragment_network) {
                 index.backlinks(note.id).distinctBy { it.from.id }.size), 14f)
             if (note.content.isNotBlank()) label(note.content.take(160), 16f)
             action(R.string.network_open) { open(note.id) }
-            action(R.string.network_new_linked) { nameLinkedNote(note) }
+            if (canLink(note.title)) action(R.string.network_new_linked) { nameLinkedNote(note) }
             action(R.string.network_only_its_links) { model.focus.value = node.key }
         }
         action(R.string.action_cancel) {}

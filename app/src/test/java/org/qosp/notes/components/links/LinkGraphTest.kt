@@ -49,16 +49,29 @@ class LinkGraphTest {
     @Test
     fun focusShowsNeighboursOnly() {
         val index = LinkIndex(listOf(note(1, "A", "[[B]]"), note(2, "B", "[[C]]"), note(3, "C"), note(4, "D", "[[C]]")))
-        val (nodes, edges) = LinkGraph.build(index, focusKey = "b")
-        assertEquals(setOf("a", "b", "c"), nodes.map { it.key }.toSet())
-        assertEquals(setOf(GraphEdge("a", "b"), GraphEdge("b", "c")), edges.toSet())
+        val (nodes, edges) = LinkGraph.build(index, focusKey = "note:2")
+        assertEquals(setOf("A", "B", "C"), nodes.map { it.title }.toSet())
+        assertEquals(setOf(GraphEdge("note:1", "note:2"), GraphEdge("note:2", "note:3")), edges.toSet())
+    }
+
+    @Test
+    fun eachVisibleNoteHasItsOwnNodeAndOutgoingEdges() {
+        val index = LinkIndex(listOf(note(1, "Same", "[[Other]]"), note(2, "same"),
+            note(3, "Other", "[[Same]]"), note(4, "", "[[Other]]"), note(5, "Alone"),
+            note(6, "Hidden").copy(isHidden = true), note(7, "Deleted").copy(isDeleted = true)))
+        val (nodes, edges) = LinkGraph.build(index, showUnlinked = true)
+        assertEquals(setOf(1L, 2L, 3L, 4L, 5L), nodes.map { it.noteId }.toSet())
+        val ids = nodes.associate { it.key to it.noteId }
+        assertEquals(setOf(1L to 3L, 3L to 2L, 4L to 3L), edges.map { ids[it.from] to ids[it.to] }.toSet())
     }
 
     @Test
     fun selfLinkNoEdge() {
         val index = LinkIndex(listOf(note(1, "A", "[[A]] [[B]] [[b]]"), note(2, "B")))
         val (nodes, edges) = LinkGraph.build(index)
-        assertEquals(listOf(GraphEdge("a", "b")), edges)
+        val source = nodes.single { it.noteId == 1L }
+        val target = nodes.single { it.noteId == 2L }
+        assertEquals(listOf(GraphEdge(source.key, target.key)), edges)
         assertEquals(2, nodes.size)
         assertNull(nodes.firstOrNull { it.degree == 0 })
     }

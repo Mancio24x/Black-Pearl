@@ -134,7 +134,11 @@ class WikiLinkPlugin(private val index: () -> LinkIndex) : AbstractMarkwonPlugin
             paint.color = if (ghost) textColor else colors.onFill
 
             val avail = width - 2 * PAD_H * density
-            val label = TextUtils.ellipsize(text.subSequence(start, end), TextPaint(paint), avail, TextUtils.TruncateAt.END)
+            // Measuring a Spanned subsequence here measures this ReplacementSpan a second time.
+            val plain = text.subSequence(start, end).toString()
+            val label = if (maxWidth() > 0 && paint.measureText(plain) > avail + 0.5f)
+                TextUtils.ellipsize(plain, TextPaint(paint), avail.coerceAtLeast(0f), TextUtils.TruncateAt.END)
+            else plain
             canvas.drawText(label, 0, label.length, x + PAD_H * density, y.toFloat(), paint)
 
             paint.color = textColor

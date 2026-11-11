@@ -46,7 +46,7 @@ class GraphLayoutTest {
     @Test
     fun hubNearCenter() {
         val (nodes, edges) = demoGraph()
-        val hub = GraphLayout.layout(nodes, edges).getValue("the bible")
+        val hub = GraphLayout.layout(nodes, edges).getValue(nodes.single { it.title == "The Bible" }.key)
         val d = hypot(hub.x.toDouble(), hub.y.toDouble())
         assertTrue("hub at $d", d < 40.0)
     }

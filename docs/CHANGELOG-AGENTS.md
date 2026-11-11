@@ -263,3 +263,8 @@ Completed the editor suggestion strip and the Network destination, including gra
 - Not changed (owner to see on the phone): labels in the Network show only for nodes with 2+ links or when zoomed;
   the node sheet uses plain stacked buttons, simpler than the design canvas. Handoff README brought up to 0.8.0.
 
+## 2026-11-11 — Network readability and navigation after 0.8.1
+- Reproduced missing leaf titles and empty wiki-link pills in the emulator screenshots for the 0.8.1 tree.
+- GraphView draws and hit-tests visible labels, strengthens edges and accepts a drag from a label. Tap opens an existing note by ID. Hold opens its available actions. Unresolved references offer explicit creation.
+- LinkGraph keeps duplicate and untitled notes separate and the global view includes unlinked notes by default. Hidden and deleted notes remain excluded. WikiLinkPlugin measures plain labels when drawing pills.
+- Added regression coverage for duplicates, untitled sources, large-graph labels, rendered pill text, and dragging then opening a note on the device. Build, lint, and emulator results are tracked on the PR.
