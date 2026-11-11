@@ -145,7 +145,15 @@ class PreferenceRepository(
         }
     }
 
+    /** Black Pearl: the sample note shipped in the APK is added only once (see components/SampleNote). */
+    suspend fun isSampleNoteAdded(): Boolean = dataStore.data.first()[SAMPLE_NOTE_ADDED] ?: false
+
+    suspend fun setSampleNoteAdded() {
+        dataStore.edit { it[SAMPLE_NOTE_ADDED] = true }
+    }
+
     companion object {
+        val SAMPLE_NOTE_ADDED = booleanPreferencesKey("sample_note_added")
         val APP_LOCK_PIN = stringPreferencesKey("app_lock_pin")
         val APP_LOCK_PIN_LENGTH = intPreferencesKey("app_lock_pin_length")
         val APP_LOCK_BIOMETRIC = booleanPreferencesKey("app_lock_biometric")

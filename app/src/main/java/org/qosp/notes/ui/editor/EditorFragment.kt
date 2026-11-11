@@ -73,6 +73,7 @@ import kotlinx.coroutines.Dispatchers
 import org.commonmark.node.Code
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import com.google.android.material.color.MaterialColors
 import org.qosp.notes.R
 import org.qosp.notes.data.model.Attachment
 import org.qosp.notes.data.model.Note
@@ -101,6 +102,7 @@ import org.qosp.notes.ui.editor.markdown.ImageBlocks
 import org.qosp.notes.ui.editor.markdown.ImageGestures
 import org.qosp.notes.ui.editor.markdown.ImageLayoutPlugin
 import org.qosp.notes.ui.editor.markdown.insertMarkdown
+import org.qosp.notes.ui.editor.markdown.toggleBulletCurrentLine
 import org.qosp.notes.ui.editor.markdown.toggleCheckmarkCurrentLine
 import org.qosp.notes.ui.media.MediaActivity
 import org.qosp.notes.ui.recorder.RECORDED_ATTACHMENT
@@ -379,6 +381,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
             updateEditMode(!model.inEditMode)
             if (model.inEditMode) requestFocusForFields(true) else view.hideKeyboard()
         }
+        // Note options stay reachable through the bottom-left "+", including in the bin.
         binding.fabNoteOptions.setOnClickListener { showNoteOptions() }
     }
 
@@ -394,7 +397,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_note_options) showNoteOptions() else runNoteAction(item.itemId)
+        runNoteAction(item.itemId)
         return super.onOptionsItemSelected(item)
     }
 
@@ -858,9 +861,9 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         containerBottomToolbar.isVisible = !isList && note.isMarkdownEnabled && model.inEditMode && contentHasFocus
 
         scrollView.updateLayoutParams<ConstraintLayout.LayoutParams> {
-            val actionBarSize = requireContext().getDimensionAttribute(R.attr.actionBarSize) ?: 0
+            // the floating formatting pill (64dp + 16dp margin) must not cover the last lines
             bottomMargin = when {
-                containerBottomToolbar.isVisible -> actionBarSize
+                containerBottomToolbar.isVisible -> resources.getDimensionPixelSize(R.dimen.editor_format_bar_space)
                 else -> 0
             }
         }
@@ -967,7 +970,10 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
     private fun setupMenuItems(note: Note, hasReminders: Boolean) = mainMenu?.run {
         findItem(R.id.action_restore_note)?.isVisible = note.isDeleted
-        findItem(R.id.action_note_options)?.isVisible = note.isDeleted
+        findItem(R.id.action_change_color)?.apply {
+            isVisible = !note.isDeleted
+            icon = noteColorDot(note)
+        }
 
         findItem(R.id.action_change_mode)?.apply {
             // if view/edit mode FAB isn't displayed (user pref) show it in the top menu
@@ -1027,10 +1033,11 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                 if (data.editorFontSize != -1) { // is customised
                     val fontSizeFloat = data.editorFontSize.toFloat()
 
-                    textViewTitlePreview.textSize = fontSizeFloat
+                    // design 2: the title stays bigger than the text (30 vs 16)
+                    textViewTitlePreview.textSize = fontSizeFloat * TITLE_SCALE
                     textViewContentPreview.textSize = fontSizeFloat
 
-                    editTextTitle.textSize = fontSizeFloat
+                    editTextTitle.textSize = fontSizeFloat * TITLE_SCALE
                     editTextContent.textSize = fontSizeFloat
 
                     if (isList) {
@@ -1112,7 +1119,6 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
             data.note.color.resId(requireContext())?.let { resId ->
                 backgroundColor = resId
                 root.setBackgroundColor(resId)
-                containerBottomToolbar.setBackgroundColor(resId)
                 toolbar.setBackgroundColor(resId)
             }
 
@@ -1209,6 +1215,16 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
                 R.id.action_toggle_check_line -> {
                     editTextContent.toggleCheckmarkCurrentLine()
+                    null
+                }
+
+                R.id.action_insert_list -> {
+                    editTextContent.toggleBulletCurrentLine()
+                    null
+                }
+
+                R.id.action_scan_text -> {
+                    showOcrSourceSheet()
                     null
                 }
 
@@ -1376,6 +1392,21 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         model.updateTaskList(tasksAdapter.tasks)
     }
 
+    /** Design 2: the note colour as a 22dp dot with a dark ring, shown in the header's round colour button. */
+    private fun noteColorDot(note: Note): android.graphics.drawable.Drawable {
+        val ctx = requireContext()
+        val density = resources.displayMetrics.density
+        val size = (22 * density).toInt()
+        val fill = note.color.resId(ctx) ?: MaterialColors.getColor(binding.root, R.attr.colorNoteDefault)
+        val ring = MaterialColors.getColor(binding.root, com.google.android.material.R.attr.colorOnSurface)
+        return android.graphics.drawable.GradientDrawable().apply {
+            shape = android.graphics.drawable.GradientDrawable.OVAL
+            setSize(size, size)
+            setColor(fill)
+            setStroke((2 * density).toInt(), ring)
+        }
+    }
+
     private fun showColorChangeDialog() {
         showNoteColorDialog(data.note?.color) { model.setColor(it) }
     }
@@ -1452,10 +1483,6 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         }
 
         fabChangeMode.setImageResource(if (model.inEditMode) R.drawable.ic_show else R.drawable.ic_pencil)
-        // "+" (note options) at the bottom left; a note in the bin uses the toolbar instead
-        if (fabNoteOptions.isVisible == isNoteDeleted) {
-            if (isNoteDeleted) fabNoteOptions.hide() else fabNoteOptions.show()
-        }
         setMarkdownToolbarVisibility(note)
     }
 
@@ -1484,6 +1511,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     }
 
     companion object {
+        private const val TITLE_SCALE = 30f / 16f
         const val MARKDOWN_DIALOG_RESULT = "MARKDOWN_DIALOG_RESULT"
     }
 }

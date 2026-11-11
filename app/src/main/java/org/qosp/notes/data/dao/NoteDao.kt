@@ -47,16 +47,6 @@ interface NoteDao {
     @Query("SELECT * FROM notes WHERE id = :noteId")
     fun getById(noteId: Long): Flow<Note?>
 
-    @Query(
-        """
-        UPDATE notes SET isDeleted = 1 WHERE id IN (
-            SELECT localNoteId FROM cloud_ids
-            WHERE remoteNoteId IS NOT NULL AND isDeletedLocally = 0 AND remoteNoteId NOT IN (:idsInUse)
-            AND provider = :provider
-        )"""
-    )
-    suspend fun moveRemotelyDeletedNotesToBin(idsInUse: List<Long>, provider: CloudService)
-
     @Transaction
     @RawQuery(
         observedEntities = [
