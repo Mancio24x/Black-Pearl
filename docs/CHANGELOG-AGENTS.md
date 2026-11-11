@@ -211,3 +211,8 @@ Append one short entry per significant task: files, decisions, tests (with resul
 - No schema, migration, serialized field, sync contract or active theme change.
 - Validation: 143 unit tests passed; assembleDebug and compileDebugAndroidTestKotlin passed;
   git diff --check passed. Device tests compiled but were not executed locally.
+
+## 2026-11-10 — "Convert to list" makes real checkboxes (branch fix/convert-to-list)
+- `Note.stringToTaskList()`: "- [ ] x", "[x] y", "☐/☑", bullets and numbers are stripped into the checkbox state
+  instead of staying in the item text; empty lines skipped. Test `data/ConvertToListTest`.
+- Checklist boxes: ticked = theme accent (`color/bp_task_checkbox`), was grey `colorControlNormal`.

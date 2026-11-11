@@ -121,6 +121,19 @@ for mode in no yes; do
     grep -o '<node[^>]*text="Idee racconto"[^>]*>' "$OUT/ui.xml" | head -1 | grep -o 'bounds="[^"]*"' | grep -o '[0-9]\+')
   if [ -n "$b" ]; then set -- $b; adb shell input swipe $(( ($1+$3)/2 )) $(( ($2+$4)/2 )) $(( ($1+$3)/2 )) $(( ($2+$4)/2 )) 800; shot "note-longpress-night_$mode"; fi
 done
+# "Convert to list": checkboxes typed as text must become real checkboxes
+adb shell cmd uimode night no; adb shell am force-stop $PKG
+adb shell am start -W -n $MAIN -a android.intent.action.VIEW -d "blackpearl://notes/editor_create?newNoteIsList=false" >/dev/null
+sleep 3
+tap_text "Title"; adb shell input text "Lista"
+tap_text "Take a note!"
+adb shell "input text '-%s[%s]%slatte'"; adb shell input keyevent KEYCODE_ENTER
+adb shell "input text '-%s[x]%spane'"; adb shell input keyevent KEYCODE_ENTER
+adb shell "input text '%s%s%scaffe'"
+adb shell input keyevent KEYCODE_BACK; sleep 1
+shot "convert-before"
+if tap_text "Note options" && tap_text "Convert to list"; then sleep 2; shot "convert-after"; fi
+adb shell input keyevent KEYCODE_BACK; sleep 1
 # App lock: set PIN 2580 in Settings, restart, see the lock screen, unlock
 adb shell cmd uimode night no; adb shell am force-stop $PKG
 adb shell am start -W -n $MAIN >/dev/null; sleep 3
