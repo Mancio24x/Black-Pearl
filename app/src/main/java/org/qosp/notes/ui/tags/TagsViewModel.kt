@@ -10,11 +10,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import me.msoul.datastore.defaultOf
 import org.qosp.notes.data.model.Tag
 import org.qosp.notes.data.repo.TagRepository
 import org.qosp.notes.preferences.PreferenceRepository
-import org.qosp.notes.preferences.SortTagsMethod
 
 data class TagData(val tag: Tag, val inNote: Boolean)
 
@@ -70,10 +68,5 @@ class TagsViewModel(
             tagRepository.deleteTagFromNote(tagId, noteId)
         }
     }
-
-    data class TagDataList(
-        val tagsList: MutableList<TagData> = mutableListOf(),
-        val sortTagsMethod: SortTagsMethod = defaultOf()
-    )
 
 }

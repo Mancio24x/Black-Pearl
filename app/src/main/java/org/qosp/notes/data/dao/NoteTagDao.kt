@@ -37,9 +37,6 @@ interface NoteTagDao {
     )
     suspend fun copyTags(fromNoteId: Long, toNoteId: Long)
 
-    @Query("SELECT * FROM note_tags")
-    fun getAllNoteTagRelations(): Flow<List<NoteTagJoin>>
-
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
