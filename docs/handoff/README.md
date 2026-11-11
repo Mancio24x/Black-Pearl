@@ -8,8 +8,8 @@ background), `RELEASE.md` (how to publish), `ENVIRONMENT.md` (tools, CI, gotchas
 
 - Leonardo (GitHub `Mancio24x`), Italian, **not a programmer**, usually on the phone (Claude Code Remote Control).
 - Write to him in **Italian, plain words**, short; explain trade-offs and recommend one option (see `CLAUDE.md`).
-- He **merges PRs himself** (ruleset bypass) and then writes "Fatto". When he says "pubblica", publish the release
-  (see `RELEASE.md`). Do not publish without his request.
+- He **merges PRs himself** (ruleset bypass) and then writes "Fatto". Since 2026-11-11 he wants every version that
+  passes CI **published without asking** (see `RELEASE.md`; from the cloud use the manual Release workflow).
 - He likes: Material 3, rounded UI, few and simple menu items, things tested on the emulator with screenshots.
 
 ## Where things are

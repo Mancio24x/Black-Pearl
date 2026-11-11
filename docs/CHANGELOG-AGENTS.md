@@ -216,3 +216,12 @@ Append one short entry per significant task: files, decisions, tests (with resul
 - `Note.stringToTaskList()`: "- [ ] x", "[x] y", "☐/☑", bullets and numbers are stripped into the checkbox state
   instead of staying in the item text; empty lines skipped. Test `data/ConvertToListTest`.
 - Checklist boxes: ticked = theme accent (`color/bp_task_checkbox`), was grey `colorControlNormal`.
+
+## 2026-11-11 — Release from cloud sessions (manual Release workflow)
+- Cloud sessions cannot push tags (git push of `refs/tags/v0.7.2` → HTTP 403), so v0.7.2 could not be released.
+- `.github/workflows/release.yml`: new `workflow_dispatch` (inputs `version`, `notes`, only on `main`): GitHub
+  creates the tag on the tested commit and publishes the release as latest with the given notes. Both modes now
+  fail if the APK certificate SHA-256 is not the Black Pearl key. Tag-push mode unchanged (draft release).
+- Owner's standing approval: publish every version that passes CI without asking (`docs/handoff/RELEASE.md`, README).
+- Checks: YAML parses; the workflow itself only runs on GitHub (first real run = v0.7.2 after merge).
+
