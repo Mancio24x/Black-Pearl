@@ -96,6 +96,9 @@
                   app:argType="org.qosp.notes.data.model.Attachment[]"
                   android:defaultValue="@null"
                   app:nullable="true"/>
+        <argument android:name="scrollToHeading"
+                  android:defaultValue=""
+                  app:argType="string"/>
 
     </fragment>
 

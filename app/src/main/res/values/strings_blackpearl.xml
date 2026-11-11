@@ -160,4 +160,8 @@
     <!-- Note editor, design 2 -->
     <string name="action_insert_list">Bulleted list</string>
     <string name="image_size_percent">%1$d%%</string>
+    <!-- Linked notes: tapping a [[link]] to a note that does not exist yet -->
+    <string name="link_create_title">Create «%1$s»?</string>
+    <string name="link_create_message">A note with this title will be created, in the same notebook. The link will work right away, in Obsidian too.</string>
+    <string name="link_create_open">Create and open</string>
 </resources>

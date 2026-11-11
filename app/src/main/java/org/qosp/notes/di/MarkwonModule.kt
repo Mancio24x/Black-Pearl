@@ -6,7 +6,6 @@ import android.text.util.Linkify.EMAIL_ADDRESSES
 import android.text.util.Linkify.WEB_URLS
 import android.util.TypedValue
 import io.noties.markwon.AbstractMarkwonPlugin
-import io.noties.markwon.LinkResolverDef
 import io.noties.markwon.Markwon
 import io.noties.markwon.Markwon.builder
 import io.noties.markwon.MarkwonConfiguration
@@ -27,6 +26,7 @@ import org.koin.dsl.module
 import org.qosp.notes.R.attr.colorBackground
 import org.qosp.notes.R.attr.colorMarkdownTask
 import org.qosp.notes.R.attr.colorNoteTextHighlight
+import org.qosp.notes.components.links.LinkIndexRepository
 import org.qosp.notes.preferences.PreferenceRepository
 import org.qosp.notes.ui.editor.markdown.BlockQuoteHandler
 import org.qosp.notes.ui.editor.markdown.CodeBlockHandler
@@ -35,16 +35,21 @@ import org.qosp.notes.ui.editor.markdown.HeadingHandler
 import org.qosp.notes.ui.editor.markdown.StrikethroughHandler
 import org.qosp.notes.ui.utils.coil.CoilImagesPlugin
 import org.qosp.notes.ui.editor.markdown.ImageLayoutPlugin
+import org.qosp.notes.ui.editor.markdown.WikiLinkPlugin
 import org.qosp.notes.ui.utils.resolveAttribute
 
 object MarkwonModule {
 
     val markwonModule = module {
-        factory<Markwon> { getMarkwon(context = androidContext(), preferenceRepository = get()) }
+        factory<Markwon> { getMarkwon(context = androidContext(), preferenceRepository = get(), linkIndex = get()) }
         factory<MarkwonEditor> { getMarkWonEditor(markwon = get()) }
     }
 
-    private fun getMarkwon(context: Context, preferenceRepository: PreferenceRepository): Markwon = builder(context)
+    private fun getMarkwon(
+        context: Context,
+        preferenceRepository: PreferenceRepository,
+        linkIndex: LinkIndexRepository,
+    ): Markwon = builder(context)
         .usePlugin(LinkifyPlugin.create(EMAIL_ADDRESSES or WEB_URLS))
         .usePlugin(SoftBreakAddsNewLinePlugin.create())
         .usePlugin(MovementMethodPlugin.create(getInstance()))
@@ -52,7 +57,8 @@ object MarkwonModule {
         .usePlugin(TablePlugin.create(context))
         .usePlugin(object : AbstractMarkwonPlugin() {
             override fun configureConfiguration(builder: MarkwonConfiguration.Builder) {
-                builder.linkResolver(LinkResolverDef())
+                // Black Pearl: [[link]] taps go to WikiLinkPlugin, web links open as before
+                builder.linkResolver(WikiLinkPlugin.Resolver())
             }
         })
         .usePlugin(SimpleExtPlugin.create { plugin: SimpleExtPlugin ->
@@ -69,6 +75,8 @@ object MarkwonModule {
         .usePlugin(CoilImagesPlugin.create(context, preferenceRepository))
         // Black Pearl: image layout (position/size/alignment) — must come after the Coil plugin
         .usePlugin(ImageLayoutPlugin(context))
+        // Black Pearl: Obsidian [[links]] drawn as tappable pills
+        .usePlugin(WikiLinkPlugin { linkIndex.index.value })
         .apply {
             val mainColor = context.resolveAttribute(colorMarkdownTask)
             val backgroundColor = context.resolveAttribute(colorBackground)

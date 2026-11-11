@@ -162,4 +162,8 @@
     <!-- Note editor, design 2 -->
     <string name="action_insert_list">Elenco puntato</string>
     <string name="image_size_percent">%1$d%%</string>
+    <!-- Linked notes: tapping a [[link]] to a note that does not exist yet -->
+    <string name="link_create_title">Creare «%1$s»?</string>
+    <string name="link_create_message">Verrà creata una nota con questo titolo, nello stesso taccuino. Il collegamento funzionerà subito, anche in Obsidian.</string>
+    <string name="link_create_open">Crea e apri</string>
 </resources>

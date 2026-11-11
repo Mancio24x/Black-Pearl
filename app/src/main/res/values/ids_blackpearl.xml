@@ -24,4 +24,6 @@
     <item name="action_export_options" type="id"/>
     <!-- The PIN screen that BaseActivity puts over every activity while the app is locked -->
     <item name="app_lock_overlay" type="id"/>
+    <!-- WikiLinkPlugin.WikiLinkClick set on a TextView that handles [[link]] taps -->
+    <item name="wiki_link_listener" type="id"/>
 </resources>
