@@ -24,9 +24,16 @@ class WikiLinkPluginTest {
 
     private val context = RuntimeEnvironment.getApplication()
 
-    private fun render(markdown: String, index: LinkIndex = LinkIndex(emptyList())): TextView {
+    private fun render(
+        markdown: String,
+        index: LinkIndex = LinkIndex(emptyList()),
+        listener: WikiLinkPlugin.WikiLinkClick? = null,
+    ): TextView {
         val markwon = Markwon.builder(context).usePlugin(WikiLinkPlugin { index }).build()
-        return TextView(context).also { markwon.setMarkdown(it, markdown) }
+        return TextView(context).also {
+            if (listener != null) it.setTag(R.id.wiki_link_listener, listener)
+            markwon.setMarkdown(it, markdown)
+        }
     }
 
     private fun TextView.spanned() = text as Spanned
@@ -60,13 +67,20 @@ class WikiLinkPluginTest {
 
     @Test
     fun clickCallsListener() {
-        val view = render("[[A#Part]]")
         var clicked: Pair<String, String?>? = null
-        view.setTag(R.id.wiki_link_listener, WikiLinkPlugin.WikiLinkClick { target, heading -> clicked = target to heading })
+        val listener = WikiLinkPlugin.WikiLinkClick { target, heading -> clicked = target to heading }
+        val view = render("[[A#Part]]", listener = listener)
 
         view.spanned().getSpans(0, view.text.length, ClickableSpan::class.java).single().onClick(view)
 
         assertEquals("A" to "Part", clicked)
+    }
+
+    @Test
+    fun notClickableWithoutListener() {
+        val view = render("[[A]]") // e.g. a note card: the tap must reach the card
+        assertEquals(1, view.pills().size)
+        assertEquals(0, view.spanned().getSpans(0, view.text.length, ClickableSpan::class.java).size)
     }
 
     @Test

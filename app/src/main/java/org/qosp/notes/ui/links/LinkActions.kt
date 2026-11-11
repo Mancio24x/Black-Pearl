@@ -6,9 +6,18 @@ import org.qosp.notes.data.repo.NoteRepository
 
 object LinkActions {
 
-    /** Id of the note titled [title]: the existing one when [index] knows it, else a new note in [notebookId]. */
-    suspend fun createOrOpen(title: String, notebookId: Long?, repo: NoteRepository, index: LinkIndex): Long {
+    /**
+     * Id of the note titled [title]: the existing one when [index] knows it, else a new ordinary note in [notebookId]
+     * ([isLocalOnly] follows the "new notes syncable" setting, like notes created in the editor).
+     */
+    suspend fun createOrOpen(
+        title: String,
+        notebookId: Long?,
+        isLocalOnly: Boolean,
+        repo: NoteRepository,
+        index: LinkIndex,
+    ): Long {
         index.resolve(title)?.let { return it.id }
-        return repo.insertNote(Note(title = title.trim(), notebookId = notebookId))
+        return repo.insertNote(Note(title = title.trim(), notebookId = notebookId, isLocalOnly = isLocalOnly))
     }
 }

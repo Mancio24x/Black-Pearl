@@ -87,6 +87,8 @@ import org.qosp.notes.data.repo.NoteRepository
 import org.qosp.notes.databinding.FragmentEditorBinding
 import org.qosp.notes.databinding.LayoutAttachmentBinding
 import org.qosp.notes.preferences.DefaultEditorMode
+import org.qosp.notes.preferences.NewNotesSyncable
+import org.qosp.notes.preferences.PreferenceRepository
 import org.qosp.notes.ui.attachments.dialog.EditAttachmentDialog
 import org.qosp.notes.ui.attachments.fromUri
 import org.qosp.notes.ui.attachments.recycler.AttachmentRecyclerListener
@@ -176,7 +178,9 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
     private val linkIndexRepository: LinkIndexRepository by inject()
     private val noteRepository: NoteRepository by inject()
+    private val preferenceRepository: PreferenceRepository by inject()
     private var headingScrollDone = false
+    private var renderedLinkIndex: LinkIndex? = null
 
     override val hasDefaultAnimation = false
     override val toolbar: Toolbar
@@ -760,6 +764,28 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
             R.id.wiki_link_listener,
             WikiLinkPlugin.WikiLinkClick { target, heading -> openWikiLink(target, heading) }
         )
+        // pills show whether their note exists: redraw them when the link index changes
+        linkIndexRepository.index.collect(viewLifecycleOwner) { index ->
+            val note = data.note ?: return@collect
+            if (index !== renderedLinkIndex && note.isMarkdownEnabled) renderContentPreview(note)
+        }
+    }
+
+    private fun renderContentPreview(note: Note) {
+        val preview = binding.textViewContentPreview
+        if (note.isMarkdownEnabled) {
+            renderedLinkIndex = linkIndexRepository.index.value
+            // Seems to be crashing often without wrapping it in a post { } call
+            preview.post {
+                markwon.applyTo(preview, note.content) {
+                    tableReplacement = { Code(getString(R.string.message_cannot_preview_table)) }
+                    maximumTableColumns = 15
+                }
+                scrollToHeadingOnce()
+            }
+        } else {
+            preview.text = note.content
+        }
     }
 
     private fun openWikiLink(target: String, heading: String?) {
@@ -773,7 +799,8 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                 viewLifecycleOwner.lifecycleScope.launch {
                     // fresh index: the shared one lags a moment behind changes and must not cause a duplicate note
                     val index = withContext(Dispatchers.Default) { LinkIndex(noteRepository.getNonDeleted().first()) }
-                    openLinkedNote(LinkActions.createOrOpen(target, notebookId, noteRepository, index), heading)
+                    val localOnly = preferenceRepository.get<NewNotesSyncable>().first() == NewNotesSyncable.NO
+                    openLinkedNote(LinkActions.createOrOpen(target, notebookId, localOnly, noteRepository, index), heading)
                 }
             }
             .setNegativeButton(R.string.action_cancel, null)
@@ -1163,18 +1190,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
             // Also set text of preview textviews
             textViewTitlePreview.text = data.note.title.ifEmpty { getString(R.string.indicator_untitled) }
 
-            if (isMarkdownEnabled) {
-                // Seems to be crashing often without wrapping it in a post { } call
-                textViewContentPreview.post {
-                    markwon.applyTo(textViewContentPreview, data.note.content) {
-                        tableReplacement = { Code(getString(R.string.message_cannot_preview_table)) }
-                        maximumTableColumns = 15
-                    }
-                    scrollToHeadingOnce()
-                }
-            } else {
-                textViewContentPreview.text = data.note.content
-            }
+            renderContentPreview(data.note)
 
             setupMenuItems(data.note, data.note.reminders.isNotEmpty())
 

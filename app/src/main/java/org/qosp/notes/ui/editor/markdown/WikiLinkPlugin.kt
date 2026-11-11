@@ -30,7 +30,8 @@ import kotlin.math.min
  * Obsidian links `[[Target#Heading|label]]` in the preview: each one becomes a Markdown link to
  * `blackpearl-link:<target>#<heading>` (the stored text is never changed), then, in a TextView, a tappable pill
  * ([WikiPillSpan]; dashed outline when the target note does not exist). Other renderings (PDF export) keep the
- * plain label. A screen that handles taps sets a [WikiLinkClick] as tag [R.id.wiki_link_listener] on the TextView.
+ * plain label. A screen that handles taps sets a [WikiLinkClick] as tag [R.id.wiki_link_listener] on the TextView
+ * before rendering; without it the pills are drawn but not clickable.
  */
 class WikiLinkPlugin(private val index: () -> LinkIndex) : AbstractMarkwonPlugin() {
 
@@ -66,6 +67,8 @@ class WikiLinkPlugin(private val index: () -> LinkIndex) : AbstractMarkwonPlugin
         )
         val density = context.resources.displayMetrics.density
         val maxWidth = { textView.width - textView.totalPaddingLeft - textView.totalPaddingRight }
+        // only a TextView that handles taps gets clickable pills (elsewhere, e.g. note cards, the tap goes to the card)
+        val clickable = textView.getTag(R.id.wiki_link_listener) != null
         for (span in links) {
             val start = text.getSpanStart(span)
             val end = text.getSpanEnd(span)
@@ -73,7 +76,7 @@ class WikiLinkPlugin(private val index: () -> LinkIndex) : AbstractMarkwonPlugin
             text.removeSpan(span)
             if (start < 0 || start >= end) continue
             text.setSpan(WikiPillSpan(index.isGhost(target), colors, density, maxWidth), start, end, FLAGS)
-            text.setSpan(WikiLinkClickSpan(target, heading), start, end, FLAGS)
+            if (clickable) text.setSpan(WikiLinkClickSpan(target, heading), start, end, FLAGS)
         }
     }
 

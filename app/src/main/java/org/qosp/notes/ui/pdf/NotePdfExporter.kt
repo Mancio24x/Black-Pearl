@@ -37,9 +37,14 @@ class NotePdfExporter(private val context: Context, private val markwon: Markwon
     private val contentWidth = (PAGE_WIDTH - 2 * MARGIN).toInt()
     private val contentHeight = PAGE_HEIGHT - 2 * MARGIN - FOOTER
 
-    private val bodyPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.BLACK; textSize = 11f }
-    private val titlePaint = TextPaint(bodyPaint).apply { textSize = 20f; typeface = Typeface.DEFAULT_BOLD }
-    private val footerPaint = TextPaint(bodyPaint).apply { textSize = 8f; color = Color.DKGRAY; textAlign = Paint.Align.CENTER }
+    // linkColor: links ([[wiki links]] too) take it; left at 0 they would be printed transparent
+    internal val bodyPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.BLACK; linkColor = Color.BLACK; textSize = 11f
+    }
+    private val titlePaint = TextPaint(bodyPaint).apply { linkColor = Color.BLACK; textSize = 20f; typeface = Typeface.DEFAULT_BOLD }
+    private val footerPaint = TextPaint(bodyPaint).apply {
+        linkColor = Color.DKGRAY; textSize = 8f; color = Color.DKGRAY; textAlign = Paint.Align.CENTER
+    }
 
     /** @return number of pages written. */
     fun write(note: Note, out: OutputStream): Int {
