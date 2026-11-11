@@ -27,6 +27,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.qosp.notes.R
 import org.qosp.notes.components.links.GraphNode
 import org.qosp.notes.components.links.LinkIndex
+import org.qosp.notes.components.links.NodeKind
 import org.qosp.notes.components.links.WikiLinks
 import org.qosp.notes.data.model.Note
 import org.qosp.notes.data.repo.NoteRepository
@@ -79,10 +80,15 @@ class NetworkFragment : BaseFragment(R.layout.fragment_network) {
     }
 
     private fun openNode(node: GraphNode) {
-        node.noteId?.let(::open) ?: showNode(node)
+        when (node.kind) {
+            NodeKind.NOTE, NodeKind.ATTACHMENT -> node.noteId?.let(::open) // an attachment opens its note for now
+            NodeKind.MISSING -> showNode(node)
+            NodeKind.TAG -> Unit // wired in a later step
+        }
     }
 
     private fun showNode(node: GraphNode) {
+        if (node.kind == NodeKind.TAG) return // not a ghost: no "Create note" sheet
         val index = model.index.value
         val note = index.visibleNotes.firstOrNull { it.id == node.noteId }
         val ctx = requireContext()

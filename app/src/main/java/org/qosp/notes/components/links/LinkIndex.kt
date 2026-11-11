@@ -1,6 +1,7 @@
 package org.qosp.notes.components.links
 
 import org.qosp.notes.data.model.Note
+import java.util.Locale
 
 data class Backlink(val from: Note, val line: String)
 
@@ -11,6 +12,8 @@ class LinkIndex(notes: List<Note>) {
     val titles = visibleNotes.filter { WikiLinks.key(it.title).isNotEmpty() }
 
     private val byKey: Map<String, Note>
+    private val tagMap = HashMap<Long, List<String>>()
+    private val tagSpelling = LinkedHashMap<String, String>() // lowercase -> spelling
     private val outMap = HashMap<Long, List<WikiLink>>()
     private val backMap = HashMap<Long, MutableList<Backlink>>()
     private val ghostNames = LinkedHashMap<String, String>() // key -> first-seen spelling
@@ -22,9 +25,21 @@ class LinkIndex(notes: List<Note>) {
         for (n in titles) map.putIfAbsent(WikiLinks.key(n.title), n)
         byKey = map
 
+        // One spelling per tag across all notes; the spelling of an app tag wins over an inline one.
+        for (note in visibleNotes) for (tag in note.tags) {
+            val name = tag.name.trim()
+            if (name.isNotEmpty()) tagSpelling.putIfAbsent(name.lowercase(Locale.ROOT), name)
+        }
+        for (note in visibleNotes) {
+            for (name in InlineTags.find(note.content)) tagSpelling.putIfAbsent(name.lowercase(Locale.ROOT), name)
+        }
         for (note in visibleNotes) {
             val links = WikiLinks.find(note.content)
             outMap[note.id] = links
+            tagMap[note.id] = (note.tags.map { it.name.trim() } + InlineTags.find(note.content))
+                .filter { it.isNotEmpty() }
+                .map { tagSpelling.getValue(it.lowercase(Locale.ROOT)) }
+                .distinct()
             val seenLines = HashSet<Pair<Long, String>>()
             for (link in links) {
                 val key = WikiLinks.key(link.target)
@@ -46,6 +61,9 @@ class LinkIndex(notes: List<Note>) {
     }
 
     fun resolve(target: String): Note? = byKey[WikiLinks.key(target)]
+
+    /** Tag names (no `#`) of a visible note: app tags plus inline `#tags`, merged case-insensitively. */
+    fun tagsOf(noteId: Long): List<String> = tagMap[noteId].orEmpty()
 
     fun outgoing(noteId: Long): List<WikiLink> = outMap[noteId].orEmpty()
 

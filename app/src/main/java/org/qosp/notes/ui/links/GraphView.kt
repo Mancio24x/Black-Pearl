@@ -20,6 +20,7 @@ import org.qosp.notes.R
 import org.qosp.notes.components.links.GraphEdge
 import org.qosp.notes.components.links.GraphNode
 import org.qosp.notes.components.links.GraphPhysics
+import org.qosp.notes.components.links.NodeKind
 import org.qosp.notes.components.links.PointF2
 import kotlin.math.abs
 import kotlin.math.hypot
@@ -189,10 +190,11 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
             val r = (4f + 1.8f * sqrt(node.degree.toFloat())).coerceAtMost(18f) * density
             val matches = (focus == null || node.key in lit) &&
                 (focus != null || node.displayTitle(context).contains(query, ignoreCase = true))
-            paint.style = if (node.noteId == null) Paint.Style.STROKE else Paint.Style.FILL
-            paint.color = if (node.noteId == null) outline else primary
+            val ghost = node.kind == NodeKind.MISSING
+            paint.style = if (ghost) Paint.Style.STROKE else Paint.Style.FILL
+            paint.color = if (ghost) outline else primary
             paint.alpha = if (matches) 255 else 64
-            paint.pathEffect = if (node.noteId == null) dashed else null
+            paint.pathEffect = if (ghost) dashed else null
             paint.strokeWidth = 1.5f * density
             canvas.drawCircle(x, y, r, paint)
             paint.style = Paint.Style.FILL
