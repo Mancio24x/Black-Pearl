@@ -151,6 +151,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
+            <org.qosp.notes.ui.links.BacklinksView
+                    android:id="@+id/backlinks"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
+
             <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/text_view_date"
                     android:layout_width="wrap_content"

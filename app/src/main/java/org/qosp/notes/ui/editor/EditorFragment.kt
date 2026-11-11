@@ -768,7 +768,18 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         linkIndexRepository.index.collect(viewLifecycleOwner) { index ->
             val note = data.note ?: return@collect
             if (index !== renderedLinkIndex && note.isMarkdownEnabled) renderContentPreview(note)
+            updateBacklinks(note)
         }
+    }
+
+    /** "Linked from · N": preview mode only, not for list notes and not for notes in the bin. */
+    private fun updateBacklinks(note: Note?) {
+        val backlinks = binding.backlinks
+        if (note == null || note.isList || note.isDeleted || model.inEditMode) {
+            backlinks.show(emptyList()) {}
+            return
+        }
+        backlinks.show(linkIndexRepository.index.value.backlinks(note.id)) { openLinkedNote(it.from.id, null) }
     }
 
     private fun renderContentPreview(note: Note) {
@@ -1572,6 +1583,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
         fabChangeMode.setImageResource(if (model.inEditMode) R.drawable.ic_show else R.drawable.ic_pencil)
         setMarkdownToolbarVisibility(note)
+        updateBacklinks(note)
     }
 
     private fun hasNoteEmptyContent(note: Note? = data.note): Boolean {

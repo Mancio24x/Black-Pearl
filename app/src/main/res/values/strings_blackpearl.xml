@@ -164,4 +164,6 @@
     <string name="link_create_title">Create «%1$s»?</string>
     <string name="link_create_message">A note with this title will be created, in the same notebook. The link will work right away, in Obsidian too.</string>
     <string name="link_create_open">Create and open</string>
+    <!-- Linked notes: notes that link to the open note -->
+    <string name="link_backlinks_header">Linked from · %1$d</string>
 </resources>

@@ -166,4 +166,5 @@
     <string name="link_create_title">Creare «%1$s»?</string>
     <string name="link_create_message">Verrà creata una nota con questo titolo, nello stesso taccuino. Il collegamento funzionerà subito, anche in Obsidian.</string>
     <string name="link_create_open">Crea e apri</string>
+    <string name="link_backlinks_header">Collegata da · %1$d</string>
 </resources>
