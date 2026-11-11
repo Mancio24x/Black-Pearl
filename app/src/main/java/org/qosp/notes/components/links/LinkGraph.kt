@@ -17,16 +17,20 @@ object LinkGraph {
         showUnlinked: Boolean = false,
         focusKey: String? = null,
     ): Pair<List<GraphNode>, List<GraphEdge>> {
-        val ghostSpelling = index.ghostTargets().associateBy { WikiLinks.key(it) }
+        // Keep a node for every visible database row. Wiki links still resolve to the newest matching title.
+        fun noteKey(id: Long) = "note:$id"
+        fun targetKey(title: String) = index.resolve(title)?.let { noteKey(it.id) } ?: "missing:${WikiLinks.key(title)}"
+        val ghostSpelling = index.ghostTargets().associateBy(::targetKey)
 
         val edgeSet = LinkedHashSet<GraphEdge>()
         val pairs = HashSet<Pair<String, String>>()
         val neighbours = HashMap<String, MutableSet<String>>()
-        for (note in index.titles) {
-            val from = WikiLinks.key(note.title)
+        for (note in index.visibleNotes) {
+            val from = noteKey(note.id)
             for (link in index.outgoing(note.id)) {
-                val to = WikiLinks.key(link.target)
-                if (to.isEmpty() || to == from) continue
+                if (WikiLinks.key(link.target).isEmpty()) continue
+                val to = targetKey(link.target)
+                if (to == from) continue
                 if (pairs.add(if (from < to) from to to else to to from)) edgeSet.add(GraphEdge(from, to))
                 neighbours.getOrPut(from) { HashSet() }.add(to)
                 neighbours.getOrPut(to) { HashSet() }.add(from)
@@ -34,11 +38,9 @@ object LinkGraph {
         }
 
         val all = LinkedHashMap<String, GraphNode>()
-        for (note in index.titles) {
-            val key = WikiLinks.key(note.title)
-            if (key in all) continue
-            val real = index.resolve(note.title) ?: continue
-            all[key] = GraphNode(key, real.title, real.id, neighbours[key]?.size ?: 0)
+        for (note in index.visibleNotes) {
+            val key = noteKey(note.id)
+            all[key] = GraphNode(key, note.title, note.id, neighbours[key]?.size ?: 0)
         }
         for (key in neighbours.keys) {
             if (key in all) continue

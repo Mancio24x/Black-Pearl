@@ -1,5 +1,8 @@
 package org.qosp.notes.ui.editor.markdown
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.text.Spanned
 import android.text.style.ClickableSpan
 import android.text.style.URLSpan
@@ -17,6 +20,7 @@ import org.qosp.notes.data.model.Note
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
@@ -54,6 +58,23 @@ class WikiLinkPluginTest {
         assertTrue(pills[0].ghost)
         assertEquals("Nope", view.text.toString().trim())
         assertEquals(0, view.spanned().getSpans(0, view.text.length, URLSpan::class.java).size)
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    fun missingLinkDrawsLettersInsideItsPill() {
+        val view = render("[[Genesis]]")
+        view.layout(0, 0, 400, 100)
+        val span = view.pills().single()
+        val paint = view.paint.apply { textSize = 32f; color = Color.BLACK }
+        val width = span.getSize(paint, view.text, 0, view.text.length, null)
+        val bitmap = Bitmap.createBitmap(width, 80, Bitmap.Config.ARGB_8888)
+        span.draw(Canvas(bitmap), view.text, 0, view.text.length, 0f, 0, 48, 80, paint)
+        val padding = (8 * context.resources.displayMetrics.density).toInt()
+        val visibleInk = (padding until width - padding).any { x ->
+            (30 until 46).any { y -> Color.alpha(bitmap.getPixel(x, y)) > 128 }
+        }
+        assertTrue("missing link drew an outline without readable text", visibleInk)
     }
 
     @Test

@@ -23,7 +23,7 @@ data class NetworkGraph(
 
 class NetworkViewModel(repository: LinkIndexRepository) : ViewModel() {
     val index = repository.index
-    val showUnlinked = MutableStateFlow(false)
+    val showUnlinked = MutableStateFlow(true)
     val focus = MutableStateFlow<String?>(null)
 
     val graph = combine(index, showUnlinked, focus) { current, unlinked, focused ->

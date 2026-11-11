@@ -1,5 +1,7 @@
 package org.qosp.notes.tests
 
+import android.os.SystemClock
+import android.view.MotionEvent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -16,7 +18,8 @@ import org.junit.Test
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.qosp.notes.R
-import org.qosp.notes.components.links.GraphNode
+import org.qosp.notes.components.links.LinkGraph
+import org.qosp.notes.components.links.PointF2
 import org.qosp.notes.data.model.Note
 import org.qosp.notes.data.repo.NoteRepository
 import org.qosp.notes.ui.MainActivity
@@ -25,7 +28,7 @@ import org.qosp.notes.ui.links.GraphView
 class NetworkNavigationTest : KoinComponent {
     private val repo: NoteRepository by inject()
 
-    @Test fun drawerDestinationOpensNoteThroughNodeSheet() {
+    @Test fun dragAndTapANoteInTheDrawerNetwork() {
         val source = Note(title = "Network test source", content = "[[Network test target]]", isLocalOnly = true)
         val target = Note(title = "Network test target", content = "Some text", isLocalOnly = true)
         val sourceId = runBlocking { repo.insertNote(source) }
@@ -39,11 +42,33 @@ class NetworkNavigationTest : KoinComponent {
                 onView(withId(R.id.graph)).check(matches(isDisplayed()))
                 // The application rebuilds its index asynchronously after a short debounce.
                 val index = getKoin().get<org.qosp.notes.components.links.LinkIndexRepository>()
-                runBlocking { kotlinx.coroutines.withTimeout(10_000) { index.index.first { it.resolve(target.title)?.id == targetId } } }
+                val snapshot = runBlocking { kotlinx.coroutines.withTimeout(10_000) {
+                    index.index.first { it.resolve(target.title)?.id == targetId }
+                } }
+                val (nodes, edges) = LinkGraph.build(snapshot)
+                val sourceNode = nodes.single { it.noteId == sourceId }
+                val targetNode = nodes.single { it.noteId == targetId }
                 scenario.onActivity {
-                    it.findViewById<GraphView>(R.id.graph).onNodeTap(GraphNode("network test target", target.title, targetId, 1))
+                    val graph = it.findViewById<GraphView>(R.id.graph)
+                    // A two-note fixture on the real graph View uses the same index, navigation and touch handler as the app.
+                    graph.setGraph(listOf(sourceNode, targetNode), edges.filter { it.from == sourceNode.key && it.to == targetNode.key },
+                        mapOf(sourceNode.key to PointF2(0f, -30f), targetNode.key to PointF2(0f, 30f)))
+                    val x = graph.width / 2f
+                    val normalFit = (graph.height - 68 * graph.resources.displayMetrics.density) / 60f
+                    val scale = normalFit.coerceIn(0.05f * graph.resources.displayMetrics.density, 2f * graph.resources.displayMetrics.density)
+                    val y = graph.height / 2f + 30f * scale
+                    val movedX = x + graph.width / 5
+                    fun touch(action: Int, px: Float) {
+                        val now = SystemClock.uptimeMillis()
+                        val e = MotionEvent.obtain(now, now, action, px, y, 0)
+                        try { graph.dispatchTouchEvent(e) } finally { e.recycle() }
+                    }
+                    touch(MotionEvent.ACTION_DOWN, x)
+                    touch(MotionEvent.ACTION_MOVE, movedX)
+                    touch(MotionEvent.ACTION_UP, movedX)
+                    touch(MotionEvent.ACTION_DOWN, movedX)
+                    touch(MotionEvent.ACTION_UP, movedX)
                 }
-                onView(withText(R.string.network_open)).perform(click())
                 scenario.onActivity {
                     assertEquals(R.id.fragment_editor, it.navController.currentDestination?.id)
                     assertEquals(targetId, it.navController.currentBackStackEntry?.arguments?.getLong("noteId"))
