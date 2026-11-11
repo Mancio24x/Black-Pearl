@@ -40,7 +40,9 @@ connected dots. Nothing else in existing screens changes.
   targets that do not exist yet (outlined, dashed, `onSurfaceVariant`). Node radius grows with its number of links.
   Archived notes are included; notes in the bin and hidden notes are not. Notes with no links are not drawn
   (a chip "Show unlinked notes" toggles them).
-- Pinch to zoom, drag to pan, drag a node to move it. Positions are not stored.
+- Like Obsidian: drag the background to move the whole graph, drag a node to move it (its links follow), pinch to
+  zoom. A "Recenter" button in the top bar puts everything back. Positions are not stored.
+- Tapping a node opens a bottom sheet (no swipe-to-expand, owner's choice); **Open** goes to the note in the editor.
 - Tap a node → bottom sheet: title, first lines of text, counts ("12 links · linked from 3"), buttons
   **Open**, **New linked note**, **Show only its links** (local graph, depth 1). Tap a ghost node → sheet
   "«Genesis» does not exist yet" with **Create note**.
