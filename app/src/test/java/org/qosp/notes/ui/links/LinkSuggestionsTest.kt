@@ -67,4 +67,10 @@ class LinkSuggestionsTest {
         assertEquals("Next: [[Exodus]]" to 16, LinkSuggestions.insert("Next: [[Ex", 10, "Exodus"))
         assertEquals("a [[Exodus]] b" to 12, LinkSuggestions.insert("a [[Ex]] b", 6, "Exodus"))
     }
+
+    @Test
+    fun titlesThatWouldBreakTheLinkAreNotSuggested() {
+        val index = LinkIndex(listOf(note(1, "Plan [draft]"), note(2, "Plan #2"), note(3, "Plan A|B"), note(4, "Plan ok")))
+        assertEquals(listOf("Plan ok"), LinkSuggestions.suggest("plan", index, selfId = null).filter { it.kind == NOTE }.map { it.title })
+    }
 }

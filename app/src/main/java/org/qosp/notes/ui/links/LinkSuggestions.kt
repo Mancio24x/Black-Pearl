@@ -22,7 +22,7 @@ object LinkSuggestions {
         val q = WikiLinks.key(query)
         val seen = HashSet<String>()
         val notes = index.titles
-            .filter { it.id != selfId && seen.add(WikiLinks.key(it.title)) }
+            .filter { it.id != selfId && linkable(it.title) && seen.add(WikiLinks.key(it.title)) }
             .map { it.title }
         val ghosts = index.ghostTargets().filter { seen.add(WikiLinks.key(it)) }
 
@@ -39,6 +39,9 @@ object LinkSuggestions {
         val result = matches.take(if (create) max - 1 else max)
         return if (create) result + Suggestion(query.trim(), Suggestion.Kind.CREATE) else result
     }
+
+    /** A title that `[[title]]` can point to: "[", "]", "|", "#" or a line break in it would break the link. */
+    fun linkable(title: String): Boolean = title.isNotBlank() && title.none { it in "[]|#\n" }
 
     /** Replaces `[[query` (and a `]]` right after the cursor) with `[[title]]`; returns new text and cursor. */
     fun insert(text: String, cursor: Int, title: String): Pair<String, Int> {

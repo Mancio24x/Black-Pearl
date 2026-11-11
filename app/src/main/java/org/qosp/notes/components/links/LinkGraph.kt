@@ -10,7 +10,7 @@ object LinkGraph {
     /**
      * Builds the graph. Nodes without any link are left out unless [showUnlinked]. With [focusKey] only that node and
      * its direct neighbours (and the edges touching the focus) are returned. Degree = number of distinct neighbours
-     * in the whole graph.
+     * in the whole graph. Two notes linking to each other share one edge (the first direction met).
      */
     fun build(
         index: LinkIndex,
@@ -20,13 +20,14 @@ object LinkGraph {
         val ghostSpelling = index.ghostTargets().associateBy { WikiLinks.key(it) }
 
         val edgeSet = LinkedHashSet<GraphEdge>()
+        val pairs = HashSet<Pair<String, String>>()
         val neighbours = HashMap<String, MutableSet<String>>()
         for (note in index.titles) {
             val from = WikiLinks.key(note.title)
             for (link in index.outgoing(note.id)) {
                 val to = WikiLinks.key(link.target)
                 if (to.isEmpty() || to == from) continue
-                edgeSet.add(GraphEdge(from, to))
+                if (pairs.add(if (from < to) from to to else to to from)) edgeSet.add(GraphEdge(from, to))
                 neighbours.getOrPut(from) { HashSet() }.add(to)
                 neighbours.getOrPut(to) { HashSet() }.add(from)
             }

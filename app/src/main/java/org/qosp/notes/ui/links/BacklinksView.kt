@@ -38,7 +38,11 @@ class BacklinksView @JvmOverloads constructor(
         visibility = View.GONE
     }
 
+    private var shown: List<Backlink>? = null
+
     fun show(items: List<Backlink>, onClick: (Backlink) -> Unit) {
+        if (items == shown) return // called on every change of the note: rebuild the cards only when they differ
+        shown = items
         removeViews(1, childCount - 1)
         isVisible = items.isNotEmpty()
         if (items.isEmpty()) return

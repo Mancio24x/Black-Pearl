@@ -28,7 +28,15 @@ class LinkGraphTest {
         assertNotNull(hub.noteId)
         assertNotNull(nodes.single { it.title == "Genesis" }.noteId)
         assertEquals(68, nodes.count { it.noteId == null })
-        assertEquals(edges.size, edges.toSet().size)
+        assertEquals(69, edges.size) // Genesis links back to the hub: still one edge between them
+    }
+
+    @Test
+    fun notesLinkingToEachOtherShareOneEdge() {
+        val index = LinkIndex(listOf(note(1, "A", "[[B]]"), note(2, "B", "[[A]] [[a]]")))
+        val (nodes, edges) = LinkGraph.build(index)
+        assertEquals(1, edges.size)
+        assertEquals(listOf(1, 1), nodes.map { it.degree })
     }
 
     @Test

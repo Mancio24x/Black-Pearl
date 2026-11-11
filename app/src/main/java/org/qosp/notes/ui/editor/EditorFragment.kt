@@ -184,6 +184,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     private val preferenceRepository: PreferenceRepository by inject()
     private var suggestionStrip: org.qosp.notes.ui.links.LinkSuggestionStrip? = null
     private var headingScrollDone = false
+    private var createLinkDialog: android.app.Dialog? = null
     private var renderedLinkIndex: LinkIndex? = null
 
     override val hasDefaultAnimation = false
@@ -558,6 +559,8 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
     override fun onDestroyView() {
         suggestionStrip = null
+        createLinkDialog?.dismiss()
+        createLinkDialog = null
         // Dismiss the snackbar which is shown for deleted notes
         snackbar?.dismiss()
         itemTouchHelper.attachToRecyclerView(null)
@@ -811,11 +814,18 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
     private fun openWikiLink(target: String, heading: String?) {
         val existing = linkIndexRepository.index.value.resolve(target)
-        if (existing != null) return openLinkedNote(existing.id, heading)
-        MaterialAlertDialogBuilder(requireContext())
+        if (existing != null) {
+            // a link to the note itself would only stack a second copy of this screen
+            if (existing.id != data.note?.id) openLinkedNote(existing.id, heading)
+            return
+        }
+        // a note in the bin is read-only: its links do not create notes; one question at a time (double tap)
+        if (data.note?.isDeleted != false || createLinkDialog?.isShowing == true) return
+        createLinkDialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.link_create_title, target))
             .setMessage(R.string.link_create_message)
             .setPositiveButton(R.string.link_create_open) { _, _ ->
+                if (view == null) return@setPositiveButton // answered after this screen was left
                 val notebookId = data.note?.notebookId
                 viewLifecycleOwner.lifecycleScope.launch {
                     // fresh index: the shared one lags a moment behind changes and must not cause a duplicate note
@@ -839,7 +849,6 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     private fun scrollToHeadingOnce() {
         val heading = args.scrollToHeading.trim()
         if (headingScrollDone || heading.isEmpty()) return
-        headingScrollDone = true
         val preview = binding.textViewContentPreview
         val scrollView = binding.scrollView
         preview.post {
@@ -856,6 +865,8 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                 y += view.top
                 view = view.parent as? View ?: return@post
             }
+            // marked as done only now: while the note is in edit mode the preview has no layout yet
+            headingScrollDone = true
             scrollView.smoothScrollTo(0, y)
         }
     }
@@ -1639,6 +1650,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
         fabChangeMode.setImageResource(if (model.inEditMode) R.drawable.ic_show else R.drawable.ic_pencil)
         setMarkdownToolbarVisibility(note)
+        if (!model.inEditMode) scrollToHeadingOnce() // opened in edit mode from a [[Note#Heading]] link
         updateBacklinks(note)
     }
 
