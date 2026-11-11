@@ -6,7 +6,9 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.qosp.notes.data.model.Attachment
 import org.qosp.notes.data.model.Note
+import org.qosp.notes.data.model.Tag
 import java.io.File
 
 class LinkGraphTest {
@@ -48,10 +50,14 @@ class LinkGraphTest {
 
     @Test
     fun focusShowsNeighboursOnly() {
-        val index = LinkIndex(listOf(note(1, "A", "[[B]]"), note(2, "B", "[[C]]"), note(3, "C"), note(4, "D", "[[C]]")))
+        val index = LinkIndex(listOf(note(1, "A", "[[B]] [[C]]"), note(2, "B", "[[C]]"), note(3, "C"), note(4, "D", "[[C]]")))
         val (nodes, edges) = LinkGraph.build(index, focusKey = "note:2")
         assertEquals(setOf("A", "B", "C"), nodes.map { it.title }.toSet())
-        assertEquals(setOf(GraphEdge("note:1", "note:2"), GraphEdge("note:2", "note:3")), edges.toSet())
+        // every edge between kept nodes, including A-C between two neighbours
+        assertEquals(
+            setOf(GraphEdge("note:1", "note:2"), GraphEdge("note:1", "note:3"), GraphEdge("note:2", "note:3")),
+            edges.toSet(),
+        )
     }
 
     @Test
@@ -74,5 +80,83 @@ class LinkGraphTest {
         assertEquals(listOf(GraphEdge(source.key, target.key)), edges)
         assertEquals(2, nodes.size)
         assertNull(nodes.firstOrNull { it.degree == 0 })
+    }
+
+    @Test
+    fun tagsOffGivesTodaysGraph() {
+        val notes = listOf(
+            note(1, "A", "[[B]] #x").copy(tags = listOf(Tag("Prayer")), attachments = listOf(Attachment(fileName = "f.png"))),
+            note(2, "B"),
+        )
+        val plain = LinkGraph.build(LinkIndex(notes))
+        assertEquals(setOf("note:1", "note:2"), plain.first.map { it.key }.toSet())
+        assertEquals(listOf(GraphEdge("note:1", "note:2")), plain.second)
+        assertTrue(plain.first.all { it.kind == NodeKind.NOTE })
+    }
+
+    @Test
+    fun appAndInlineTagsMerge() {
+        val index = LinkIndex(listOf(note(1, "A").copy(tags = listOf(Tag("Prayer"))), note(2, "B", "#prayer")))
+        val (nodes, edges) = LinkGraph.build(index, tags = true)
+        val tag = nodes.single { it.kind == NodeKind.TAG }
+        assertEquals("tag:prayer", tag.key)
+        assertEquals("#Prayer", tag.title)
+        assertEquals(2, tag.degree)
+        assertNull(tag.noteId)
+        assertEquals(setOf(GraphEdge("note:1", "tag:prayer"), GraphEdge("note:2", "tag:prayer")), edges.toSet())
+    }
+
+    @Test
+    fun tagOnlyNoteCountsAsLinked() {
+        val index = LinkIndex(listOf(note(1, "A", "#solo")))
+        assertTrue(LinkGraph.build(index).first.isEmpty())
+        assertEquals(setOf("note:1", "tag:solo"), LinkGraph.build(index, tags = true).first.map { it.key }.toSet())
+    }
+
+    @Test
+    fun attachmentsBecomeNodes() {
+        val index = LinkIndex(listOf(note(1, "A").copy(attachments = listOf(Attachment(Attachment.Type.AUDIO, "p", "d", ""), Attachment()))))
+        val (nodes, edges) = LinkGraph.build(index, attachments = true)
+        val file = nodes.single { it.kind == NodeKind.ATTACHMENT }
+        assertEquals("file:1:0", file.key)
+        assertEquals(1L, file.noteId)
+        assertEquals("d", file.title)
+        assertEquals(Attachment.Type.AUDIO, file.attachmentType)
+        assertEquals(listOf(GraphEdge("note:1", file.key)), edges)
+    }
+
+    @Test
+    fun hiddenAndBinNotesGiveNoTagsOrFiles() {
+        val index = LinkIndex(listOf(
+            note(1, "H", "#x").copy(isHidden = true, attachments = listOf(Attachment(fileName = "a"))),
+            note(2, "D", "#x").copy(isDeleted = true),
+        ))
+        val (nodes, edges) = LinkGraph.build(index, showUnlinked = true, tags = true, attachments = true)
+        assertTrue(nodes.isEmpty())
+        assertTrue(edges.isEmpty())
+    }
+
+    private fun chain() = LinkIndex(listOf(
+        note(1, "A", "[[B]]"), note(2, "B", "[[C]]"), note(3, "C", "[[D]]"),
+        note(4, "D", "[[E]]"), note(5, "E", "[[F]]"), note(6, "F"),
+    ))
+
+    @Test
+    fun depthFollowsLinks() {
+        fun titles(depth: Int) = LinkGraph.build(chain(), focusKey = "note:1", depth = depth).first.map { it.title }.toSet()
+        assertEquals(setOf("A", "B"), titles(1))
+        assertEquals(setOf("A", "B", "C", "D"), titles(3))
+        assertEquals(setOf("A", "B", "C", "D", "E", "F"), titles(9))
+        val (_, edges) = LinkGraph.build(chain(), focusKey = "note:1", depth = 3)
+        assertEquals(3, edges.size)
+    }
+
+    @Test
+    fun depthCrossesTags() {
+        val index = LinkIndex(listOf(note(1, "A", "#x"), note(2, "B", "#x")))
+        val (nodes, _) = LinkGraph.build(index, focusKey = "note:1", depth = 2, tags = true)
+        assertEquals(setOf("note:1", "tag:x", "note:2"), nodes.map { it.key }.toSet())
+        val (shallow, _) = LinkGraph.build(index, focusKey = "note:1", depth = 1, tags = true)
+        assertEquals(setOf("note:1", "tag:x"), shallow.map { it.key }.toSet())
     }
 }
