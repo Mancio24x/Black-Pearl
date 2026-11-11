@@ -96,12 +96,26 @@ data class Note(
         }
     }
 
+    /**
+     * "Convert to list": one item per non-empty line. Black Pearl: Markdown and plain-text checkboxes ("- [ ] milk",
+     * "[x] bread", "☐ / ☑"), bullets ("- ", "• ") and numbers ("1. ") become real checkboxes instead of staying in the
+     * text of the item; "[x]" / "☑" keep the item ticked.
+     */
+    private companion object {
+        // optional bullet or number, optional checkbox, then the text; group 1 = the checkbox
+        val TASK_LINE = Regex("""^(?:[-*+•◦▪‣·]\s+|\d{1,3}[.)]\s+)?(\[[ xX✓✔]?]|[☐☑☒□])?\s*(.*)$""")
+    }
+
     fun stringToTaskList(): List<NoteTask> {
         var nextId = 0L
-
-        return content
-            .lines()
-            .map { NoteTask(nextId++, it.trim(), false) }
+        return content.lines().mapNotNull { line ->
+            val match = TASK_LINE.matchEntire(line.trim()) ?: return@mapNotNull null
+            val (box, text) = match.destructured
+            val clean = text.trim()
+            if (clean.isEmpty()) return@mapNotNull null
+            val done = box == "☑" || box == "☒" || (box.startsWith("[") && box.trim('[', ']', ' ').isNotEmpty())
+            NoteTask(nextId++, clean, done)
+        }
     }
 
     fun mdToTaskList(content: String): List<NoteTask> {

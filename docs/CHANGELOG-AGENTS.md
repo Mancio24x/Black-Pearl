@@ -203,6 +203,28 @@ Append one short entry per significant task: files, decisions, tests (with resul
   `lintDebug` failed with 243 pre-existing errors in unchanged files (FragmentLiveDataObserve, MissingQuantity,
   MissingTranslation); no errors in either edited application file. Lint is report-only in CI. Device checks run in CI.
 
+## 2026-11-10 — Remove confirmed dead code
+- Removed four unused Compose contrast schemes, their 140 exclusive colours, and the unused ColorFamily/
+  unspecified_scheme pair; active View-derived themes and light/dark fallback schemes remain.
+- Removed TagsViewModel.TagDataList and its imports, six unused sync result/exception types, the unused DAO
+  methods moveRemotelyDeletedNotesToBin/getAllNoteTagRelations, and the unreferenced ic_more_vert drawable.
+- No schema, migration, serialized field, sync contract or active theme change.
+- Validation: 143 unit tests passed; assembleDebug and compileDebugAndroidTestKotlin passed;
+  git diff --check passed. Device tests compiled but were not executed locally.
+
+## 2026-11-10 — "Convert to list" makes real checkboxes (branch fix/convert-to-list)
+- `Note.stringToTaskList()`: "- [ ] x", "[x] y", "☐/☑", bullets and numbers are stripped into the checkbox state
+  instead of staying in the item text; empty lines skipped. Test `data/ConvertToListTest`.
+- Checklist boxes: ticked = theme accent (`color/bp_task_checkbox`), was grey `colorControlNormal`.
+
+## 2026-11-11 — Release from cloud sessions (manual Release workflow)
+- Cloud sessions cannot push tags (git push of `refs/tags/v0.7.2` → HTTP 403), so v0.7.2 could not be released.
+- `.github/workflows/release.yml`: new `workflow_dispatch` (inputs `version`, `notes`, only on `main`): GitHub
+  creates the tag on the tested commit and publishes the release as latest with the given notes. Both modes now
+  fail if the APK certificate SHA-256 is not the Black Pearl key. Tag-push mode unchanged (draft release).
+- Owner's standing approval: publish every version that passes CI without asking (`docs/handoff/RELEASE.md`, README).
+- Checks: YAML parses; the workflow itself only runs on GitHub (first real run = v0.7.2 after merge).
+
 ## 2026-11-10 — Clickable task squares, simpler formatting bar, refreshed vivid themes (scheduled run)
 - Task squares: new `ui/editor/markdown/TaskBoxes.kt`. In the editor (Markdown on) `- [ ]` / `- [x]` are drawn as a
   rounded square (`TaskBoxSpan`, ReplacementSpan); ticked lines are struck through and muted. A tap on the square

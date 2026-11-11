@@ -1,6 +1,16 @@
 # Publishing a release
 
-Only when the owner asks ("pubblica"), and only from `main` after his merge.
+**Standing approval (owner, 2026-11-11):** publish every version that passes, without asking: `main` CI green
+(Build + UI preview on the same tree). Only from `main` after his merge.
+
+## From a cloud session (cannot push tags: HTTP 403)
+
+Run the workflow by hand (GitHub MCP `actions_run_trigger`, method `run_workflow`, `workflow_id: release.yml`,
+`ref: main`, inputs `version` = `X.Y.Z`, `notes` = Italian Markdown, style below). GitHub tags the tested `main`
+commit, builds, checks the signing key fingerprint and publishes the release as latest. Then check it with
+`get_release_by_tag` (APK attached, not draft). Check `git diff origin/main <tested tip>` is empty first.
+
+## From the owner's Mac (tag push)
 
 ```bash
 R=Mancio24x/Black-Pearl          # ALWAYS pass --repo: gh otherwise picks the "upstream" Quillpad remote

@@ -1,10 +1,21 @@
 name: Release
 
-# Runs when a version tag like v0.1.0 is pushed. Creates a DRAFT GitHub release:
-# the owner reviews it and presses "Publish".
+# Two ways to start it:
+# - a version tag like v0.1.0 is pushed: creates a DRAFT GitHub release, the owner reviews it and presses "Publish";
+# - "Run workflow" (workflow_dispatch) on main with a version and Italian notes: GitHub creates the tag itself and
+#   PUBLISHES the release as latest. Used by cloud agent sessions, which cannot push tags (owner's standing approval,
+#   see docs/handoff/RELEASE.md). The APK must be signed with the usual key or nothing is published.
 on:
   push:
     tags: [ 'v*' ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version without the v, e.g. 0.7.2'
+        required: true
+      notes:
+        description: 'Release notes (Markdown, Italian)'
+        required: true
 
 permissions:
   contents: write
@@ -25,7 +36,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Check signing secrets
         env:
@@ -35,9 +46,25 @@ jobs:
             echo "::error::Missing secret KEYSTORE_BASE64 (see docs/TESTING.md > Release signing)"; exit 1
           fi
 
+      - name: Choose the tag
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            [ "$GITHUB_REF" = refs/heads/main ] || { echo "::error::Run it on main"; exit 1; }
+            TAG="v${INPUT_VERSION#v}"
+            if [ -n "$(git ls-remote --tags origin "refs/tags/$TAG")" ]; then
+              echo "::error::Tag $TAG already exists"; exit 1
+            fi
+            git tag "$TAG"   # local only: the release step creates it on GitHub once the APK is ready
+          else
+            TAG="$GITHUB_REF_NAME"
+          fi
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+
       - name: Check tag format
         run: |
-          [[ "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]{1,2}\.[0-9]{1,2}$ ]] || { echo "::error::Tag must be vX.Y.Z (Y, Z < 100)"; exit 1; }
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]{1,2}\.[0-9]{1,2}$ ]] || { echo "::error::Tag must be vX.Y.Z (Y, Z < 100)"; exit 1; }
 
       - name: Unit tests
         run: ./gradlew testDebugUnitTest
@@ -51,7 +78,7 @@ jobs:
         run: |
           echo "$KEYSTORE_BASE64" | base64 -d > app/release.jks
           ./gradlew assembleRelease \
-            -PreleaseVersion="${GITHUB_REF_NAME#v}" \
+            -PreleaseVersion="${TAG#v}" \
             -Pkeystore=release.jks \
             -Pstorepass="$STORE_PASS" \
             -Pkeyalias="$KEY_ALIAS" \
@@ -61,26 +88,50 @@ jobs:
       - name: Verify signature
         run: |
           APKSIGNER=$(ls $ANDROID_HOME/build-tools/*/apksigner | sort -V | tail -1)
-          $APKSIGNER verify --print-certs app/build/outputs/apk/release/app-release.apk
+          $APKSIGNER verify --print-certs app/build/outputs/apk/release/app-release.apk | tee signer.txt
+          # same key as every earlier release, so updates install over the old app
+          grep -q 'SHA-256 digest: e9054f1cf9b6ac97badc7b91199c5065108dd59d23b52b5415dfbb03ab2ffb55' signer.txt \
+            || { echo "::error::APK not signed with the Black Pearl key"; exit 1; }
 
       - name: Prepare files and changelog
         run: |
-          V="${GITHUB_REF_NAME#v}"
+          V="${TAG#v}"
           cp app/build/outputs/apk/release/app-release.apk "black-pearl-$V.apk"
           gzip -c app/build/outputs/mapping/release/mapping.txt > "mapping-$V.txt.gz"
-          PREV=$(git describe --tags --abbrev=0 "$GITHUB_REF_NAME^" 2>/dev/null || true)
+          PREV=$(git describe --tags --abbrev=0 "$TAG^" 2>/dev/null || true)
           {
             echo "## Changes"
-            if [ -n "$PREV" ]; then git log --no-merges --pretty='- %s' "$PREV..$GITHUB_REF_NAME"
+            if [ -n "$PREV" ]; then git log --no-merges --pretty='- %s' "$PREV..$TAG"
             else echo "- First Black Pearl release (based on Quillpad, see docs/DECISIONS.md)"; fi
           } > CHANGELOG_RELEASE.md
           echo "V=$V" >> "$GITHUB_ENV"
 
       - name: Create draft release
+        if: github.event_name == 'push'
         uses: softprops/action-gh-release@v3
         with:
           draft: true
           body_path: CHANGELOG_RELEASE.md
+          files: |
+            black-pearl-${{ env.V }}.apk
+            mapping-${{ env.V }}.txt.gz
+
+      - name: Write release notes
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          NOTES: ${{ inputs.notes }}
+        run: printf '%s\n' "$NOTES" > NOTES.md
+
+      - name: Publish release
+        if: github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ env.TAG }}
+          target_commitish: ${{ github.sha }}
+          name: Black Pearl ${{ env.V }}
+          body_path: NOTES.md
+          draft: false
+          make_latest: 'true'
           files: |
             black-pearl-${{ env.V }}.apk
             mapping-${{ env.V }}.txt.gz
