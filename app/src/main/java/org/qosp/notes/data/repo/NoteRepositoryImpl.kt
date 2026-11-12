@@ -190,6 +190,12 @@ class NoteRepositoryImpl(
         return noteId
     }
 
+    override suspend fun insertLocalNotes(notes: List<Note>): List<Long> {
+        if (notes.isEmpty()) return emptyList()
+        Log.d(tag, "insertLocalNotes: Creating ${notes.size} local notes in one transaction")
+        return noteDao.insertAll(notes.map { it.toEntity() })
+    }
+
     override suspend fun updateNotes(vararg notes: Note, sync: Boolean) = notes.forEach { updateNote(it, sync) }
 
     private suspend fun updateNote(note: Note, sync: Boolean) {
