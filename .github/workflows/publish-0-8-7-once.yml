@@ -1,0 +1,31 @@
+name: Publish Black Pearl 0.8.7
+on:
+  push:
+    branches: ['release/dispatch-0.8.7']
+    paths: ['.github/workflows/publish-0-8-7-once.yml']
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: Mancio24x/Black-Pearl
+      NOTES: |
+        ## Novità della 0.8.7
+        - La Rete dispone i gruppi collegati e le note isolate in spazi distinti. I titoli si adattano allo spazio e allo zoom.
+        - Il grafo si apre e cambia disposizione con un’animazione. Quando trascini una nota si muovono anche quelle vicine, anche negli archivi grandi.
+        - Ricerca e filtri si aprono dall’ingranaggio. Il pulsante ▶ mostra la crescita della rete nel tempo.
+
+        Aggiornamento diretto dalle versioni precedenti (stessa firma).
+    steps:
+      - name: Start the official release on the tested main commit
+        run: |
+          set -euo pipefail
+          test "$(gh api "repos/$GH_REPO/branches/main" --jq '.commit.sha')" = d5ff3f193167577373410766027978c018b1f5a0
+          if gh release view v0.8.7 --repo "$GH_REPO" >/dev/null 2>&1; then exit 0; fi
+          gh workflow run release.yml --repo "$GH_REPO" --ref main -f version=0.8.7 -f notes="$NOTES"
