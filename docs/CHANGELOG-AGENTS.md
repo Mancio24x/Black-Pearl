@@ -398,5 +398,5 @@ Completed the editor suggestion strip and the Network destination, including gra
   most 160 labels per frame (most linked first). Network empty-state opens "+Start here".
 - Tests: `BibleStudyKitTest` (1300 files, unique titles, links seen by `LinkIndex`, added once), `LinkParseCacheTest`.
   Values checked against the files (69 links in "The Bible (WEB)", 13 notes link to Gen-01). Android build on CI.
-- Known limits: Obsidian `aliases:` in front matter are not used yet, so links like `[[Start here]]` show as ghosts;
-  deleting the notebook moves its notes to "All notes".
+- Checked on the files: 7336 links, all but 2 resolve to a kit note by title (aliases are not needed).
+- Known limit: deleting the notebook moves its notes to "All notes".
