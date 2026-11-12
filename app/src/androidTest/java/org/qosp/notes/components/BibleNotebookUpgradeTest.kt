@@ -47,6 +47,8 @@ class BibleNotebookUpgradeTest {
             val loose = add("Gen-02", null)
             val edited = db.noteDao.insert(Note(title = "My annotations", content = "Private marginalia", notebookId = legacy).toEntity())
             val mine = db.noteDao.insert(Note(title = "Genesis", content = "My own study", notebookId = privateBook).toEntity())
+            val personalCopy = add("Exodus", privateBook)
+            val personalCopy2 = add("Gen-03", privateBook)
             val personal = db.noteDao.insert(Note(title = "Shopping").toEntity())
             assertEquals(main, kit.reconcile(99999))
             assertEquals(main, kit.reconcile(main))
@@ -55,7 +57,7 @@ class BibleNotebookUpgradeTest {
             assertEquals(main, db.noteDao.getById(loose).first()!!.notebookId)
             assertEquals("Private marginalia", db.noteDao.getById(edited).first()!!.content)
             assertEquals(main, db.noteDao.getById(edited).first()!!.notebookId)
-            assertEquals(setOf(mine, personal), db.noteDao.getNonDeletedOrArchivedExcept(main, SortMethod.TITLE_ASC).first().map { it.id }.toSet())
+            assertEquals(setOf(mine, personal, personalCopy, personalCopy2), db.noteDao.getNonDeletedOrArchivedExcept(main, SortMethod.TITLE_ASC).first().map { it.id }.toSet())
             assertEquals(1, kit.inReadingOrder(db.noteDao.getByNotebook(main, SortMethod.TITLE_ASC).first()).count { it.title == "Gen-01" })
 
             val partial = listOf(file(BibleStudyKit.START), file("The Bible (WEB)"), file("Genesis"), file("Gen-01"))

@@ -76,7 +76,7 @@ class BibleNotebook(
         }
         known["The Bible"] = INDEX_PATH
         // Only matching content establishes provenance. A personal notebook called "Bible" is insufficient.
-        val moves = mutableMapOf<Long?, MutableList<Long>>()
+        val loose = mutableListOf<Long>()
         val matchedTitles = mutableMapOf<Long, MutableSet<String>>()
         for (titles in known.keys.chunked(BibleStudyKit.CHUNK)) {
             val candidates = db.noteDao.kitCandidates(titles)
@@ -87,24 +87,26 @@ class BibleNotebook(
                 }
                 for (row in rows) {
                     if (row.content.trimEnd() !in comparable) continue
-                    moves.getOrPut(row.notebookId) { ArrayList() }.add(row.id)
+                    if (row.notebookId == null) loose += row.id
                     row.notebookId?.let { matchedTitles.getOrPut(it) { mutableSetOf() }.add(title) }
                 }
             }
         }
-        fun isKitName(name: String) = listOf("bible", "bibbia", "scripture (web)").any { name.contains(it, true) }
+        db.noteDao.kitCandidates(listOf("")).filter { it.notebookId == null && it.content.trim() == EMPTY_PAGE }
+            .forEach { loose += it.id }
         val identified = books.filter { book ->
             val count = matchedTitles[book.id]?.size ?: 0
-            (book.name == BibleStudyKit.NOTEBOOK && count > 0) ||
-                ((book.id == saved || isKitName(book.name)) && count >= 2)
+            (legacyName.matches(book.name.trim()) && count > 0) || (book.id == saved && count >= 2)
         }.map { it.id }.toSet()
-        val canonical = saved?.takeIf { it in identified || names[it]?.name == BibleStudyKit.NOTEBOOK }
+        val savedBook = names[saved]
+        val canonical = savedBook?.takeIf { it.id in identified && it.name == BibleStudyKit.NOTEBOOK }?.id
             ?: identified.filter { names[it]?.name == BibleStudyKit.NOTEBOOK }
                 .sortedWith(compareByDescending<Long> { matchedTitles[it]?.size ?: 0 }.thenBy { it }).firstOrNull()
+            ?: savedBook?.takeIf { it.id in identified }?.id
             ?: books.firstOrNull { it.name == BibleStudyKit.NOTEBOOK && db.noteDao.notebookTitles(it.id).isEmpty() }?.id
             ?: db.notebookDao.insert(Notebook(name = BibleStudyKit.NOTEBOOK))
 
-        moves[null].orEmpty().chunked(BibleStudyKit.CHUNK).forEach { db.noteDao.moveIntoNotebook(it, canonical) }
+        loose.chunked(BibleStudyKit.CHUNK).forEach { db.noteDao.moveIntoNotebook(it, canonical) }
         for (book in books) {
             if (book.id == canonical) continue
             if (book.id in identified) {
@@ -112,6 +114,12 @@ class BibleNotebook(
                 db.noteDao.mergeNotebook(book.id, canonical)
             }
             if (book.id in identified || book.name == BibleStudyKit.NOTEBOOK) db.notebookDao.deleteIfEmpty(book.id)
+        }
+        if (preferences.isBibleKitAdded() && (saved !in identified || identified.any { it != canonical })) {
+            val present = db.noteDao.notebookTitles(canonical).toSet()
+            for (chunk in paths.filterNot { BibleStudyKit.titleOf(it) in present }.chunked(BibleStudyKit.CHUNK)) {
+                db.noteDao.insertAll(chunk.map { BibleStudyKit.noteFrom(it, original(it), canonical).toEntity() })
+            }
         }
         canonical
     }
@@ -160,15 +168,23 @@ class BibleNotebook(
 
     suspend fun inReadingOrder(notes: List<Note>): List<Note> = withContext(Dispatchers.Default) {
         val seen = HashSet<Note>()
+        val duplicates = notes.groupingBy { it.title }.eachCount()
         notes.sortedWith(compareBy<Note> { order[it.title] ?: Int.MAX_VALUE }
             .thenBy { it.title }.thenBy { it.id }).filter { note ->
             // An untouched duplicate is shown once. Retain both IDs in Room and show all differing annotations.
-            seen.add(note.copy(id = 0, creationDate = 0, modifiedDate = 0, content = note.content.trimEnd()))
+            if (note.title.isEmpty() && note.content.trim() == EMPTY_PAGE) return@filter false
+            duplicates[note.title] == 1 || seen.add(note.copy(id = 0, creationDate = 0, modifiedDate = 0,
+                isLocalOnly = false, content = note.content.trimEnd()))
         }
     }
 
     companion object {
+        private const val EMPTY_PAGE = "links: [[The Bible]]\n# \n\n[[-01|Start Reading →]]"
         const val INDEX_PATH = "The Bible (WEB).md"
+        private val legacyName = Regex(
+            """(?:the bible|bible(?: study kit)?|bibbia|scripture)(?:\s*\((?:web|v?\d+)\))*""",
+            RegexOption.IGNORE_CASE,
+        )
         private val groupHeading = Regex("^### (.+)$", RegexOption.MULTILINE)
         private val chapterNumber = Regex("""-(\d+)$""")
         fun readingOrder(paths: List<String>): Map<String, Int> {
