@@ -8,7 +8,8 @@ data class NextcloudNote(
     val etag: String? = null,
     val content: String?,
     val title: String,
-    val category: String,
+    // null = field left out of the request body (Json encodeDefaults=false), so an update keeps the server category
+    val category: String? = null,
     val favorite: Boolean,
     val modified: Long, // seconds
     val readOnly: Boolean? = null,

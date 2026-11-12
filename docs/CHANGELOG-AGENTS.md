@@ -304,8 +304,99 @@ Completed the editor suggestion strip and the Network destination, including gra
 - Owner decision: ask before changing other notes (option A).
 - Tests: `LinkRenameTest` (5) — run with JUnit in a JVM prototype with a stub Note: 5/5 pass; Android build on CI.
 
+## fix(editor): stale editor data, serialized edits, undo history, recorder/music crashes
+- Files: ui/editor/EditorViewModel.kt, ui/editor/EditorFragment.kt, ui/utils/views/ExtendedEditText.kt, ui/recorder/RecorderService.kt, ui/media/MusicService.kt, ui/media/MediaActivity.kt, strings_blackpearl.xml (en, it).
+- Fixes: #1 `replayExpirationMillis = 0` (no stale replay on resubscribe); #6 Mutex + latest note read inside the lock; #2 undo history cleared after `editContent`; #3 history saved as parcelable list, capped (500 entries, 100k chars saved); #4 MediaRecorder stop/prepare/start guarded; #5 audio open errors caught, toast + finish; link rename re-reads notes and re-plans on "Update".
+- Tests: none added (Android-only code); no build possible here (no Android SDK). Unverified: all of it, CI must compile and test.
+
+## 2026-11-12 — Fix review findings: lists, reminders, security
+- Lists: `ActivityViewModel.update` re-reads each note by id before applying the change (stale sheet snapshot); widget
+  skips hidden notes; search uses `getNonDeleted` and treats a blank query as empty.
+- Reminders: `rescheduleAll` shows expired reminders instead of deleting them; `sendNotification` returns if the reminder
+  row is gone or the note is missing/in the bin (`ReminderManager.shouldNotify`), and deletes the row only after `notify`
+  (kept if notifications are disabled; retried at next boot).
+- Security: `FLAG_SECURE` (+ `setRecentsScreenshotEnabled` on 33+) follows `AppLock.secure` at once; wrong-PIN counter and
+  wait saved in DataStore (`app_lock_failures`, `app_lock_blocked_until`, wall clock); start-up read retries and fails
+  closed (`loadAppLockAtStart`); Settings "current PIN" uses `AppLock.verifyPin` (same limit); new `data_extraction_rules.xml`
+  and `backup_rules.xml` exclude database, datastore, media and shared prefs from cloud backup and device transfer
+  (`allowBackup` unchanged; users move notes with the app's export).
+- Tests: `AppLockTest` (+6), `ReminderManagerTest` (2). Not run: no Android SDK here; CI compiles and runs them.
+- Not done: alarms are not cancelled at bin time (no context in the repository); the fire-time check covers it.
+
+## 2026-11-12 — Backup/restore safety fixes (review data.md #1 #2 #3 #5 #6 #7 #9, lists.md #7)
+- `BackupManager.restoreNotesFromBackup`: backup `idMappings` are no longer restored (restored notes are new local
+  notes; the next sync uploads them). The DB part runs in one Room transaction (`runInTransaction`, wired in
+  `di/UtilModule` with `withTransaction`, room-ktx already a dependency); notes/tags are inserted with sync
+  off inside it; reminder alarms are scheduled after commit. `notesByIds()` added.
+- `BackupService`: restore errors caught -> existing "restore failed" notification (cancellation rethrown); "back up
+  selected notes" passes a `LongArray` of ids (`NOTE_IDS`) instead of `Note` parcelables; notes loaded in the service.
+- `data/Backup.kt`: `fromString` uses `Json { ignoreUnknownKeys; coerceInputValues }`; write format unchanged.
+- New `components/backup/BackupRules.kt`: zip restore accepts only `backup.json` and `media/<name>` (no dirs, sub-dirs,
+  `..`, `.`, `/` or `\`, `._*`; others skipped); `uniqueName` never returns a taken name (used by
+  `AttachmentHandler.IncludeFiles` and restore); `remapMediaLinks` rewrites inline
+  `content://<any authority>/media_files/<name>` links in note content to the restored file.
+- Tests: `BackupRulesTest` (6) and 3 new `BackupTest` cases: 10/10 pass in a JVM prototype with stubbed Room/Parcelize.
+  Unverified: Android compile, `withTransaction` on device, `NoteLifecycleTest` (instrumented). Not done: process-death
+  part of lists.md #7 (picker result after `notesToBackup` is lost still makes a full backup).
+
+## 2026-11-12 — Sync review fixes (#1, #5, #7, #8, #10a, #11, #12a)
+- `SynchronizeNotes.kt`: new `SyncSafetyGuard.abortReason` — MAPPING sync aborts (`SyncNotesResult.abortReason`,
+  `SyncSafetyAbort` result, toast `message_sync_aborted_incomplete_listing` EN/IT) when the remote listing is empty
+  while live notes are mapped, or when ≥3 and more than half of the mapped notes are missing.
+- `NoteRepositoryImpl`: a note binned because its remote is gone loses its mapping (a reappearing file is imported,
+  never deleted); `restoreNotes` deletes the old mapping before inserting the new one; checklist pull uses
+  `Note.withRemoteListContent` (any non-task, non-blank remote line → text note with the remote content).
+- `StorageBackend`: `getAll` queries the children itself (same URIs as `TreeDocumentFile`) and returns null on any
+  error, missing cursor or `EXTRA_LOADING`; rename uses `DocumentsContract.renameDocument` on the mapped URI and stores
+  the returned URI (old URI kept on failure).
+- `ProcessRemoteActions`: mapping deleted only when the remote delete returns true; Update with no mapping creates the
+  remote note (not for binned / local-only notes).
+- Nextcloud: `NextcloudNote.category` nullable; updates send no category (server keeps it), create still sends "".
+- Not done (owner decision): conflict copies #2, #3, #4, #6.
+- Tests: `SynchronizeNotesTest` (+5, one existing test adapted to the guard), `RemoteListContentTest` (5),
+  `ProcessRemoteActionsTest` (5), `NextcloudBackendTest` (+2). Guard + list logic (real `SynchronizeNotes.kt`, Note
+  functions copied) 11/11 pass and Nextcloud JSON 2/2 pass in JVM prototypes; mockk/Android tests run on CI only.
+  `StorageBackend` SAF code unverified (no SDK/device).
+
+## 2026-11-12 — Fix round 2 after final review
+- CI `KoinModulesTest` NPE: Koin 4.1 `verify()` casts each constructor parameter's `KType.classifier` to `KClass`, and
+  kotlin-reflect returns null for a `suspend` function type, so `extraTypes` cannot fix it (checked in a JVM prototype
+  with koin-test 4.1.0). `BackupManager.runInTransaction` is now a `fun interface TransactionRunner` (same lambda in
+  `UtilModule`); `AppLock`'s plain `() -> Long` params pass verify as they are. Test file unchanged.
+- App lock (`AppLock`, `App`, `PreferenceRepository.readAppLockState`): unreadable settings start locked only if
+  `BiometricManager.canAuthenticate(LOCK_AUTHENTICATORS)` succeeds, otherwise unlocked (logged); unreadable settings
+  are read again on foreground and before each PIN try; wrong-PIN counter writes are serial (Mutex + UNDISPATCHED)
+  and never crash (`runCatching`). Also fixed `start()` locking from the parameter instead of the settings in use.
+- Backup rules: notes excluded from Google cloud backup only, included in device-to-device transfer (Android 12+);
+  Android ≤11 keeps the excludes. Recorded in DECISIONS.md.
+- `EditorViewModel.update`: `CoroutineStart.UNDISPATCHED`, writes queue on the mutex in call order.
+- Sync: reverted "Update with no mapping creates the remote note" (could switch the first sync from TITLE to MAPPING
+  and duplicate notes); guard message names the remedy (EN/IT), shown once per app session, long toast.
+- `BaseActivity`: FLAG_SECURE only below Android 13; 13+ only hides the recents preview.
+- Recorder: a failed `stop()` clears `outputUri`, the dialog adds no attachment.
+- `BackupRules.remapMediaLinks`: names may contain `(`, `)`, `'`; a trailing `)` closing the Markdown link is kept.
+- Removed unused `first` import in App.kt.
+- Tests: `AppLockTest` (+4), `BackupRulesTest` (+1): 25/25 pass in a JVM prototype (real AppLock/PinHasher/BackupRules).
+  `ProcessRemoteActionsTest` (update without mapping does nothing), new `NoteRepositorySyncTest` (binned-by-sync note
+  loses its mapping, no remote delete): mockk/Android, CI only. Unverified: Android compile, KoinModulesTest on CI,
+  backup rules on a device.
+
 ## 2026-11-12 — Network readability and motion
 - Layout linked components independently and put orphans in compact rows. A large orphan collection opens on the connected network; Recenter fits everything.
 - GraphView animates opening and filter transitions, follows the system animation preference, keeps labels off other labels and node markers, and prioritizes real notes, connections and the active search. Large vaults simulate the dragged neighbourhood. Tapping a visible title or node opens its note.
 - Search and filters now share a collapsible toolbar control. Timelapse nodes fade and grow when they appear.
 - Added layout, crowded-label, search-hit and large-vault drag regressions. The device navigation test uses the actual rendered node position during a transition. Android verification runs in the PR Build and UI preview workflows.
+
+## 2026-11-12 — Bible Study Kit replaces the "The Bible" demo note
+- Owner request: ship the Obsidian "Bible Study Kit" (free licence; World English Bible) instead of the single demo
+  note, readable by the Network with all its links. One giant note was ruled out: ~4.6 MB exceeds SQLite's ~2 MB
+  cursor window and would make the editor unusable, and the Network draws one node per note.
+- `components/BibleStudyKit.kt` adds the 1300 files once (local only) as notes of a "Bible Study Kit" notebook; the
+  notebook id is saved first and "All notes" leaves that notebook out (owner choice A). Old `DemoLinksNote` + asset
+  removed; an existing "The Bible" note on a phone stays untouched.
+- `LinkParseCache` keeps each note's parsed links/tags, so a change re-reads only that note. `GraphView` tries at
+  most 160 labels per frame (most linked first). Network empty-state opens "+Start here".
+- Tests: `BibleStudyKitTest` (1300 files, unique titles, links seen by `LinkIndex`, added once), `LinkParseCacheTest`.
+  Values checked against the files (69 links in "The Bible (WEB)", 13 notes link to Gen-01). Android build on CI.
+- Checked on the files: 7336 links, all but 2 resolve to a kit note by title (aliases are not needed).
+- Known limit: deleting the notebook moves its notes to "All notes".

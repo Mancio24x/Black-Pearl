@@ -13,7 +13,7 @@ fun NextcloudNote.asSyncNote() = SyncNote(
     title = title,
     lastModified = modified, // Nextcloud already uses epoch seconds.
     extra = etag,
-    category = category,
+    category = category ?: "",
     favorite = favorite,
     readOnly = readOnly == true,
 )

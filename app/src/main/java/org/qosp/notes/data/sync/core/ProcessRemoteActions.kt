@@ -104,8 +104,10 @@ class ProcessRemoteActions(
 
     private suspend fun deleteRemoteNotes(note: Note, syncProvider: ISyncBackend) = try {
         idMappingDao.getByLocalIdAndProvider(note.id, syncProvider.type)?.let { mapping ->
-            syncProvider.deleteNote(mapping = mapping)
-            idMappingDao.deleteByLocalId(note.id)
+            // Keep the mapping when the remote delete failed: the next full sync retries the delete instead of
+            // importing the remote note again as a new note.
+            if (syncProvider.deleteNote(mapping = mapping)) idMappingDao.deleteByLocalId(note.id)
+            else Log.w(tag, "deleteRemoteNotes: remote delete failed for note ID=${note.id}, mapping kept")
         }
     } catch (e: Exception) {
         Log.e(tag, "processRemoteOperation: Failed to delete notes: ${e.message}", e)
@@ -121,6 +123,8 @@ class ProcessRemoteActions(
     }
 
     private suspend fun updateRemote(note: Note, syncProvider: ISyncBackend) = try {
+        // No mapping: do nothing, the next full sync creates the remote note. Creating it here could add the first
+        // mapping before the first full sync, which would then match by mapping instead of title and duplicate notes.
         idMappingDao.getByLocalIdAndProvider(note.id, syncProvider.type)?.let {
             val updatedMapping = syncProvider.updateNote(note, it)
             idMappingDao.update(updatedMapping)

@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -61,8 +62,9 @@ class BackupService : LifecycleService() {
                     restoreNotes(uri)
                 }
                 Action.BACKUP -> {
-                    val notes = i.extras?.getParcelableArrayList<Note>(NOTES)?.toSet()
-                    backupNotes(notes, uri)
+                    // Only ids travel in the Intent (whole notes can exceed the ~1 MB Binder limit)
+                    val noteIds = i.extras?.getLongArray(NOTE_IDS)
+                    backupNotes(noteIds, uri)
                 }
                 Action.IMPORT -> Unit
             }
@@ -94,9 +96,10 @@ class BackupService : LifecycleService() {
     }
 
     /**
-     * Backs up the specific [notes] to a file with URI [outputUri] or all notes if [notes] is null.
+     * Backs up the notes with ids [noteIds] to a file with URI [outputUri] or all notes if [noteIds] is null.
      */
-    private fun backupNotes(notes: Set<Note>? = null, outputUri: Uri) = startJob {
+    private fun backupNotes(noteIds: LongArray? = null, outputUri: Uri) = startJob {
+        val notes = noteIds?.let { backupManager.notesByIds(it) }
         val handler = when (preferenceRepository.get<BackupStrategy>().first()) {
             BackupStrategy.INCLUDE_FILES -> AttachmentHandler.IncludeFiles(applicationContext)
             BackupStrategy.KEEP_INFO -> AttachmentHandler.KeepInfoOnly
@@ -184,12 +187,20 @@ class BackupService : LifecycleService() {
             },
         )
 
-        backupManager.restoreNotesFromBackup(backup)
+        val restored = runCatching { backupManager.restoreNotesFromBackup(backup) }
+        // A cancelled job (service timeout) must still stop; the transaction has already been rolled back
+        restored.exceptionOrNull()?.let { if (it is CancellationException) throw it }
 
         notificationManager?.notify(
             notificationId,
             notificationBuilder
-                .setContentTitle(getString(R.string.notification_restore_complete))
+                .setContentTitle(
+                    getString(
+                        if (restored.isSuccess) R.string.notification_restore_complete
+                        else R.string.notification_restore_failed
+                    )
+                )
+                .setContentText(restored.exceptionOrNull()?.message)
                 .setOngoing(false)
                 .setAutoCancel(true)
                 .build()
@@ -238,7 +249,7 @@ class BackupService : LifecycleService() {
     companion object {
         private const val URI_EXTRA = "URI_EXTRA"
         private const val URIS_EXTRA = "URIS_EXTRA"
-        private const val NOTES = "NOTES"
+        private const val NOTE_IDS = "NOTE_IDS"
         private const val ACTION = "ACTION"
 
         fun restoreNotes(context: Context, backupUri: Uri) {
@@ -260,7 +271,7 @@ class BackupService : LifecycleService() {
         fun backupNotes(context: Context, notes: Set<Note>? = null, outputUri: Uri) {
             Intent(context, BackupService::class.java).also { intent ->
                 intent.putExtra(ACTION, Action.BACKUP)
-                if (notes != null) intent.putParcelableArrayListExtra(NOTES, ArrayList(notes))
+                if (notes != null) intent.putExtra(NOTE_IDS, notes.map { it.id }.toLongArray())
                 intent.putExtra(URI_EXTRA, outputUri)
                 ContextCompat.startForegroundService(context, intent)
             }

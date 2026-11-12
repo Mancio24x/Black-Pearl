@@ -895,6 +895,8 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         val updated = transform(current)
         if (updated == current) return
         binding.editTextContent.withOnlyTextWatcher<MarkwonEditorTextWatcher> { setText(updated) }
+        // the replacement is not recorded by the undo watcher, so old entries no longer match the text
+        binding.editTextContent.clearUndoRedoHistory()
         model.setNoteContent(updated)
     }
 
@@ -1548,9 +1550,16 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                     val app = requireContext().applicationContext
                     // the activity scope outlives this screen, which may close right after the answer
                     requireActivity().lifecycleScope.launch {
-                        withContext(Dispatchers.IO) { noteRepository.updateNotes(*planned.toTypedArray()) }
-                        Toast.makeText(app, app.resources.getQuantityString(R.plurals.link_rename_done,
-                            planned.size, planned.size), Toast.LENGTH_SHORT).show()
+                        // re-read the notes now: they may have changed (sync, edits) since the dialog was planned
+                        val fresh = withContext(Dispatchers.IO) {
+                            val latest = noteRepository.getAll().first()
+                            LinkRename.plan(latest, note.id, oldTitle, newTitle, Instant.now().epochSecond)
+                                .also { if (it.isNotEmpty()) noteRepository.updateNotes(*it.toTypedArray()) }
+                        }
+                        if (fresh.isNotEmpty()) {
+                            Toast.makeText(app, app.resources.getQuantityString(R.plurals.link_rename_done,
+                                fresh.size, fresh.size), Toast.LENGTH_SHORT).show()
+                        }
                     }
                     then()
                 }

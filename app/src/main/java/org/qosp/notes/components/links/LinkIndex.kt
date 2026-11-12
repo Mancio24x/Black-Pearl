@@ -6,7 +6,7 @@ import java.util.Locale
 data class Backlink(val from: Note, val line: String)
 
 /** Indexes visible notes. Only notes with a linkable title can be wiki-link targets. */
-class LinkIndex(notes: List<Note>) {
+class LinkIndex(notes: List<Note>, cache: LinkParseCache? = null) {
     val visibleNotes = notes.filter { !it.isDeleted && !it.isHidden }
         .sortedWith(compareByDescending<Note> { it.modifiedDate }.thenByDescending { it.id })
     val titles = visibleNotes.filter { WikiLinks.key(it.title).isNotEmpty() }
@@ -32,12 +32,12 @@ class LinkIndex(notes: List<Note>) {
         }
         val inlineTags = HashMap<Long, List<String>>()
         for (note in visibleNotes) {
-            val found = InlineTags.find(note.content)
+            val found = cache?.tags(note.id, note.content) ?: InlineTags.find(note.content)
             inlineTags[note.id] = found
             for (name in found) tagSpelling.putIfAbsent(name.lowercase(Locale.ROOT), name)
         }
         for (note in visibleNotes) {
-            val links = WikiLinks.find(note.content)
+            val links = cache?.links(note.id, note.content) ?: WikiLinks.find(note.content)
             outMap[note.id] = links
             tagMap[note.id] = (note.tags.map { it.name.trim() } + inlineTags.getValue(note.id))
                 .filter { it.isNotEmpty() }

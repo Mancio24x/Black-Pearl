@@ -225,10 +225,12 @@
         <item quantity="other">%1$d notes link to «%2$s». Make their links point to «%3$s»?</item>
     </plurals>
     <string name="link_rename_update">Update</string>
+    <string name="audio_open_error">Could not open the audio file.</string>
     <string name="link_rename_keep">No</string>
     <plurals name="link_rename_done">
         <item quantity="one">Links updated in %1$d note</item>
         <item quantity="other">Links updated in %1$d notes</item>
     </plurals>
+    <string name="message_sync_aborted_incomplete_listing">Sync stopped: many synced notes are missing from the folder or account. No note was deleted. If you removed them on purpose, choose the sync folder or account again in Settings.</string>
     <string name="network_controls">Graph search and filters</string>
 </resources>

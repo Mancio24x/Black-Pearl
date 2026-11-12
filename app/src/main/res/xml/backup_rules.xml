@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 and older: these rules cannot tell cloud backup from phone-to-phone transfer, so the cloud rule
+     (keep notes out of Google cloud backup) applies to both. Use the app's own backup zip to move notes. -->
+<full-backup-content>
+    <exclude domain="database" path="." />
+    <exclude domain="file" path="datastore" />
+    <exclude domain="file" path="media" />
+    <exclude domain="sharedpref" path="." />
+</full-backup-content>

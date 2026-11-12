@@ -393,7 +393,11 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
             square.roundOut(candidate)
             occupiedLabels.op(candidate, Region.Op.UNION)
         }
+        // Labels are tried in order of importance (most linked first); a very large network (the Bible Study Kit
+        // has ~1300 notes) stops after a budget so a frame stays fast. Zooming in shows the others.
+        var labelAttempts = 0
         fun label(node: GraphNode, priority: Boolean) {
+            if (!priority && labelAttempts >= MAX_LABEL_ATTEMPTS) return
             if (shown?.contains(node.key) == false) return
             if (!priority && focus != null && node.key !in lit) return
             val p = positions[node.key] ?: return
@@ -407,6 +411,7 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
                 ((elapsed - (replay.appearMs[node.key] ?: 0L)) / 200f).coerceIn(0f, 1f)
             caption.alpha = (255 * fade * reveal).roundToInt()
             halo.alpha = caption.alpha
+            labelAttempts++
             drawLabel(canvas, node, x, y, radius(node), priority)
         }
         (pressedNode ?: highlighted)?.let { label(it, true) }
@@ -587,5 +592,9 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
             }
         }
         return true
+    }
+
+    private companion object {
+        const val MAX_LABEL_ATTEMPTS = 160
     }
 }

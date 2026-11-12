@@ -29,6 +29,14 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 
+/**
+ * Runs [block] in one database transaction. A named interface, not a `suspend` function type: Koin's
+ * `verify()` (KoinModulesTest) cannot read a suspend function type by reflection and fails with an NPE.
+ */
+fun interface TransactionRunner {
+    suspend fun run(block: suspend () -> Unit)
+}
+
 class BackupManager(
     private val currentVersion: Int,
     private val noteRepository: NoteRepository,
@@ -38,8 +46,14 @@ class BackupManager(
     private val idMappingRepository: IdMappingRepository,
     private val reminderManager: ReminderManager,
     private val context: Context,
+    /** Runs the database part of a restore atomically (Room `withTransaction` in the app, see UtilModule). */
+    private val runInTransaction: TransactionRunner = TransactionRunner { it() },
 ) {
     private val BUFFER = 2048
+
+    /** Loads the notes with these [ids] (notes deleted in the meantime are skipped). */
+    suspend fun notesByIds(ids: LongArray): Set<Note> =
+        ids.distinct().mapNotNull { noteRepository.getById(it).first() }.toSet()
 
     /**
      * Creates a backup which contains [notes] or the whole database if [notes] is null.
@@ -89,11 +103,33 @@ class BackupManager(
         return Backup(currentVersion, newNotes.toSet(), notebooks, reminders, tags, joins, idMappings)
     }
 
+    /**
+     * Adds the content of [backup] as NEW local notes. The database part is all-or-nothing.
+     * The backup's sync id mappings are deliberately NOT restored: they point to remote notes that may be gone or
+     * still belong to the original notes, and the next sync would then bin or overwrite the restored copies.
+     * Restored notes have no mapping, so the next sync uploads them as new notes.
+     */
     suspend fun restoreNotesFromBackup(backup: Backup) {
         val notebooksMap = mutableMapOf<Long, Long>()
         val tagsMap = mutableMapOf<Long, Long>()
         val notesMap = mutableMapOf<Long, Long>()
+        val toSchedule = mutableListOf<Reminder>()
 
+        runInTransaction.run { restoreInDatabase(backup, notebooksMap, tagsMap, notesMap, toSchedule) }
+
+        // Alarms only after the data is committed
+        toSchedule.forEach { reminder ->
+            reminderManager.schedule(reminderId = reminder.id, noteId = reminder.noteId, dateTime = reminder.date)
+        }
+    }
+
+    private suspend fun restoreInDatabase(
+        backup: Backup,
+        notebooksMap: MutableMap<Long, Long>,
+        tagsMap: MutableMap<Long, Long>,
+        notesMap: MutableMap<Long, Long>,
+        toSchedule: MutableList<Reminder>,
+    ) {
         backup.notebooks.forEach { notebook ->
             val existingNotebook = notebookRepository.getByName(notebook.name).firstOrNull()
             if (existingNotebook != null) {
@@ -127,20 +163,15 @@ class BackupManager(
                     }
                 }
             )
-            notesMap[note.id] = noteRepository.insertNote(newNote)
-        }
-
-        backup.idMappings.forEach {
-            val noteId = notesMap[it.localNoteId] ?: return@forEach
-            val newMapping = it.copy(mappingId = 0L, localNoteId = noteId)
-
-            idMappingRepository.assignProviderToNote(newMapping)
+            // sync = false: a queued remote Create could still run if the transaction is rolled back.
+            // Notes without a mapping are uploaded by the next sync anyway.
+            notesMap[note.id] = noteRepository.insertNote(newNote, sync = false)
         }
 
         backup.joins.forEach { join ->
             val tagId = tagsMap[join.tagId] ?: return@forEach
             val noteId = notesMap[join.noteId] ?: return@forEach
-            tagRepository.addTagToNote(tagId, noteId)
+            tagRepository.addTagToNote(tagId, noteId, shouldSync = false)
         }
 
         backup.reminders.forEach { reminder ->
@@ -148,11 +179,7 @@ class BackupManager(
 
             val noteId = notesMap[reminder.noteId] ?: return@forEach
             val reminderId = reminderRepository.insert(reminder.copy(id = 0L, noteId = noteId))
-            reminderManager.schedule(
-                reminderId = reminderId,
-                noteId = noteId,
-                dateTime = reminder.date
-            )
+            toSchedule.add(reminder.copy(id = reminderId, noteId = noteId))
         }
     }
 
@@ -162,12 +189,15 @@ class BackupManager(
     ): Result<Backup> = runCatching {
         var backup: Backup? = null
         val nameMap = mutableMapOf<String, String>()
+        // URI-encoded name in the backup -> URI of the restored file, to fix inline links in note content
+        val linkMap = mutableMapOf<String, String>()
 
         ZipInputStream(BufferedInputStream(context.contentResolver.openInputStream(uri))).use { input ->
             while (true) {
                 val entry = runCatching { input.nextEntry }.getOrNull() ?: break
-                when (entry.name) {
-                    "backup.json" -> {
+                val mediaName = BackupRules.mediaFileName(entry.name, entry.isDirectory, App.MEDIA_FOLDER)
+                when {
+                    entry.name == BackupRules.BACKUP_JSON -> {
                         // Create backup class
                         val reader = input.reader()
                         val builder = StringBuilder()
@@ -181,30 +211,19 @@ class BackupManager(
                         backup = Backup.fromString(deserialized)
                     }
 
-                    "${App.MEDIA_FOLDER}/" -> {
-                        // Ignore directory
-                        continue
-                    }
+                    // Skip folders, files outside media/ (e.g. __MACOSX/) and unsafe names
+                    mediaName == null -> continue
 
                     // Copy media files to local storage
                     else -> {
                         val dir = File(context.filesDir, App.MEDIA_FOLDER).also { it.mkdirs() }
 
-                        var fileId = 1
-                        val originalName = entry.name.split("/").last()
-                        val generateFilename = { "${fileId}_$originalName".also { fileId += 1 } }
-                        var fileName = originalName
-
-                        // If a file with the same name already exists in app storage
-                        // give the new file a new name and loop until it is unique
-                        do {
-                            val exists = dir.listFiles()?.any { it.name == fileName } == true
-                            if (exists) {
-                                fileName = generateFilename()
-                                // Map the old name to the new name so we can change the notes later to use the new name
-                                nameMap[originalName] = fileName
-                            }
-                        } while (exists)
+                        val originalName: String = mediaName
+                        // If a file with the same name already exists in app storage give the new file a unique name
+                        val fileName = BackupRules.uniqueName(originalName) { File(dir, it).exists() }
+                        // Map the old name to the new name so we can change the notes later to use the new name
+                        if (fileName != originalName) nameMap[originalName] = fileName
+                        getAttachmentUri(context, fileName)?.let { linkMap[Uri.encode(originalName)] = it.toString() }
 
                         FileOutputStream(File(dir, fileName)).use { out ->
                             val buffer = ByteArray(BUFFER)
@@ -220,13 +239,16 @@ class BackupManager(
         }
 
         backup.run {
-            if (this == null || nameMap.isEmpty()) return@run this
+            if (this == null || (nameMap.isEmpty() && linkMap.isEmpty())) return@run this
             val newNotes = notes
                 .map { note ->
                     val newAttachments = note.attachments.map { attachment ->
                         attachment.copy(fileName = nameMap[attachment.fileName] ?: attachment.fileName)
                     }
-                    note.copy(attachments = newAttachments)
+                    note.copy(
+                        content = BackupRules.remapMediaLinks(note.content, linkMap),
+                        attachments = newAttachments,
+                    )
                 }
                 .toSet()
 

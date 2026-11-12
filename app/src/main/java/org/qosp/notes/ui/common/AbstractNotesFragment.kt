@@ -34,6 +34,7 @@ import org.qosp.notes.R
 import org.qosp.notes.data.model.Note
 import org.qosp.notes.data.sync.core.BaseResult
 import org.qosp.notes.data.sync.core.ServerNotSupported
+import org.qosp.notes.data.sync.core.SyncSafetyAbort
 import org.qosp.notes.data.sync.core.Unauthorized
 import org.qosp.notes.databinding.LayoutNoteBinding
 import org.qosp.notes.preferences.LayoutMode
@@ -107,11 +108,18 @@ abstract class AbstractNotesFragment(@LayoutRes resId: Int) : BaseFragment(resId
         val resId = when (this) {
             ServerNotSupported -> R.string.message_server_not_compatible
             Unauthorized -> R.string.message_invalid_credentials
+            is SyncSafetyAbort -> {
+                // the guard can stop every sync until the user acts: say it once per app session, not on each resume
+                if (syncGuardMessageShown) return
+                syncGuardMessageShown = true
+                R.string.message_sync_aborted_incomplete_listing
+            }
             else -> null
         }
 
         resId?.let {
-            Toast.makeText(requireContext(), getString(it), Toast.LENGTH_SHORT).show()
+            val duration = if (this is SyncSafetyAbort) Toast.LENGTH_LONG else Toast.LENGTH_SHORT
+            Toast.makeText(requireContext(), getString(it), duration).show()
         }
     }
 
@@ -503,5 +511,10 @@ abstract class AbstractNotesFragment(@LayoutRes resId: Int) : BaseFragment(resId
             NoteListOption.SCREEN_ON -> if (on) activityModel.enableScreenAlwaysOn(note) else activityModel.disableScreenAlwaysOn(note)
             NoteListOption.MARKDOWN -> if (on) activityModel.enableMarkdown(note) else activityModel.disableMarkdown(note)
         }
+    }
+
+    companion object {
+        /** The sync-guard message was shown in this app process (lives as long as the process). */
+        private var syncGuardMessageShown = false
     }
 }

@@ -10,6 +10,9 @@ import io.mockk.junit4.MockKRule
 import io.mockk.mockkStatic
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -33,6 +36,7 @@ class SynchronizeNotesTest {
     fun setup() {
         mockkStatic(Log::class)
         every { Log.d(any(), any()) } returns 0
+        every { Log.w(any<String>(), any<String>()) } returns 0
     }
 
     @Test
@@ -182,10 +186,19 @@ class SynchronizeNotesTest {
             isDeletedLocally = false
         )
 
-        coEvery { idMappingRepository.getAllByProvider(CloudService.NEXTCLOUD) } returns listOf(mapping)
+        // A second, unchanged note keeps the listing non-empty (an empty listing aborts the sync, see SyncSafetyGuard)
+        val otherLocal = Note(id = 3L, title = "Other", modifiedDate = 100L)
+        val otherMapping = IdMapping(
+            localNoteId = 3L, remoteNoteId = 4L, provider = CloudService.NEXTCLOUD, extras = null,
+            isDeletedLocally = false
+        )
+        val otherRemote = SyncNote(id = 4L, idStr = "4", title = "Other", lastModified = 100L, content = null)
+
+        coEvery { idMappingRepository.getAllByProvider(CloudService.NEXTCLOUD) } returns listOf(mapping, otherMapping)
 
         // When
-        val result = synchronizeNotes(listOf(localNote), emptyList(), CloudService.NEXTCLOUD)
+        val result =
+            synchronizeNotes(listOf(localNote, otherLocal), listOf(otherRemote), CloudService.NEXTCLOUD)
 
         // Then
         assertEquals(1, result.localUpdates.size)
@@ -333,5 +346,78 @@ class SynchronizeNotesTest {
         // Then
         assertEquals(0, result.localUpdates.size)
         assertEquals(0, result.remoteUpdates.size)
+    }
+
+    // --- Black Pearl: safety guard against short / empty remote listings ---
+
+    private fun mapped(n: Int, service: CloudService = CloudService.FILE_STORAGE) = (1..n).map { i ->
+        Note(id = i.toLong(), title = "N$i", modifiedDate = 100L) to
+            IdMapping(localNoteId = i.toLong(), remoteNoteId = i.toLong(), provider = service, extras = null,
+                isDeletedLocally = false, storageUri = "uri$i")
+    }
+
+    private fun remoteFor(i: Int) =
+        SyncNote(id = i.toLong(), idStr = "uri$i", title = "N$i", lastModified = 100L, content = "")
+
+    @Test
+    fun `empty remote listing with mapped notes aborts the sync and bins nothing`() = runTest {
+        val pairs = mapped(1)
+        coEvery { idMappingRepository.getAllByProvider(CloudService.FILE_STORAGE) } returns pairs.map { it.second }
+
+        val result = synchronizeNotes(pairs.map { it.first }, emptyList(), CloudService.FILE_STORAGE)
+
+        assertNotNull(result.abortReason)
+        assertTrue(result.localUpdates.isEmpty())
+        assertTrue(result.remoteUpdates.isEmpty())
+    }
+
+    @Test
+    fun `more than half of mapped notes missing aborts the sync`() = runTest {
+        val pairs = mapped(5)
+        coEvery { idMappingRepository.getAllByProvider(CloudService.FILE_STORAGE) } returns pairs.map { it.second }
+
+        // only 2 of 5 files listed: 3 missing > half
+        val result = synchronizeNotes(pairs.map { it.first }, listOf(remoteFor(1), remoteFor(2)), CloudService.FILE_STORAGE)
+
+        assertNotNull(result.abortReason)
+        assertTrue(result.localUpdates.isEmpty())
+        assertTrue(result.remoteUpdates.isEmpty())
+    }
+
+    @Test
+    fun `a few missing notes are still binned`() = runTest {
+        val pairs = mapped(5)
+        coEvery { idMappingRepository.getAllByProvider(CloudService.FILE_STORAGE) } returns pairs.map { it.second }
+
+        // 2 of 5 missing: below the threshold
+        val listed = listOf(remoteFor(1), remoteFor(2), remoteFor(3))
+        val result = synchronizeNotes(pairs.map { it.first }, listed, CloudService.FILE_STORAGE)
+
+        assertNull(result.abortReason)
+        assertEquals(2, result.localUpdates.filterIsInstance<NoteAction.Delete>().size)
+        assertTrue(result.remoteUpdates.isEmpty())
+    }
+
+    @Test
+    fun `file reappearing without mapping is imported, never deleted remotely`() = runTest {
+        // the note was binned by the sync and its mapping removed: the file comes back
+        val pairs = mapped(1)
+        coEvery { idMappingRepository.getAllByProvider(CloudService.FILE_STORAGE) } returns pairs.map { it.second }
+        val back = SyncNote(id = 0L, idStr = "uri-old", title = "Back", lastModified = 100L, content = "x")
+
+        val result = synchronizeNotes(pairs.map { it.first }, listOf(remoteFor(1), back), CloudService.FILE_STORAGE)
+
+        assertTrue(result.remoteUpdates.none { it is NoteAction.Delete })
+        assertEquals(back, (result.localUpdates.single() as NoteAction.Create).remoteNote)
+    }
+
+    @Test
+    fun `guard thresholds`() {
+        assertNull(SyncSafetyGuard.abortReason(mappedCount = 0, missingCount = 0, remoteCount = 0))
+        assertNotNull(SyncSafetyGuard.abortReason(mappedCount = 1, missingCount = 1, remoteCount = 0))
+        assertNull(SyncSafetyGuard.abortReason(mappedCount = 2, missingCount = 2, remoteCount = 3)) // < 3 missing
+        assertNull(SyncSafetyGuard.abortReason(mappedCount = 6, missingCount = 3, remoteCount = 3)) // exactly half
+        assertNotNull(SyncSafetyGuard.abortReason(mappedCount = 5, missingCount = 3, remoteCount = 2))
+        assertNull(SyncSafetyGuard.abortReason(mappedCount = 100, missingCount = 10, remoteCount = 90))
     }
 }

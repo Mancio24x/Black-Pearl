@@ -13,12 +13,18 @@ import org.qosp.notes.data.repo.NoteRepository
 
 /** The current [LinkIndex] of all notes, rebuilt in the background a moment after notes change. */
 class LinkIndexRepository(notes: NoteRepository, scope: CoroutineScope) {
+    private val cache = LinkParseCache()
 
     @OptIn(FlowPreview::class)
     val index: StateFlow<LinkIndex> = notes.getNonDeleted()
         .debounce(300)
         // a note that cannot be indexed must not stop the index from following later changes
-        .mapNotNull { runCatching { LinkIndex(it) }.getOrNull() }
+        .mapNotNull { notes ->
+            runCatching {
+                cache.retain(notes.mapTo(HashSet()) { it.id })
+                LinkIndex(notes, cache)
+            }.getOrNull()
+        }
         .flowOn(Dispatchers.Default)
         .stateIn(scope, SharingStarted.Eagerly, LinkIndex(emptyList()))
 }
