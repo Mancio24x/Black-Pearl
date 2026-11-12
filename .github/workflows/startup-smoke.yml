@@ -2,7 +2,9 @@ name: Startup smoke
 
 # Starts the REAL app (App.onCreate, welcome screen, Bible Study Kit, app lock) from a release build (R8 on) on an
 # emulator: device tests use a TestApplication and the screenshot job a debug build, so neither catches a crash
-# that only the published APK has. Two cases: fresh install, and update over the previous release with its data.
+# that only the published APK has. Cases: fresh install; update over the previous release with its data; and
+# "update-with-notes": the previous release filled with ~250 long notes (~2 MB) via share intents, then updated,
+# with launch time and memory (dumpsys meminfo) written to smoke/summary.txt and the job summary.
 on:
   workflow_dispatch:
     inputs:
@@ -10,6 +12,10 @@ on:
         description: 'Tag to update from'
         required: false
         default: 'v0.8.7'
+      heap:
+        description: 'Optional dalvik.vm.heapgrowthlimit for the notes case, e.g. 192m (adb root + framework restart)'
+        required: false
+        default: ''
   pull_request:
   push:
     branches: [ 'ccr-*' ]
@@ -53,6 +59,8 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
       - name: Start the app on an emulator
+        env:
+          SMOKE_HEAP: ${{ inputs.heap || '' }}
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
@@ -60,6 +68,7 @@ jobs:
           target: google_apis
           profile: pixel_6
           disable-animations: true
+          ram-size: 2048M
           script: scripts/startup-smoke.sh "$RUNNER_TEMP/old.apk" "$RUNNER_TEMP/new.apk"
       - uses: actions/upload-artifact@v7
         if: always()
