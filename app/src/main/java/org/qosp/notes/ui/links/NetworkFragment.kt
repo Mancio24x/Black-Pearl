@@ -50,9 +50,14 @@ class NetworkFragment : BaseFragment(R.layout.fragment_network) {
     override val toolbarTitle: String get() = getString(R.string.nav_network)
     override val hasMenu = true
     private val TIMELAPSE_ITEM = 0x4e54
+    private val CONTROLS_ITEM = 0x4e55
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
+        menu.add(Menu.NONE, CONTROLS_ITEM, Menu.NONE, R.string.network_controls).apply {
+            setIcon(R.drawable.ic_settings)
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+        }
         menu.add(Menu.NONE, TIMELAPSE_ITEM, Menu.NONE, R.string.network_timelapse).apply {
             setIcon(R.drawable.ic_play)
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
@@ -60,6 +65,16 @@ class NetworkFragment : BaseFragment(R.layout.fragment_network) {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == CONTROLS_ITEM) {
+            model.controlsOpen = !model.controlsOpen
+            binding.networkControls.isVisible = model.controlsOpen
+            if (!model.controlsOpen && binding.networkSearchField.hasFocus()) {
+                androidx.core.view.ViewCompat.getWindowInsetsController(binding.networkSearchField)
+                    ?.hide(androidx.core.view.WindowInsetsCompat.Type.ime())
+                binding.networkSearchField.clearFocus()
+            }
+            return true
+        }
         if (item.itemId != TIMELAPSE_ITEM) return super.onOptionsItemSelected(item)
         val graph = binding.graph
         if (graph.isPlayingTimelapse) graph.stopTimelapse()
@@ -70,6 +85,7 @@ class NetworkFragment : BaseFragment(R.layout.fragment_network) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val ui = binding
+        ui.networkControls.isVisible = model.controlsOpen
         ui.networkUnlinkedChip.isChecked = model.showUnlinked.value
         ui.networkUnlinkedChip.setOnCheckedChangeListener { _, checked -> ui.graph.stopTimelapse(); model.showUnlinked.value = checked }
         ui.networkTagsChip.isChecked = model.showTags.value

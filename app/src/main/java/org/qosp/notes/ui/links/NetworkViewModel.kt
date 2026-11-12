@@ -30,6 +30,7 @@ private data class GraphOptions(
 )
 
 class NetworkViewModel(repository: LinkIndexRepository) : ViewModel() {
+    var controlsOpen = false
     val index = repository.index
     val showUnlinked = MutableStateFlow(true)
     val focus = MutableStateFlow<String?>(null)

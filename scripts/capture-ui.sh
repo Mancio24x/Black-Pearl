@@ -52,9 +52,27 @@ for mode in no yes; do
   shot "whatsnew-night_$mode"
   tap_text "Continue" && sleep 3
   shot "main-night_$mode"
-  if tap_text "Open navigation drawer" && tap_text "Network"; then
-    if [ "$mode" = no ]; then shot "network"; else shot "network-dark"; fi
-    adb shell input keyevent KEYCODE_BACK; sleep 1
+  if tap_text "Open navigation drawer"; then
+    if [ "$mode" = no ]; then
+      # The test emulator disables animations. Enable only property animations for this clip
+      # so the preview shows the real entry transition, then restore the emulator setting.
+      previous_scale=$(adb shell settings get global animator_duration_scale | tr -d '\r')
+      adb shell settings put global animator_duration_scale 1
+      adb shell screenrecord --size 540x960 --bit-rate 2000000 --time-limit 8 /sdcard/network-motion.mp4 &
+      recorder=$!
+    fi
+    if tap_text "Network"; then
+      if [ "$mode" = no ]; then shot "network"; else shot "network-dark"; fi
+      if [ "$mode" = no ]; then wait "$recorder"; fi
+      adb shell input keyevent KEYCODE_BACK; sleep 1
+    fi
+    if [ "$mode" = no ]; then
+      wait "$recorder" 2>/dev/null || true
+      adb pull /sdcard/network-motion.mp4 "$OUT/network-motion.mp4" >/dev/null 2>&1
+      adb shell rm -f /sdcard/network-motion.mp4
+      if [ "$previous_scale" = null ]; then adb shell settings delete global animator_duration_scale
+      else adb shell settings put global animator_duration_scale "$previous_scale"; fi
+    fi
   fi
   if [ "$mode" = no ] && tap_text "The Bible"; then
     shot "linked-note"

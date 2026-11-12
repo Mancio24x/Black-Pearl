@@ -233,4 +233,5 @@
         <item quantity="other">Collegamenti aggiornati in %1$d note</item>
     </plurals>
     <string name="message_sync_aborted_incomplete_listing">Sincronizzazione fermata: molte note sincronizzate mancano dalla cartella o dall\'account. Nessuna nota è stata cancellata. Se le hai tolte apposta, scegli di nuovo la cartella o l\'account di sincronizzazione nelle Impostazioni.</string>
+    <string name="network_controls">Ricerca e filtri della Rete</string>
 </resources>

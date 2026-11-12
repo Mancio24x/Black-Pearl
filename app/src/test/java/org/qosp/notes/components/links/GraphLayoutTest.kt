@@ -52,6 +52,28 @@ class GraphLayoutTest {
     }
 
     @Test
+    fun addingIsolatedNotesKeepsTheLinkedComponentAtItsOriginalSize() {
+        val (nodes, links) = demoGraph()
+        val linked = GraphLayout.layout(nodes, links)
+        val orphans = (1..240).map { GraphNode("orphan:$it", "Note $it", it.toLong(), 0) }
+        val mixed = GraphLayout.layout(nodes + orphans, links)
+        assertEquals(linked, mixed.filterKeys { it in linked })
+        assertEquals(orphans.size, orphans.map { mixed.getValue(it.key) }.distinct().size)
+        assertTrue(orphans.all { mixed.getValue(it.key).y > linked.values.maxOf { p -> p.y } })
+    }
+
+    @Test
+    fun disconnectedPairsKeepTheSameInternalSpacing() {
+        val nodes = (1..40).map { GraphNode("n$it", "N$it", it.toLong(), 1) }
+        val links = nodes.chunked(2).map { GraphEdge(it[0].key, it[1].key) }
+        val single = GraphLayout.layout(nodes.take(2), links.take(1))
+        val packed = GraphLayout.layout(nodes, links)
+        fun distance(a: PointF2, b: PointF2) = hypot((a.x - b.x).toDouble(), (a.y - b.y).toDouble())
+        val expected = distance(single.getValue("n1"), single.getValue("n2"))
+        for (edge in links) assertEquals(expected, distance(packed.getValue(edge.from), packed.getValue(edge.to)), 0.01)
+    }
+
+    @Test
     fun emptyAndSingle() {
         assertTrue(GraphLayout.layout(emptyList(), emptyList()).isEmpty())
         val one = GraphLayout.layout(listOf(GraphNode("a", "A", 1, 0)), emptyList())
