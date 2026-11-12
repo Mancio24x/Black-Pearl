@@ -24,6 +24,7 @@ import org.qosp.notes.data.sync.core.RemoteOperation.Create
 import org.qosp.notes.data.sync.core.RemoteOperation.Delete
 import org.qosp.notes.data.sync.core.RemoteOperation.Update
 import org.qosp.notes.data.sync.core.Success
+import org.qosp.notes.data.sync.core.SyncSafetyAbort
 import org.qosp.notes.data.sync.core.SyncMethod
 import org.qosp.notes.data.sync.core.SyncNotesResult
 import org.qosp.notes.data.sync.core.SynchronizeNotes
@@ -102,6 +103,11 @@ class NoteRepositoryImpl(
                         "${syncResult.remoteUpdates.size} remote"
                 )
 
+                syncResult.abortReason?.let { reason ->
+                    Log.w(tag, "syncNotes: aborted for safety - $reason")
+                    return@withLock SyncSafetyAbort(reason)
+                }
+
                 if (syncMethod == SyncMethod.TITLE) applyMappingChanges(syncResult, syncProvider) // Initial import
                 applyLocalUpdates(syncResult.localUpdates, syncProvider)
                 applyRemoteUpdates(syncResult.remoteUpdates)
@@ -126,12 +132,9 @@ class NoteRepositoryImpl(
 
                     is NoteAction.Update -> {
                         val mergedNote = action.remoteNote.updateLocalNote(action.note)
-                        val note = if (action.note.isList) {
-                            val tasks = mergedNote.mdToTaskList(mergedNote.content)
-                            mergedNote.copy(content = "", taskList = tasks, isList = true)
-                        } else {
-                            mergedNote
-                        }
+                        // A checklist stays a checklist only if the remote text is all tasks; else it becomes text
+                        val note = if (action.note.isList) mergedNote.withRemoteListContent(mergedNote.content)
+                        else mergedNote
                         idMappingDao.updateNoteExtras(
                             localId = action.note.id,
                             cloudService = syncProvider.type,
@@ -141,7 +144,10 @@ class NoteRepositoryImpl(
                     }
 
                     is NoteAction.Delete -> {
+                        // Remote copy is gone: bin the note and forget its mapping, so a file/note that reappears
+                        // later is imported again instead of being deleted remotely.
                         moveNotesToBin(action.note, sync = false)
+                        idMappingDao.deleteByLocalId(action.note.id)
                     }
                 }
             } catch (e: Exception) {
@@ -223,6 +229,8 @@ class NoteRepositoryImpl(
                         syncableNotes
                             .associateWith { syncProvider.createNote(it) }
                             .forEach { (n, syncNote) ->
+                                // Drop the old mapping (it points to a remote copy that is gone), keep only the new one
+                                idMappingDao.deleteByLocalId(n.id)
                                 idMappingDao.insert(syncNote.getMapping(n.id, syncProvider.type))
                                 noteDao.updateLastModified(n.id, syncNote.lastModified)
                             }

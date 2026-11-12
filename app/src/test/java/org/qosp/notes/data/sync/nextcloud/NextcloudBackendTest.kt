@@ -7,12 +7,21 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.slot
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
+import org.qosp.notes.data.model.IdMapping
+import org.qosp.notes.data.model.Note
 import org.qosp.notes.data.sync.core.AvailabilityStatus
 import org.qosp.notes.data.sync.nextcloud.model.NextcloudNotesCapabilities
+import org.qosp.notes.preferences.CloudService
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.TestTimeSource
 
@@ -97,5 +106,32 @@ class NextcloudBackendTest {
 
         assertEquals(AvailabilityStatus.Available, status)
         coVerify(exactly = 2) { api.getAllCapabilitiesAPI(any(), any()) }
+    }
+
+    @Test
+    fun `updateNote leaves the category out so the server keeps it`() = runTest {
+        val sent = slot<NextcloudNote>()
+        coEvery { api.updateNoteAPI(capture(sent), any(), any(), any()) } answers {
+            sent.captured.copy(etag = "e2", category = "Work")
+        }
+        val mapping = IdMapping(
+            localNoteId = 1L, remoteNoteId = 7L, provider = CloudService.NEXTCLOUD, extras = "e1",
+            isDeletedLocally = false
+        )
+
+        val updated = backend.updateNote(Note(id = 1L, title = "T", content = "c"), mapping)
+
+        assertNull(sent.captured.category)
+        assertFalse(Json { ignoreUnknownKeys = true }.encodeToString(sent.captured).contains("category"))
+        assertEquals("e2", updated.extras)
+    }
+
+    @Test
+    fun `server category is still decoded`() {
+        val json = Json { ignoreUnknownKeys = true }
+        val note = json.decodeFromString<NextcloudNote>(
+            """{"id":1,"content":"c","title":"t","category":"Work","favorite":false,"modified":5}"""
+        )
+        assertEquals("Work", note.category)
     }
 }

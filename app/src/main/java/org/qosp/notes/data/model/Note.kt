@@ -104,6 +104,9 @@ data class Note(
     private companion object {
         // optional bullet or number, optional checkbox, then the text; group 1 = the checkbox
         val TASK_LINE = Regex("""^(?:[-*+•◦▪‣·]\s+|\d{1,3}[.)]\s+)?(\[[ xX✓✔]?]|[☐☑☒□])?\s*(.*)$""")
+
+        // a Markdown task line as written by taskListToMd(): "- [ ] text" / "- [x] text"
+        val MD_TASK_LINE = Regex("^\\s*[-+*] *\\[([ xX])](.*)$")
     }
 
     fun stringToTaskList(): List<NoteTask> {
@@ -118,8 +121,21 @@ data class Note(
         }
     }
 
+    /** True when every non-blank line of [content] is a Markdown task, so it can become a checklist losslessly. */
+    fun isMdTaskListOnly(content: String): Boolean =
+        content.lines().all { it.isBlank() || MD_TASK_LINE.matches(it) }
+
+    /**
+     * Black Pearl: applies remote Markdown to a checklist note. It stays a checklist only when every line is a task;
+     * any other line (heading, paragraph, ...) turns the note into a text note with the remote content as-is, so no
+     * line is dropped or glued onto a task.
+     */
+    fun withRemoteListContent(content: String): Note =
+        if (isMdTaskListOnly(content)) copy(content = "", taskList = mdToTaskList(content), isList = true)
+        else copy(content = content, taskList = listOf(), isList = false)
+
     fun mdToTaskList(content: String): List<NoteTask> {
-        val regex = Regex("^\\s*[-+*] *\\[([ xX])](.*)$")
+        val regex = MD_TASK_LINE
         val tasks = mutableListOf<NoteTask>()
         content.lines().forEachIndexed { index, line ->
             val result = regex.find(line)

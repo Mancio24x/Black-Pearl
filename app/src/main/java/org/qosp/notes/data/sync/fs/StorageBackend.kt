@@ -69,11 +69,10 @@ class StorageBackend(private val context: Context, private val config: StorageCo
 
     override suspend fun updateNote(note: Note, mapping: IdMapping): IdMapping {
         val uri = mapping.storageUri?.toUri() ?: throw IllegalArgumentException("URI cannot be null")
-        val rootDoc = getRootDocumentFile() ?: throw IOException("Unable to access storage location")
         val file = DocumentFile.fromSingleUri(context, uri) ?: throw FileNotFoundException("URI not found")
 
         writeNoteToFile(file, content = note.toStorableContent())
-        val newUri = if (note.filename != file.name) renameFile(file, note.filename, rootDoc) else uri
+        val newUri = if (note.filename != file.name) renameFile(file, note.filename) else uri
         return mapping.copy(storageUri = newUri.toString())
     }
 
@@ -109,19 +108,68 @@ class StorageBackend(private val context: Context, private val config: StorageCo
     override suspend fun getAll(): List<SyncNote>? {
         val root = getRootDocumentFile() ?: return null
         return try {
-            val files = root.listFiles()
+            // Black Pearl: DocumentFile.listFiles() swallows query errors and returns a short/empty array, which made
+            // the sync bin notes. Query the children ourselves and fail (null = abort the sync) on any problem.
+            val files = listChildren(root.uri)
                 .flatMap {
                     if (it.isDirectory) {
-                        if (it.name?.startsWith(".") == true) emptyList()// Skip hidden directories
-                        else it.listFiles().toList()
+                        if (it.name.startsWith(".")) emptyList() // Skip hidden directories
+                        else listChildren(it.uri)
                     } else listOf(it)
                 }
-                .filter { it.name?.startsWith(".") != true } // Skip hidden files
-                .filter { it.name?.endsWith(".md") == true || it.name?.endsWith(".txt") == true }
-            files.map { file -> getFile(file) }
+                .filter { !it.isDirectory }
+                .filter { !it.name.startsWith(".") } // Skip hidden files
+                .filter { it.name.endsWith(".md") || it.name.endsWith(".txt") }
+            files.map { file ->
+                SyncNote(
+                    id = 0,
+                    idStr = file.uri.toString(),
+                    content = readFileContent(file.uri, file.name),
+                    title = getTitleFromUri(file.uri),
+                    lastModified = file.lastModifiedMs / 1000, // Milliseconds to seconds
+                )
+            }
         } catch (e: Exception) {
             Log.e(TAG, "getAll: Error listing files", e)
             null
+        }
+    }
+
+    private class Child(val uri: Uri, val name: String, val isDirectory: Boolean, val lastModifiedMs: Long)
+
+    /**
+     * Lists the direct children of the document at [parentUri] (a document URI inside the tree). Builds the child
+     * URIs exactly like TreeDocumentFile.listFiles(), so existing mappings keep matching.
+     * Throws when the provider gives no cursor or says the listing is still loading (incomplete).
+     */
+    private fun listChildren(parentUri: Uri): List<Child> {
+        val childrenUri =
+            DocumentsContract.buildChildDocumentsUriUsingTree(parentUri, DocumentsContract.getDocumentId(parentUri))
+        val projection = arrayOf(
+            DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+            DocumentsContract.Document.COLUMN_MIME_TYPE,
+            DocumentsContract.Document.COLUMN_LAST_MODIFIED,
+        )
+        val cursor = context.contentResolver.query(childrenUri, projection, null, null, null)
+            ?: throw IOException("No cursor when listing $parentUri")
+        return cursor.use { c ->
+            if (c.extras?.getBoolean(DocumentsContract.EXTRA_LOADING, false) == true) {
+                throw IOException("Listing of $parentUri is still loading")
+            }
+            buildList {
+                while (c.moveToNext()) {
+                    val docId = c.getString(0) ?: continue
+                    add(
+                        Child(
+                            uri = DocumentsContract.buildDocumentUriUsingTree(parentUri, docId),
+                            name = c.getString(1) ?: "",
+                            isDirectory = c.getString(2) == DocumentsContract.Document.MIME_TYPE_DIR,
+                            lastModifiedMs = if (c.isNull(3)) 0L else c.getLong(3),
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -159,9 +207,11 @@ class StorageBackend(private val context: Context, private val config: StorageCo
         }
     }
 
-    private fun readFileContent(file: DocumentFile): String? {
-        Log.d(TAG, "readFileContent: ${file.name}")
-        return context.contentResolver.openInputStream(file.uri)?.use { it.bufferedReader().readText() }
+    private fun readFileContent(file: DocumentFile): String? = readFileContent(file.uri, file.name)
+
+    private fun readFileContent(uri: Uri, name: String?): String? {
+        Log.d(TAG, "readFileContent: $name")
+        return context.contentResolver.openInputStream(uri)?.use { it.bufferedReader().readText() }
     }
 
     private fun getTitleFromUri(uri: Uri): String {
@@ -173,13 +223,18 @@ class StorageBackend(private val context: Context, private val config: StorageCo
         }
     }
 
-    private fun renameFile(file: DocumentFile, newName: String, root: DocumentFile): String {
+    /**
+     * Renames the mapped document itself (not a same-named file found in the root) and returns its new URI.
+     * On failure the content is already written, so the old URI is kept and the rename is retried next time.
+     */
+    private fun renameFile(file: DocumentFile, newName: String): Uri {
         Log.d(TAG, "renameFile: Renaming ${file.name} to $newName")
-        val foundFile = root.listFiles().firstOrNull { it.name == file.name }
-            ?: throw FileNotFoundException("File ${file.name} not found")
-        val succeeded = foundFile.renameTo(newName)
-        Log.d(TAG, "renameFile: Renaming ${foundFile.name}, succeeded? $succeeded")
-        return foundFile.uri.toString()
+        return try {
+            DocumentsContract.renameDocument(context.contentResolver, file.uri, newName) ?: file.uri
+        } catch (e: Exception) {
+            Log.e(TAG, "renameFile: Could not rename ${file.name} to $newName", e)
+            file.uri
+        }
     }
 
     private inline fun <reified T> inStorage(block: () -> T): T? {

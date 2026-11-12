@@ -40,17 +40,24 @@ class SynchronizeNotes(private val idMappingRepository: IdMappingRepository) {
                     if (service == CloudService.NEXTCLOUD) it.remoteNoteId?.toString() ?: "" else it.storageUri ?: ""
                 }.filterKeys { it != "" }
 
+                // Black Pearl: refuse to treat "missing remote" as a deletion when the listing looks incomplete
+                // (empty folder, provider still loading, partial cursor). Otherwise many notes would be binned.
+                val mappedLocal = localNotes.filter { localToRemoteMap[it.id] != null }
+                val missing = mappedLocal.count { note ->
+                    remoteKeyOf(localToRemoteMap.getValue(note.id), service)?.let { remoteNotesMap[it] } == null
+                }
+                SyncSafetyGuard.abortReason(mappedLocal.size, missing, remoteNotes.size)?.let { reason ->
+                    Log.w(tag, "SynchronizeNotes: aborting sync - $reason")
+                    return SyncNotesResult(emptyList(), emptyList(), abortReason = reason)
+                }
+
                 // Process local notes
                 for (localNote in localNotes) {
                     val mapping = localToRemoteMap[localNote.id]
 
                     if (mapping != null) {
                         // Local note has a mapping to a remote note
-                        val remoteNote = when (service) {
-                            CloudService.NEXTCLOUD -> mapping.remoteNoteId.toString()
-                            CloudService.FILE_STORAGE -> mapping.storageUri
-                            else -> null
-                        }?.let { remoteNotesMap[it] }
+                        val remoteNote = remoteKeyOf(mapping, service)?.let { remoteNotesMap[it] }
 
                         if (remoteNote != null) {
                             // Both local and remote notes exist, compare last modified times
@@ -171,6 +178,34 @@ class SynchronizeNotes(private val idMappingRepository: IdMappingRepository) {
         }
         return SyncNotesResult(localUpdates, remoteUpdates, mappingUpdates)
     }
+
+    private fun remoteKeyOf(mapping: IdMapping, service: CloudService): String? = when (service) {
+        CloudService.NEXTCLOUD -> mapping.remoteNoteId.toString()
+        CloudService.FILE_STORAGE -> mapping.storageUri
+        else -> null
+    }
+}
+
+/**
+ * Black Pearl: decides whether a MAPPING sync must stop because the remote listing looks incomplete.
+ * A short listing would otherwise move every "missing" note to the bin (and, before this guard, later delete the files).
+ */
+object SyncSafetyGuard {
+    const val MIN_MISSING_TO_ABORT = 3
+
+    /**
+     * @param mappedCount local (non-deleted) notes that have a mapping for this service
+     * @param missingCount how many of them are not in the remote listing
+     * @param remoteCount size of the remote listing
+     * @return a reason when the sync must be aborted, null when it is safe to go on
+     */
+    fun abortReason(mappedCount: Int, missingCount: Int, remoteCount: Int): String? = when {
+        mappedCount > 0 && remoteCount == 0 ->
+            "remote listing is empty but $mappedCount notes are mapped"
+        missingCount >= MIN_MISSING_TO_ABORT && missingCount * 2 > mappedCount ->
+            "$missingCount of $mappedCount mapped notes are missing from the remote listing"
+        else -> null
+    }
 }
 
 sealed interface NoteAction {
@@ -182,5 +217,7 @@ sealed interface NoteAction {
 data class SyncNotesResult(
     val localUpdates: List<NoteAction>,
     val remoteUpdates: List<NoteAction>,
-    val newMappings: List<IdMapping> = emptyList()
+    val newMappings: List<IdMapping> = emptyList(),
+    /** Not null when the sync was aborted by [SyncSafetyGuard]: nothing must be applied. */
+    val abortReason: String? = null,
 )

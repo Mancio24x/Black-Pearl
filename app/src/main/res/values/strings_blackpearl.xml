@@ -231,4 +231,5 @@
         <item quantity="one">Links updated in %1$d note</item>
         <item quantity="other">Links updated in %1$d notes</item>
     </plurals>
+    <string name="message_sync_aborted_incomplete_listing">Sync stopped: many synced notes are missing from the folder or server, so nothing was changed. Check it and try again.</string>
 </resources>
