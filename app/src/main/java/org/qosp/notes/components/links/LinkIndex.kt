@@ -30,13 +30,16 @@ class LinkIndex(notes: List<Note>) {
             val name = tag.name.trim()
             if (name.isNotEmpty()) tagSpelling.putIfAbsent(name.lowercase(Locale.ROOT), name)
         }
+        val inlineTags = HashMap<Long, List<String>>()
         for (note in visibleNotes) {
-            for (name in InlineTags.find(note.content)) tagSpelling.putIfAbsent(name.lowercase(Locale.ROOT), name)
+            val found = InlineTags.find(note.content)
+            inlineTags[note.id] = found
+            for (name in found) tagSpelling.putIfAbsent(name.lowercase(Locale.ROOT), name)
         }
         for (note in visibleNotes) {
             val links = WikiLinks.find(note.content)
             outMap[note.id] = links
-            tagMap[note.id] = (note.tags.map { it.name.trim() } + InlineTags.find(note.content))
+            tagMap[note.id] = (note.tags.map { it.name.trim() } + inlineTags.getValue(note.id))
                 .filter { it.isNotEmpty() }
                 .map { tagSpelling.getValue(it.lowercase(Locale.ROOT)) }
                 .distinct()

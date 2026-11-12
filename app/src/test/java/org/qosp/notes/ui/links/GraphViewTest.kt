@@ -6,6 +6,7 @@ import android.os.Looper
 import android.view.ContextThemeWrapper
 import android.view.MotionEvent
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -13,7 +14,9 @@ import org.junit.runner.RunWith
 import org.qosp.notes.R
 import org.qosp.notes.components.links.GraphEdge
 import org.qosp.notes.components.links.GraphNode
+import org.qosp.notes.components.links.NodeKind
 import org.qosp.notes.components.links.PointF2
+import org.qosp.notes.data.model.Attachment
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
@@ -121,5 +124,82 @@ class GraphViewTest {
         val unlinked = abs(graph.positionOf("c")!!.y)
         assertTrue("linked note moved $linked, unlinked $unlinked", linked > 8f && linked > 3 * unlinked)
         assertEquals(null, tapped)
+    }
+
+    private val n1 = GraphNode("note:1", "One", 1, 1)
+    private val n2 = GraphNode("note:2", "Two", 2, 2)
+    private val n3 = GraphNode("note:3", "Three", 3, 2)
+    private val tag = GraphNode("tag:x", "x", null, 1, NodeKind.TAG)
+    private val created = mapOf("note:1" to 1L, "note:2" to 2L, "note:3" to 3L)
+
+    private fun timelapseGraph() = graph.setGraph(listOf(n1, n2, n3, tag),
+        listOf(GraphEdge("note:1", "note:2"), GraphEdge("note:2", "note:3"), GraphEdge("note:3", "tag:x")),
+        mapOf("note:1" to PointF2(-60f, 0f), "note:2" to PointF2(0f, 0f), "note:3" to PointF2(60f, 0f), "tag:x" to PointF2(120f, 0f)))
+
+    private var now = 0L
+
+    /** Moves the fake timelapse clock and runs one tick directly (no looper: it would re-post forever at a frozen time). */
+    private fun advance(ms: Long) {
+        now += ms
+        graph.timelapseTick()
+    }
+
+    @Test fun timelapseShowsNotesInCreationOrder() {
+        timelapseGraph()
+        graph.clock = { now }
+        graph.playTimelapse(created)
+        assertTrue(graph.isPlayingTimelapse)
+        assertEquals(emptySet<String>(), graph.visibleKeys)
+        advance(1600)
+        assertEquals(setOf("note:1", "note:2"), graph.visibleKeys)
+        advance(1900)
+        assertFalse(graph.isPlayingTimelapse)
+        assertNull(graph.visibleKeys)
+    }
+
+    @Test fun touchStopsTimelapse() {
+        timelapseGraph()
+        graph.clock = { now }
+        graph.playTimelapse(created)
+        assertTrue(graph.isPlayingTimelapse)
+        touch(MotionEvent.ACTION_DOWN, 20f, 20f)
+        assertNull(graph.visibleKeys)
+        assertFalse(graph.isPlayingTimelapse)
+    }
+
+    @Test fun nodesAppearWithTheirFirstNote() {
+        timelapseGraph()
+        graph.clock = { now }
+        graph.playTimelapse(created)
+        advance(1600)
+        assertFalse("tag:x" in graph.visibleKeys!!)
+    }
+
+    @Test fun tappingATagNodeDeliversKindTag() {
+        val t = GraphNode("tag:x", "x", null, 1, NodeKind.TAG)
+        graph.setGraph(listOf(t), emptyList(), mapOf(t.key to PointF2(0f, 0f)))
+        tap(300f, 300f)
+        assertEquals(NodeKind.TAG, tapped?.kind)
+    }
+
+    @Test fun tappingAnAttachmentNodeDeliversKindAttachment() {
+        val f = GraphNode("file:1", "", null, 1, NodeKind.ATTACHMENT, Attachment.Type.IMAGE)
+        graph.setGraph(listOf(f), emptyList(), mapOf(f.key to PointF2(0f, 0f)))
+        tap(300f, 300f)
+        assertEquals(NodeKind.ATTACHMENT, tapped?.kind)
+    }
+
+    @Test fun blankAttachmentTitleFallsBackToTheFileKindLabel() {
+        val context = RuntimeEnvironment.getApplication()
+        val expected = mapOf(
+            Attachment.Type.IMAGE to R.string.network_file_photo,
+            Attachment.Type.AUDIO to R.string.network_file_audio,
+            Attachment.Type.VIDEO to R.string.network_file_video,
+            Attachment.Type.GENERIC to R.string.network_file_other,
+        )
+        for ((type, res) in expected) {
+            val f = GraphNode("file:$type", "", null, 1, NodeKind.ATTACHMENT, type)
+            assertEquals(context.getString(res), f.displayTitle(context))
+        }
     }
 }
