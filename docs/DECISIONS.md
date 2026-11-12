@@ -81,3 +81,10 @@ Newest last. Format: date — decision — why.
 ## Linked notes and the Network
 
 Keep Obsidian wiki links in Markdown. Derive the graph in memory without changing the database or backup format. Exclude hidden and deleted notes. When titles coincide, choose the most recently modified note.
+
+## Sync conflicts: last writer wins (owner decision, 2026-11-12)
+
+When the same note changes on two sides (app and Obsidian folder, or two devices) between syncs, the newer
+modification time wins and the other edit is not kept. Conflict copies were proposed and declined by the owner
+("B"). Data-loss guards still apply: a sync aborts when the remote listing is empty or more than half of the mapped
+notes are missing, and a note binned by sync never triggers a remote delete.
