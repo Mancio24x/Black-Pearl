@@ -2,6 +2,7 @@ package org.qosp.notes.ui.links
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.RectF
 import android.os.Looper
 import android.view.ContextThemeWrapper
 import android.view.MotionEvent
@@ -60,6 +61,40 @@ class GraphViewTest {
         // The center leaf is at (500, 300). Tap its title outside the 24 dp node target.
         tap(540f, 300f)
         assertEquals(leaf, tapped)
+    }
+
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @Config(qualifiers = "mdpi")
+    @Test fun crowdedTitlesNeverOverlapAndSearchPromotesTheRequestedNote() {
+        val nodes = (1..36).map { GraphNode("n$it", "Long note title number $it", it.toLong(), 1) }
+        val points = nodes.mapIndexed { i, n -> n.key to PointF2((i % 6) * 9f, (i / 6) * 9f) }.toMap()
+        graph.setGraph(nodes, emptyList(), points)
+        val canvas = Canvas(Bitmap.createBitmap(600, 600, Bitmap.Config.ARGB_8888))
+        graph.draw(canvas)
+        val boxes = nodes.mapNotNull { graph.labelBounds(it.key) }
+        assertTrue("expected some readable titles", boxes.isNotEmpty())
+        assertTrue("crowded labels should yield", boxes.size < nodes.size)
+        for (i in boxes.indices) for (j in 0 until i) assertFalse(RectF.intersects(boxes[i], boxes[j]))
+        val wanted = nodes.last()
+        graph.query = wanted.title
+        graph.draw(canvas)
+        val box = requireNotNull(graph.labelBounds(wanted.key))
+        tap(box.centerX(), box.centerY())
+        assertEquals(wanted, tapped)
+    }
+
+    @Test fun draggingInALargeVaultStillMovesTheLinkedNeighbour() {
+        val others = (1..320).map { GraphNode("x$it", "Other $it", it.toLong(), 0) }
+        val points = others.associate { it.key to PointF2(-1000f, -500f) } +
+            mapOf("a" to PointF2(0f, 0f), "b" to PointF2(45f, 0f))
+        graph.setGraph(listOf(a, b) + others, listOf(GraphEdge("a", "b")), points)
+        val start = graph.screenPosition("a")!!
+        touch(MotionEvent.ACTION_DOWN, start.x, start.y)
+        touch(MotionEvent.ACTION_MOVE, start.x, start.y + 100)
+        touch(MotionEvent.ACTION_UP, start.x, start.y + 100)
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofSeconds(4))
+        assertTrue(graph.positionOf("b")!!.y > 3f)
+        assertEquals(points[others.first().key], graph.positionOf(others.first().key))
     }
 
     @Test fun tapAfterDraggingNodeOpensItInItsNewPosition() {

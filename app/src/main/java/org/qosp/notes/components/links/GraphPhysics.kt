@@ -27,10 +27,20 @@ class GraphPhysics(start: Map<String, PointF2>, edges: List<GraphEdge>) {
         val b = indexOf[e.to]
         if (a == null || b == null || a == b) null else if (a < b) a to b else b to a
     }.distinct()
+    // The layout packs independent components side by side. Between components only use
+    // short-range collision avoidance, so dragging a cluster doesn't sweep away unrelated notes.
+    private val component = IntArray(n) { it }
     private var pinned = -1
     private var heat = 0.0
 
     init {
+        fun root(i: Int): Int {
+            var r = i
+            while (component[r] != r) r = component[r]
+            return r
+        }
+        for ((a, b) in springs) component[root(b)] = root(a)
+        for (i in 0 until n) component[i] = root(i)
         forces(restX, restY)
     }
 
@@ -102,7 +112,8 @@ class GraphPhysics(start: Map<String, PointF2>, edges: List<GraphEdge>) {
                 val ux = x[i] - x[j]
                 val uy = y[i] - y[j]
                 val d = max(sqrt(ux * ux + uy * uy), MIN_DIST)
-                val f = K * K / (d * d)
+                val strength = if (component[i] == component[j]) 1.0 else max(0.0, 1.0 - d / K)
+                val f = strength * K * K / (d * d)
                 outX[i] += ux * f
                 outY[i] += uy * f
                 outX[j] -= ux * f
@@ -126,7 +137,7 @@ class GraphPhysics(start: Map<String, PointF2>, edges: List<GraphEdge>) {
     }
 
     companion object {
-        /** Above this many nodes a frame would be too slow on older phones: only the dragged node moves. */
+        /** Maximum nodes in one live simulation. Large vaults simulate a neighbourhood around the dragged node. */
         const val MAX_LIVE_NODES = 300
 
         private const val K = 40.0

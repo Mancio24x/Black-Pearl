@@ -303,3 +303,9 @@ Completed the editor suggestion strip and the Network destination, including gra
   "Update links?" (Update / No, not cancelable) lists how many notes; updates run in the activity scope and sync as usual.
 - Owner decision: ask before changing other notes (option A).
 - Tests: `LinkRenameTest` (5) — run with JUnit in a JVM prototype with a stub Note: 5/5 pass; Android build on CI.
+
+## 2026-11-12 — Network readability and motion
+- Layout linked components independently and put orphans in compact rows. A large orphan collection opens on the connected network; Recenter fits everything.
+- GraphView animates opening and filter transitions, follows the system animation preference, keeps labels off other labels and node markers, and prioritizes real notes, connections and the active search. Large vaults simulate the dragged neighbourhood. Tapping a visible title or node opens its note.
+- Search and filters now share a collapsible toolbar control. Timelapse nodes fade and grow when they appear.
+- Added layout, crowded-label, search-hit and large-vault drag regressions. The device navigation test uses the actual rendered node position during a transition. Android verification runs in the PR Build and UI preview workflows.

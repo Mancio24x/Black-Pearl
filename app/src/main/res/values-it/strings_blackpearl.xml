@@ -231,4 +231,5 @@
         <item quantity="one">Collegamenti aggiornati in %1$d nota</item>
         <item quantity="other">Collegamenti aggiornati in %1$d note</item>
     </plurals>
+    <string name="network_controls">Ricerca e filtri della Rete</string>
 </resources>
