@@ -54,6 +54,7 @@ class RecorderServiceBinder(
     private val _recordingTime: MutableStateFlow<Long> = MutableStateFlow(0)
 
     var recordingTime: Flow<Long> = _recordingTime
+    /** The recorded file; null when nothing was saved (the file was deleted). */
     var outputUri: Uri? = null
     val isRecording get() = state == RecorderService.RecorderState.RECORDING
 
@@ -65,10 +66,12 @@ class RecorderServiceBinder(
                     recorder.stop()
                 } catch (e: RuntimeException) {
                     outputFile?.delete()
+                    outputUri = null // nothing was saved: no attachment for it
                 }
             } else {
                 // never started: stop() would throw, and the file is empty
                 outputFile?.delete()
+                outputUri = null
             }
             try {
                 recorder.release()

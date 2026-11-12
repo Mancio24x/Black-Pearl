@@ -37,7 +37,17 @@ object BackupRules {
      */
     fun remapMediaLinks(content: String, links: Map<String, String>): String {
         if (links.isEmpty() || "/media_files/" !in content) return content
-        val pattern = Regex("""content://[^/\s()<>\[\]"']+/media_files/([A-Za-z0-9._~%!$&'*+,;=@-]+)""")
-        return pattern.replace(content) { match -> links[match.groupValues[1]] ?: match.value }
+        // `(`, `)` and `'` are left as they are by Uri.encode, so `photo (1).jpg` is `photo%20(1).jpg` in a link
+        val pattern = Regex("""content://[^/\s()<>\[\]"']+/media_files/([A-Za-z0-9._~%!$&'()*+,;=@-]+)""")
+        return pattern.replace(content) { match ->
+            // the match may also hold the `)` that closes a Markdown link: drop trailing `)` until a name is known
+            var name = match.groupValues[1]
+            var tail = ""
+            while (name !in links && name.endsWith(')')) {
+                name = name.dropLast(1)
+                tail = ")$tail"
+            }
+            links[name]?.let { it + tail } ?: match.value
+        }
     }
 }

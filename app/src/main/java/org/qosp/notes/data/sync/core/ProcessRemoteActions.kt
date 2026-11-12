@@ -123,17 +123,13 @@ class ProcessRemoteActions(
     }
 
     private suspend fun updateRemote(note: Note, syncProvider: ISyncBackend) = try {
-        val mapping = idMappingDao.getByLocalIdAndProvider(note.id, syncProvider.type)
-        when {
-            mapping != null -> idMappingDao.update(syncProvider.updateNote(note, mapping))
-            // No remote copy yet (e.g. a Create replaced by this Update within the debounce): create it now
-            updateNeedsCreate(note) -> insertRemote(syncProvider, note)
-            else -> Unit
+        // No mapping: do nothing, the next full sync creates the remote note. Creating it here could add the first
+        // mapping before the first full sync, which would then match by mapping instead of title and duplicate notes.
+        idMappingDao.getByLocalIdAndProvider(note.id, syncProvider.type)?.let {
+            val updatedMapping = syncProvider.updateNote(note, it)
+            idMappingDao.update(updatedMapping)
         }
     } catch (e: Exception) {
         Log.e(tag, "processRemoteOperation: Failed to update note ID=${note.id}: ${e.message}", e)
     }
 }
-
-/** An Update for a note without mapping must create the remote note, unless the note is binned or local-only. */
-internal fun updateNeedsCreate(note: Note): Boolean = !note.isDeleted && !note.isLocalOnly

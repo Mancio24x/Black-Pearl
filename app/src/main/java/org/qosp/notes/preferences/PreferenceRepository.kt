@@ -140,20 +140,20 @@ class PreferenceRepository(
      * Read at app start. Unlike [getAppLock] it never turns a read error into "no lock": it retries once and then
      * returns settings with an unreadable PIN, so the app starts locked (fingerprint / phone screen lock still open it).
      */
-    suspend fun loadAppLockAtStart(): AppLockState {
-        repeat(2) {
-            try {
-                val prefs = dataStore.data.first()
-                return AppLockState(
-                    prefs.toAppLockSettings(),
-                    prefs[APP_LOCK_FAILURES] ?: 0,
-                    prefs[APP_LOCK_BLOCKED_UNTIL] ?: 0L,
-                )
-            } catch (e: IOException) {
-                // try again
-            }
-        }
-        return AppLockState(AppLockSettings(pinHash = UNREADABLE_PIN_HASH, pinLength = 0))
+    suspend fun loadAppLockAtStart(): AppLockState =
+        readAppLockState() ?: readAppLockState() // try again once
+            ?: AppLockState(AppLockSettings(pinHash = UNREADABLE_PIN_HASH, pinLength = 0))
+
+    /** One read of the lock settings and the wrong-PIN counter; null when the store cannot be read. */
+    suspend fun readAppLockState(): AppLockState? = try {
+        val prefs = dataStore.data.first()
+        AppLockState(
+            prefs.toAppLockSettings(),
+            prefs[APP_LOCK_FAILURES] ?: 0,
+            prefs[APP_LOCK_BLOCKED_UNTIL] ?: 0L,
+        )
+    } catch (e: IOException) {
+        null
     }
 
     /** Wrong-PIN counter and the end of the wait (wall clock millis), kept so that killing the app does not reset them. */

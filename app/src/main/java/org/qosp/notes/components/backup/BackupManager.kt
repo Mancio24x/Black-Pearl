@@ -29,6 +29,14 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 
+/**
+ * Runs [block] in one database transaction. A named interface, not a `suspend` function type: Koin's
+ * `verify()` (KoinModulesTest) cannot read a suspend function type by reflection and fails with an NPE.
+ */
+fun interface TransactionRunner {
+    suspend fun run(block: suspend () -> Unit)
+}
+
 class BackupManager(
     private val currentVersion: Int,
     private val noteRepository: NoteRepository,
@@ -39,7 +47,7 @@ class BackupManager(
     private val reminderManager: ReminderManager,
     private val context: Context,
     /** Runs the database part of a restore atomically (Room `withTransaction` in the app, see UtilModule). */
-    private val runInTransaction: suspend (suspend () -> Unit) -> Unit = { it() },
+    private val runInTransaction: TransactionRunner = TransactionRunner { it() },
 ) {
     private val BUFFER = 2048
 
@@ -107,7 +115,7 @@ class BackupManager(
         val notesMap = mutableMapOf<Long, Long>()
         val toSchedule = mutableListOf<Reminder>()
 
-        runInTransaction { restoreInDatabase(backup, notebooksMap, tagsMap, notesMap, toSchedule) }
+        runInTransaction.run { restoreInDatabase(backup, notebooksMap, tagsMap, notesMap, toSchedule) }
 
         // Alarms only after the data is committed
         toSchedule.forEach { reminder ->

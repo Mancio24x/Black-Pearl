@@ -144,10 +144,14 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     private fun applySecureScreen(secure: Boolean) {
-        if (Build.VERSION.SDK_INT >= 33) setRecentsScreenshotEnabled(!secure)
-        // before Android 13 the only way to hide the recents preview is FLAG_SECURE (it also blocks screenshots)
-        if (secure) window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-        else window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        if (Build.VERSION.SDK_INT >= 33) {
+            // Android 13+: hide only the recents preview; the user can still take screenshots
+            setRecentsScreenshotEnabled(!secure)
+        } else {
+            // before Android 13 the only way to hide the recents preview is FLAG_SECURE (it also blocks screenshots)
+            if (secure) window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+            else window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
     }
 
     // Back does not close the lock screen: it leaves the app

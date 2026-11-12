@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Android 12+: notes, media, settings and the PIN hash stay on the phone (not in cloud backup nor device transfer).
-     Use the app's own export (menu > Import and export) to move notes. -->
+<!-- Android 12+: notes, media, settings and the PIN hash are kept out of Google cloud backup (privacy), but are
+     carried by phone-to-phone transfer (started by the user, encrypted). The app's own backup zip
+     (menu > Import and export) is the supported backup. See docs/DECISIONS.md. -->
 <data-extraction-rules>
     <cloud-backup>
         <exclude domain="database" path="." />
@@ -9,9 +10,9 @@
         <exclude domain="sharedpref" path="." />
     </cloud-backup>
     <device-transfer>
-        <exclude domain="database" path="." />
-        <exclude domain="file" path="datastore" />
-        <exclude domain="file" path="media" />
-        <exclude domain="sharedpref" path="." />
+        <include domain="database" path="." />
+        <include domain="file" path="datastore" />
+        <include domain="file" path="media" />
+        <include domain="sharedpref" path="." />
     </device-transfer>
 </data-extraction-rules>

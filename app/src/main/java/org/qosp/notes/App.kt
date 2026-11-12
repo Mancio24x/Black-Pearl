@@ -3,15 +3,21 @@ package org.qosp.notes
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.biometric.BiometricManager
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.qosp.notes.components.DemoLinksNote
 import org.qosp.notes.components.SampleNote
 import org.koin.android.ext.android.get
 import org.qosp.notes.preferences.PreferenceRepository
+import org.qosp.notes.preferences.UNREADABLE_PIN_HASH
+import org.qosp.notes.ui.BaseActivity
 import org.qosp.notes.ui.lock.AppLock
 import android.app.Application
 import android.app.NotificationChannel
@@ -119,9 +125,29 @@ class App : Application(), ImageLoaderFactory {
         val appLock: AppLock = get()
         val preferences: PreferenceRepository = get()
         val state = runBlocking { preferences.loadAppLockAtStart() }
-        appLock.start(state.settings, state.failures, state.blockedUntil)
+        val unreadable = state.settings.pinHash == UNREADABLE_PIN_HASH
+        val deviceCanVerifyOwner = !unreadable || BiometricManager.from(this)
+            .canAuthenticate(BaseActivity.LOCK_AUTHENTICATORS) == BiometricManager.BIOMETRIC_SUCCESS
+        if (unreadable) {
+            Log.w(
+                "App",
+                "App lock settings unreadable; starting " +
+                    if (deviceCanVerifyOwner) "locked (biometric / screen lock can open it)" else "unlocked (no other way in)"
+            )
+        }
+        appLock.start(state.settings, state.failures, state.blockedUntil, deviceCanVerifyOwner)
+        // read again on foreground and before each PIN try, so a passing storage error heals without a restart
+        appLock.reloadSettings = { runBlocking(Dispatchers.IO) { preferences.readAppLockState() } }
+        // one writer, in call order (UNDISPATCHED queues on the mutex at once); a failed write must not crash the app
+        val attemptsScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+        val attemptsMutex = Mutex()
         appLock.onAttemptsChanged = { failures, blockedUntil ->
-            CoroutineScope(Dispatchers.IO).launch { preferences.setAppLockAttempts(failures, blockedUntil) }
+            attemptsScope.launch(start = CoroutineStart.UNDISPATCHED) {
+                attemptsMutex.withLock {
+                    runCatching { preferences.setAppLockAttempts(failures, blockedUntil) }
+                        .onFailure { Log.w("App", "Could not save the wrong-PIN counter", it) }
+                }
+            }
         }
         ProcessLifecycleOwner.get().lifecycle.addObserver(object : DefaultLifecycleObserver {
             override fun onStart(owner: LifecycleOwner) = appLock.onAppForeground()

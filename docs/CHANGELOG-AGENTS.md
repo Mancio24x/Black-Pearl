@@ -357,3 +357,26 @@ Completed the editor suggestion strip and the Network destination, including gra
   `ProcessRemoteActionsTest` (5), `NextcloudBackendTest` (+2). Guard + list logic (real `SynchronizeNotes.kt`, Note
   functions copied) 11/11 pass and Nextcloud JSON 2/2 pass in JVM prototypes; mockk/Android tests run on CI only.
   `StorageBackend` SAF code unverified (no SDK/device).
+
+## 2026-11-12 — Fix round 2 after final review
+- CI `KoinModulesTest` NPE: Koin 4.1 `verify()` casts each constructor parameter's `KType.classifier` to `KClass`, and
+  kotlin-reflect returns null for a `suspend` function type, so `extraTypes` cannot fix it (checked in a JVM prototype
+  with koin-test 4.1.0). `BackupManager.runInTransaction` is now a `fun interface TransactionRunner` (same lambda in
+  `UtilModule`); `AppLock`'s plain `() -> Long` params pass verify as they are. Test file unchanged.
+- App lock (`AppLock`, `App`, `PreferenceRepository.readAppLockState`): unreadable settings start locked only if
+  `BiometricManager.canAuthenticate(LOCK_AUTHENTICATORS)` succeeds, otherwise unlocked (logged); unreadable settings
+  are read again on foreground and before each PIN try; wrong-PIN counter writes are serial (Mutex + UNDISPATCHED)
+  and never crash (`runCatching`). Also fixed `start()` locking from the parameter instead of the settings in use.
+- Backup rules: notes excluded from Google cloud backup only, included in device-to-device transfer (Android 12+);
+  Android ≤11 keeps the excludes. Recorded in DECISIONS.md.
+- `EditorViewModel.update`: `CoroutineStart.UNDISPATCHED`, writes queue on the mutex in call order.
+- Sync: reverted "Update with no mapping creates the remote note" (could switch the first sync from TITLE to MAPPING
+  and duplicate notes); guard message names the remedy (EN/IT), shown once per app session, long toast.
+- `BaseActivity`: FLAG_SECURE only below Android 13; 13+ only hides the recents preview.
+- Recorder: a failed `stop()` clears `outputUri`, the dialog adds no attachment.
+- `BackupRules.remapMediaLinks`: names may contain `(`, `)`, `'`; a trailing `)` closing the Markdown link is kept.
+- Removed unused `first` import in App.kt.
+- Tests: `AppLockTest` (+4), `BackupRulesTest` (+1): 25/25 pass in a JVM prototype (real AppLock/PinHasher/BackupRules).
+  `ProcessRemoteActionsTest` (update without mapping does nothing), new `NoteRepositorySyncTest` (binned-by-sync note
+  loses its mapping, no remote delete): mockk/Android, CI only. Unverified: Android compile, KoinModulesTest on CI,
+  backup rules on a device.

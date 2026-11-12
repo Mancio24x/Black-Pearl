@@ -77,6 +77,22 @@ class BackupRulesTest {
     }
 
     @Test
+    fun remapsLinksWhoseNameHasBracketsOrQuotes() {
+        val app = "content://io.github.mancio24x.blackpearl.provider/media_files"
+        // Uri.encode("photo (1).jpg") = "photo%20(1).jpg"; the last ")" closes the Markdown link
+        val content = "![](${app}/photo%20(1).jpg) e ![](${app}/l'auto.jpg \"=center,50\") e ![](${app}/(x).jpg)"
+        val links = mapOf(
+            "photo%20(1).jpg" to "$app/1_photo%20(1).jpg",
+            "l'auto.jpg" to "$app/1_l'auto.jpg",
+            "(x).jpg" to "$app/1_(x).jpg",
+        )
+        val expected = "![](${app}/1_photo%20(1).jpg) e ![](${app}/1_l'auto.jpg \"=center,50\") e ![](${app}/1_(x).jpg)"
+        assertEquals(expected, BackupRules.remapMediaLinks(content, links))
+        // a name that is not in the map is left unchanged, closing bracket included
+        assertEquals("![](${app}/other%20(2).jpg)", BackupRules.remapMediaLinks("![](${app}/other%20(2).jpg)", links))
+    }
+
+    @Test
     fun leavesOtherLinksAndPlainTextAlone() {
         val content = "[web](https://example.com/media_files/a.jpg) media_files/a.jpg ![](file:///x/a.jpg)"
         assertEquals(content, BackupRules.remapMediaLinks(content, mapOf("a.jpg" to "content://p/media_files/1_a.jpg")))

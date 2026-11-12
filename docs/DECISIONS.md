@@ -88,3 +88,15 @@ When the same note changes on two sides (app and Obsidian folder, or two devices
 modification time wins and the other edit is not kept. Conflict copies were proposed and declined by the owner
 ("B"). Data-loss guards still apply: a sync aborts when the remote listing is empty or more than half of the mapped
 notes are missing, and a note binned by sync never triggers a remote delete.
+
+## Android backup and app-lock safety (2026-11-12)
+
+- **System backup.** Notes are excluded from Google cloud backup (privacy), kept in phone-to-phone transfer; the
+  app's own backup zip is the supported backup. Android 11 and older cannot tell the two apart, so there the
+  cloud rule applies to both (`res/xml/backup_rules.xml`).
+- **Sync guard.** When more than half of the mapped notes (at least 3) are missing from the folder or account, sync
+  stops instead of binning them. If the user removed them on purpose, choosing the sync folder or account again in
+  Settings clears the mappings and sync starts over; the message says so, once per app session.
+- **Unreadable lock settings.** The app starts locked only when Android can still verify the owner (fingerprint,
+  face, screen lock); otherwise it starts unlocked, because a user who cannot get in would clear the app's data and
+  lose the notes. The settings are read again on foreground and before each PIN try.

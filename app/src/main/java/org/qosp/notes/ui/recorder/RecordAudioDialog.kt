@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.os.IBinder
 import android.view.LayoutInflater
@@ -114,18 +113,20 @@ class RecordAudioDialog : BaseDialog<DialogRecordAudioBinding>() {
     }
 
     private fun stopRecording() {
-        val uri = recorderService?.outputUri ?: Uri.EMPTY
-
-        recorderService?.stopRecordingAndUnbind(connection)
+        val service = recorderService
+        service?.stopRecordingAndUnbind(connection)
         recorderService = null
 
-        setFragmentResult(
-            RECORD_CODE,
-            bundleOf(
-                RECORDED_ATTACHMENT to Attachment.fromUri(requireContext(), uri)
-                    .copy(description = getString(R.string.indicator_recorded_clip))
+        // read after stopping: a failed stop deletes the file and clears the URI, so no attachment is added
+        service?.outputUri?.let { uri ->
+            setFragmentResult(
+                RECORD_CODE,
+                bundleOf(
+                    RECORDED_ATTACHMENT to Attachment.fromUri(requireContext(), uri)
+                        .copy(description = getString(R.string.indicator_recorded_clip))
+                )
             )
-        )
+        }
         dismiss()
     }
 

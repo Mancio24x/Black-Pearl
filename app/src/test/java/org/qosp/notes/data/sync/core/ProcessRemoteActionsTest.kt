@@ -10,8 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.qosp.notes.data.dao.IdMappingDao
@@ -73,15 +71,14 @@ class ProcessRemoteActionsTest {
     }
 
     @Test
-    fun `update without mapping creates the remote note`() = runTest {
+    fun `update without mapping does nothing (the full sync creates the note)`() = runTest {
         coEvery { idMappingDao.getByLocalIdAndProvider(1L, CloudService.FILE_STORAGE) } returns null
-        coEvery { backend.createNote(note) } returns
-            SyncNote(id = 0L, idStr = "uri1", content = "c", title = "T", lastModified = 11L)
 
         process(RemoteOperation.Update(note))
 
-        coVerify(exactly = 1) { backend.createNote(note) }
-        coVerify(exactly = 1) { idMappingDao.insert(any()) }
+        coVerify(exactly = 0) { backend.createNote(any()) }
+        coVerify(exactly = 0) { backend.updateNote(any(), any()) }
+        coVerify(exactly = 0) { idMappingDao.insert(any()) }
     }
 
     @Test
@@ -93,12 +90,5 @@ class ProcessRemoteActionsTest {
 
         coVerify(exactly = 1) { backend.updateNote(note, mapping) }
         coVerify(exactly = 0) { backend.createNote(any()) }
-    }
-
-    @Test
-    fun `binned or local-only notes are never created by an update`() {
-        assertTrue(updateNeedsCreate(note))
-        assertFalse(updateNeedsCreate(note.copy(isDeleted = true)))
-        assertFalse(updateNeedsCreate(note.copy(isLocalOnly = true)))
     }
 }

@@ -2,6 +2,7 @@ package org.qosp.notes.ui.editor
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -174,7 +175,9 @@ class EditorViewModel(
     private val updateMutex = Mutex()
 
     private inline fun update(crossinline transform: suspend (Note) -> Note) {
-        viewModelScope.launch(Dispatchers.IO) {
+        // UNDISPATCHED: the call takes the lock or joins its (FIFO) queue at once on the caller's thread, so writes
+        // are applied in call order (typing "ab" then "abc" never ends as "ab").
+        viewModelScope.launch(Dispatchers.IO, start = CoroutineStart.UNDISPATCHED) {
             // Serialize writes and read the latest stored note inside the lock, so quick edits
             // never build on a stale snapshot.
             updateMutex.withLock {

@@ -140,4 +140,57 @@ class AppLockTest {
         assertTrue(lock.locked.value)
         assertTrue(lock.tryPin(pin) is AppLock.PinResult.Wrong)
     }
+
+    @Test
+    fun unreadableSettingsStartUnlockedWhenAndroidCannotVerifyTheOwner() {
+        val unreadable = AppLockSettings(pinHash = org.qosp.notes.preferences.UNREADABLE_PIN_HASH)
+        assertEquals(AppLockSettings(), AppLock.startSettings(unreadable, deviceCanVerifyOwner = false))
+        assertEquals(unreadable, AppLock.startSettings(unreadable, deviceCanVerifyOwner = true))
+        val withPin = settings()
+        assertEquals(withPin, AppLock.startSettings(withPin, deviceCanVerifyOwner = false))
+
+        val lock = AppLock { now }.apply { start(unreadable, deviceCanVerifyOwner = false) }
+        assertFalse(lock.locked.value)
+        assertFalse(lock.settings.enabled)
+    }
+
+    @Test
+    fun unreadableSettingsAreReadAgainBeforeAPinTry() {
+        var stored: org.qosp.notes.preferences.AppLockState? = null
+        val lock = AppLock { now }.apply {
+            reloadSettings = { stored }
+            start(AppLockSettings(pinHash = org.qosp.notes.preferences.UNREADABLE_PIN_HASH))
+        }
+        assertTrue(lock.tryPin(pin) is AppLock.PinResult.Wrong) // still unreadable
+        stored = org.qosp.notes.preferences.AppLockState(settings())
+        assertEquals(AppLock.PinResult.Unlocked, lock.tryPin(pin))
+        assertFalse(lock.locked.value)
+    }
+
+    @Test
+    fun unreadableSettingsAreReadAgainOnForeground() {
+        var stored: org.qosp.notes.preferences.AppLockState? = null
+        val lock = AppLock { now }.apply {
+            reloadSettings = { stored }
+            start(AppLockSettings(pinHash = org.qosp.notes.preferences.UNREADABLE_PIN_HASH))
+        }
+        lock.onAppForeground()
+        assertTrue(lock.locked.value)
+        // the store is readable again and no PIN was ever set: the app opens
+        stored = org.qosp.notes.preferences.AppLockState(AppLockSettings())
+        lock.onAppForeground()
+        assertFalse(lock.locked.value)
+        assertFalse(lock.settings.enabled)
+    }
+
+    @Test
+    fun aReloadThatThrowsKeepsTheLock() {
+        val lock = AppLock { now }.apply {
+            reloadSettings = { throw java.io.IOException("still broken") }
+            start(AppLockSettings(pinHash = org.qosp.notes.preferences.UNREADABLE_PIN_HASH))
+        }
+        lock.onAppForeground()
+        assertTrue(lock.locked.value)
+        assertTrue(lock.tryPin(pin) is AppLock.PinResult.Wrong)
+    }
 }
