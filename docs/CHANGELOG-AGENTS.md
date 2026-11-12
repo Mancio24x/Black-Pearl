@@ -288,3 +288,9 @@ Completed the editor suggestion strip and the Network destination, including gra
 - `fragment_network.xml`: chips `network_tags_chip`, `network_files_chip`; Material `Slider` `network_depth` (1..5, only visible while focused). `NetworkViewModel`: `showTags`, `showAttachments`, `depth` combined into `graph`.
 - `NetworkFragment`: play item in the toolbar (`hasMenu = true`, added in `onCreateOptionsMenu`, so BaseFragment's menu invalidation cannot clear it). Every chip, Recenter, Show all, the slider and play-while-playing stop the timelapse. Tag tap/hold opens a sheet listing its notes; attachment tap opens its note, hold shows the owner note's sheet. `displayTitle` gives blank attachments a type label. Strings in EN and IT.
 - Tests: not run (no Android SDK in this environment); CI to compile. Open: `NetworkNavigationTest` not touched, verify on device.
+
+## 2026-11-12 — Inline tags: fewer false tags
+- `components/links/InlineTags.kt`: `[text](#section)` anchors, `?#x` / `=#x` URL parts, HTML attributes, `![[embed|#x]]`
+  are not tags; a tag needs a letter or digit and not only digits (`#-`, `#_`, `#//` are not tags); `#a/` gives `a`;
+  decomposed accents stay in the name. Display-only (note text never changed).
+- Tests: 6 new cases in `InlineTagsTest` (all 11 cases checked in a JVM prototype; JUnit on CI).
