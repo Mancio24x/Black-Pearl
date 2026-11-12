@@ -32,4 +32,37 @@ class InlineTagsTest {
     fun dedupesCaseInsensitivelyKeepingFirstSpelling() {
         assertEquals(listOf("Same"), InlineTags.find("#Same and #same"))
     }
+
+    @Test
+    fun ignoresMarkdownAnchorLinks() {
+        assertEquals(listOf("real"), InlineTags.find("see [the part](#section) and (#real)"))
+    }
+
+    @Test
+    fun ignoresTagsMadeOnlyOfSymbols() {
+        assertEquals(listOf("_1", "x-y"), InlineTags.find("#- #_ #-- #// #_1 #x-y"))
+    }
+
+    @Test
+    fun trimsLeadingAndTrailingSlashes() {
+        assertEquals(listOf("a", "b/c"), InlineTags.find("#a/ and #/b/c/"))
+    }
+
+    @Test
+    fun ignoresQueryFragmentsEmbedsAndHtmlAttributes() {
+        assertEquals(
+            emptyList<String>(),
+            InlineTags.find("x.y/?#q a=#v ![[pic.png|#label]] <a href=\"#top\">"),
+        )
+    }
+
+    @Test
+    fun keepsDecomposedAccents() {
+        assertEquals(listOf("cafe\u0301"), InlineTags.find("#cafe\u0301 time"))
+    }
+
+    @Test
+    fun findsTagsWithCrLfAndUnicodeLetters() {
+        assertEquals(listOf("uno", "città"), InlineTags.find("#uno\r\n#città"))
+    }
 }
