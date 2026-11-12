@@ -422,3 +422,12 @@ Completed the editor suggestion strip and the Network destination, including gra
   (notebook id saved first, `setBibleKitAdded()` last) unchanged. No schema change.
 - Tests: `BibleStudyKitTest` now captures `insertLocalNotes` chunks (1300 / 800 resumed, chunk <= 200,
   `insertNote` never called). Not run here (no Android SDK); CI runs them.
+## 2026-11-12 — "All notes" leaves the Bible Study Kit out in SQL
+- `NoteDao.getNonDeletedOrArchivedExcept(notebookId, sortMethod)` (same query/order as `getNonDeletedOrArchived`
+  + `AND (notebookId IS NULL OR notebookId != ?)`, bound arg), exposed in `NoteRepository`/`NoteRepositoryImpl`.
+  `MainViewModel` "All notes" switches query on `getBibleKitNotebookId()` instead of reading the ~5 MB kit and
+  filtering in Kotlin on every DB change. Same visible result.
+- Not changed: search (`SearchViewModel`, `getNonDeleted` = all non-deleted incl. archived and kit notes, filtered in
+  Kotlin) and widget (`NotesWidgetViewsFactory`, reads all non-deleted/non-archived, keeps pinned non-hidden).
+- Tests: new `ui/main/MainViewModelTest` (mockk; kit id -> excluding query, null -> plain query). Not run locally
+  (no Android SDK); CI runs it.

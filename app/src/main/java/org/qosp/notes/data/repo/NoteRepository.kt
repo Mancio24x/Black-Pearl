@@ -29,6 +29,7 @@ interface NoteRepository {
     fun getArchived(sortMethod: SortMethod = defaultOf()): Flow<List<Note>>
     fun getNonDeleted(sortMethod: SortMethod = defaultOf()): Flow<List<Note>>
     fun getNonDeletedOrArchived(sortMethod: SortMethod = defaultOf()): Flow<List<Note>>
+    fun getNonDeletedOrArchivedExcept(notebookId: Long, sortMethod: SortMethod = defaultOf()): Flow<List<Note>>
     fun getAll(sortMethod: SortMethod = defaultOf()): Flow<List<Note>>
     fun getByNotebook(notebookId: Long, sortMethod: SortMethod = defaultOf()): Flow<List<Note>>
     fun getNonRemoteNotes(provider: CloudService, sortMethod: SortMethod = defaultOf()): Flow<List<Note>>
