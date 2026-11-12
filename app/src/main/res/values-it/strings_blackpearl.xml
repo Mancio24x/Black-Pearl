@@ -231,4 +231,5 @@
         <item quantity="one">Collegamenti aggiornati in %1$d nota</item>
         <item quantity="other">Collegamenti aggiornati in %1$d note</item>
     </plurals>
+    <string name="message_sync_aborted_incomplete_listing">Sincronizzazione fermata: molte note sincronizzate mancano dalla cartella o dal server, quindi non è stato modificato nulla. Controlla e riprova.</string>
 </resources>

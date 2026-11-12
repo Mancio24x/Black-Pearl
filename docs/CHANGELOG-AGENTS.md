@@ -303,3 +303,22 @@ Completed the editor suggestion strip and the Network destination, including gra
   "Update links?" (Update / No, not cancelable) lists how many notes; updates run in the activity scope and sync as usual.
 - Owner decision: ask before changing other notes (option A).
 - Tests: `LinkRenameTest` (5) — run with JUnit in a JVM prototype with a stub Note: 5/5 pass; Android build on CI.
+
+## 2026-11-12 — Sync review fixes (#1, #5, #7, #8, #10a, #11, #12a)
+- `SynchronizeNotes.kt`: new `SyncSafetyGuard.abortReason` — MAPPING sync aborts (`SyncNotesResult.abortReason`,
+  `SyncSafetyAbort` result, toast `message_sync_aborted_incomplete_listing` EN/IT) when the remote listing is empty
+  while live notes are mapped, or when ≥3 and more than half of the mapped notes are missing.
+- `NoteRepositoryImpl`: a note binned because its remote is gone loses its mapping (a reappearing file is imported,
+  never deleted); `restoreNotes` deletes the old mapping before inserting the new one; checklist pull uses
+  `Note.withRemoteListContent` (any non-task, non-blank remote line → text note with the remote content).
+- `StorageBackend`: `getAll` queries the children itself (same URIs as `TreeDocumentFile`) and returns null on any
+  error, missing cursor or `EXTRA_LOADING`; rename uses `DocumentsContract.renameDocument` on the mapped URI and stores
+  the returned URI (old URI kept on failure).
+- `ProcessRemoteActions`: mapping deleted only when the remote delete returns true; Update with no mapping creates the
+  remote note (not for binned / local-only notes).
+- Nextcloud: `NextcloudNote.category` nullable; updates send no category (server keeps it), create still sends "".
+- Not done (owner decision): conflict copies #2, #3, #4, #6.
+- Tests: `SynchronizeNotesTest` (+5, one existing test adapted to the guard), `RemoteListContentTest` (5),
+  `ProcessRemoteActionsTest` (5), `NextcloudBackendTest` (+2). Guard + list logic (real `SynchronizeNotes.kt`, Note
+  functions copied) 11/11 pass and Nextcloud JSON 2/2 pass in JVM prototypes; mockk/Android tests run on CI only.
+  `StorageBackend` SAF code unverified (no SDK/device).

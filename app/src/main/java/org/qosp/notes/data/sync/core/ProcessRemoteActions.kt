@@ -104,8 +104,10 @@ class ProcessRemoteActions(
 
     private suspend fun deleteRemoteNotes(note: Note, syncProvider: ISyncBackend) = try {
         idMappingDao.getByLocalIdAndProvider(note.id, syncProvider.type)?.let { mapping ->
-            syncProvider.deleteNote(mapping = mapping)
-            idMappingDao.deleteByLocalId(note.id)
+            // Keep the mapping when the remote delete failed: the next full sync retries the delete instead of
+            // importing the remote note again as a new note.
+            if (syncProvider.deleteNote(mapping = mapping)) idMappingDao.deleteByLocalId(note.id)
+            else Log.w(tag, "deleteRemoteNotes: remote delete failed for note ID=${note.id}, mapping kept")
         }
     } catch (e: Exception) {
         Log.e(tag, "processRemoteOperation: Failed to delete notes: ${e.message}", e)
@@ -121,11 +123,17 @@ class ProcessRemoteActions(
     }
 
     private suspend fun updateRemote(note: Note, syncProvider: ISyncBackend) = try {
-        idMappingDao.getByLocalIdAndProvider(note.id, syncProvider.type)?.let {
-            val updatedMapping = syncProvider.updateNote(note, it)
-            idMappingDao.update(updatedMapping)
+        val mapping = idMappingDao.getByLocalIdAndProvider(note.id, syncProvider.type)
+        when {
+            mapping != null -> idMappingDao.update(syncProvider.updateNote(note, mapping))
+            // No remote copy yet (e.g. a Create replaced by this Update within the debounce): create it now
+            updateNeedsCreate(note) -> insertRemote(syncProvider, note)
+            else -> Unit
         }
     } catch (e: Exception) {
         Log.e(tag, "processRemoteOperation: Failed to update note ID=${note.id}: ${e.message}", e)
     }
 }
+
+/** An Update for a note without mapping must create the remote note, unless the note is binned or local-only. */
+internal fun updateNeedsCreate(note: Note): Boolean = !note.isDeleted && !note.isLocalOnly

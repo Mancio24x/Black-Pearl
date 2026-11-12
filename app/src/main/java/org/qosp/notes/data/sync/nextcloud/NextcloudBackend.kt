@@ -72,7 +72,7 @@ class NextcloudBackend(
         requireNotNull(mapping.remoteNoteId) { "Remote note id is null." }
         Log.d(tag, "updateNote: ${note.title}")
         val api = apiProvider.getAPI()
-        val nNote = note.asNextcloudNote(mapping.remoteNoteId, "")
+        val nNote = note.asNextcloudNote(mapping.remoteNoteId, category = null) // keep the server category
         val updatedNote = api.updateNote(nNote, mapping.extras ?: "", config)
         return mapping.copy(remoteNoteId = updatedNote.id, extras = updatedNote.etag)
     }

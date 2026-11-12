@@ -34,6 +34,7 @@ import org.qosp.notes.R
 import org.qosp.notes.data.model.Note
 import org.qosp.notes.data.sync.core.BaseResult
 import org.qosp.notes.data.sync.core.ServerNotSupported
+import org.qosp.notes.data.sync.core.SyncSafetyAbort
 import org.qosp.notes.data.sync.core.Unauthorized
 import org.qosp.notes.databinding.LayoutNoteBinding
 import org.qosp.notes.preferences.LayoutMode
@@ -107,6 +108,7 @@ abstract class AbstractNotesFragment(@LayoutRes resId: Int) : BaseFragment(resId
         val resId = when (this) {
             ServerNotSupported -> R.string.message_server_not_compatible
             Unauthorized -> R.string.message_invalid_credentials
+            is SyncSafetyAbort -> R.string.message_sync_aborted_incomplete_listing
             else -> null
         }
 
