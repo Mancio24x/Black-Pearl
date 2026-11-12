@@ -386,3 +386,17 @@ Completed the editor suggestion strip and the Network destination, including gra
 - GraphView animates opening and filter transitions, follows the system animation preference, keeps labels off other labels and node markers, and prioritizes real notes, connections and the active search. Large vaults simulate the dragged neighbourhood. Tapping a visible title or node opens its note.
 - Search and filters now share a collapsible toolbar control. Timelapse nodes fade and grow when they appear.
 - Added layout, crowded-label, search-hit and large-vault drag regressions. The device navigation test uses the actual rendered node position during a transition. Android verification runs in the PR Build and UI preview workflows.
+
+## 2026-11-12 — Bible Study Kit replaces the "The Bible" demo note
+- Owner request: ship the Obsidian "Bible Study Kit" (free licence; World English Bible) instead of the single demo
+  note, readable by the Network with all its links. One giant note was ruled out: ~4.6 MB exceeds SQLite's ~2 MB
+  cursor window and would make the editor unusable, and the Network draws one node per note.
+- `components/BibleStudyKit.kt` adds the 1300 files once (local only) as notes of a "Bible Study Kit" notebook; the
+  notebook id is saved first and "All notes" leaves that notebook out (owner choice A). Old `DemoLinksNote` + asset
+  removed; an existing "The Bible" note on a phone stays untouched.
+- `LinkParseCache` keeps each note's parsed links/tags, so a change re-reads only that note. `GraphView` tries at
+  most 160 labels per frame (most linked first). Network empty-state opens "+Start here".
+- Tests: `BibleStudyKitTest` (1300 files, unique titles, links seen by `LinkIndex`, added once), `LinkParseCacheTest`.
+  Values checked against the files (69 links in "The Bible (WEB)", 13 notes link to Gen-01). Android build on CI.
+- Known limits: Obsidian `aliases:` in front matter are not used yet, so links like `[[Start here]]` show as ghosts;
+  deleting the notebook moves its notes to "All notes".

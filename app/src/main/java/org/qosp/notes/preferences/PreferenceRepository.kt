@@ -187,15 +187,23 @@ class PreferenceRepository(
         dataStore.edit { it[SAMPLE_NOTE_ADDED] = true }
     }
 
-    /** Black Pearl: the demo note "The Bible" is added only once (see components/DemoLinksNote). */
-    suspend fun isDemoLinksNoteAdded(): Boolean = dataStore.data.first()[DEMO_LINKS_NOTE_ADDED] ?: false
+    /** Black Pearl: the Bible Study Kit is added only once (see components/BibleStudyKit). */
+    suspend fun isBibleKitAdded(): Boolean = dataStore.data.first()[BIBLE_KIT_ADDED] ?: false
 
-    suspend fun setDemoLinksNoteAdded() {
-        dataStore.edit { it[DEMO_LINKS_NOTE_ADDED] = true }
+    suspend fun setBibleKitAdded() {
+        dataStore.edit { it[BIBLE_KIT_ADDED] = true }
+    }
+
+    /** The kit's notebook, left out of "All notes"; null before the kit is added. */
+    fun getBibleKitNotebookId(): Flow<Long?> = dataStore.data.catch { emit(emptyPreferences()) }.map { it[BIBLE_KIT_NOTEBOOK_ID] }
+
+    suspend fun setBibleKitNotebookId(id: Long) {
+        dataStore.edit { it[BIBLE_KIT_NOTEBOOK_ID] = id }
     }
 
     companion object {
-        val DEMO_LINKS_NOTE_ADDED = booleanPreferencesKey("demo_links_note_added")
+        val BIBLE_KIT_ADDED = booleanPreferencesKey("bible_study_kit_added")
+        val BIBLE_KIT_NOTEBOOK_ID = longPreferencesKey("bible_study_kit_notebook_id")
         val SAMPLE_NOTE_ADDED = booleanPreferencesKey("sample_note_added")
         val APP_LOCK_PIN = stringPreferencesKey("app_lock_pin")
         val APP_LOCK_PIN_LENGTH = intPreferencesKey("app_lock_pin_length")

@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import org.qosp.notes.components.DemoLinksNote
+import org.qosp.notes.components.BibleStudyKit
 import org.qosp.notes.components.SampleNote
 import org.koin.android.ext.android.get
 import org.qosp.notes.preferences.PreferenceRepository
@@ -116,7 +116,7 @@ class App : Application(), ImageLoaderFactory {
     private fun addSampleNote() {
         CoroutineScope(Dispatchers.IO).launch {
             SampleNote.addOnce(this@App, get(), get())
-            DemoLinksNote.addOnce(this@App, get(), get())
+            BibleStudyKit.addOnce(this@App, get(), get(), get())
         }
     }
 

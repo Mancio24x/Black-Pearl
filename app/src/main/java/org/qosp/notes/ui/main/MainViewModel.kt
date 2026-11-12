@@ -2,6 +2,7 @@ package org.qosp.notes.ui.main
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
@@ -25,7 +26,11 @@ class MainViewModel(
     override val provideNotes = { sortMethod: SortMethod ->
         notebookIdFlow.flatMapLatest { id ->
             when (id) {
-                null -> noteRepository.getNonDeletedOrArchived(sortMethod)
+                // the Bible Study Kit has its own notebook and stays out of "All notes"
+                null -> combine(
+                    noteRepository.getNonDeletedOrArchived(sortMethod),
+                    preferenceRepository.getBibleKitNotebookId(),
+                ) { notes, kitId -> if (kitId == null) notes else notes.filter { it.notebookId != kitId } }
                 R.id.nav_default_notebook.toLong() -> noteRepository.getNotesWithoutNotebook(sortMethod)
                 else -> noteRepository.getByNotebook(id, sortMethod)
             }

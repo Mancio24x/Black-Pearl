@@ -29,6 +29,7 @@ import java.util.Locale
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.qosp.notes.R
+import org.qosp.notes.components.BibleStudyKit
 import org.qosp.notes.components.links.GraphNode
 import org.qosp.notes.components.links.LinkIndex
 import org.qosp.notes.components.links.NodeKind
@@ -118,7 +119,7 @@ class NetworkFragment : BaseFragment(R.layout.fragment_network) {
         ui.graph.onNodeTap = ::openNode
         ui.graph.onNodeLongPress = ::showNode
         ui.networkAdd.setOnClickListener { chooseSource() }
-        ui.networkEmptyView.setOnClickListener { model.index.value.resolve("The Bible")?.let { open(it.id) } }
+        ui.networkEmptyView.setOnClickListener { model.index.value.let { it.resolve(BibleStudyKit.START) ?: it.resolve("The Bible") }?.let { open(it.id) } }
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 model.graph.collect { graph ->
