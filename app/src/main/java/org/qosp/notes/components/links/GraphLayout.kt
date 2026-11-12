@@ -2,6 +2,7 @@ package org.qosp.notes.components.links
 
 import java.util.Random
 import kotlin.math.PI
+import kotlin.math.ceil
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
@@ -25,6 +26,79 @@ object GraphLayout {
         seed: Long = 42,
     ): Map<String, PointF2> {
         val keys = nodes.map { it.key }.distinct()
+        if (keys.isEmpty()) return emptyMap()
+        val neighbours = keys.associateWith { ArrayList<String>() }
+        val links = edges.filter { it.from != it.to && it.from in neighbours && it.to in neighbours }
+        for (link in links) {
+            neighbours.getValue(link.from).add(link.to)
+            neighbours.getValue(link.to).add(link.from)
+        }
+        val groups = mutableListOf<List<String>>()
+        val groupByKey = HashMap<String, Int>()
+        val isolated = mutableListOf<String>()
+        for (key in keys) {
+            if (neighbours.getValue(key).isEmpty()) { isolated.add(key); continue }
+            if (key in groupByKey) continue
+            val group = arrayListOf(key)
+            groupByKey[key] = groups.size
+            var cursor = 0
+            while (cursor < group.size) {
+                for (next in neighbours.getValue(group[cursor++])) {
+                    if (groupByKey.putIfAbsent(next, groups.size) == null) group.add(next)
+                }
+            }
+            groups.add(group)
+        }
+        val byGroup = links.groupBy { groupByKey.getValue(it.from) }
+        val islands = groups.mapIndexed { i, group ->
+            layoutConnected(group, byGroup[i].orEmpty(), iterations, seed)
+        }.sortedByDescending { it.size }
+        val points = packIslands(islands)
+
+        // Orphans have no springs. Put them near the network without letting their repulsion
+        // squeeze an entire linked component into a tiny corner of the fitted viewport.
+        if (isolated.isNotEmpty()) {
+            val columns = ceil(sqrt(isolated.size.toDouble())).toInt()
+            val left = points.values.minOfOrNull { it.x } ?: 0f
+            val right = points.values.maxOfOrNull { it.x } ?: 0f
+            val bottom = points.values.maxOfOrNull { it.y } ?: 0f
+            val gap = ((right - left) / (columns - 1).coerceAtLeast(1)).coerceIn(60f, 100f)
+            val top = if (points.isEmpty()) 0f else bottom + 48f
+            isolated.forEachIndexed { i, key ->
+                val onRow = minOf(columns, isolated.size - (i / columns) * columns)
+                val x = (left + right) / 2 + (i % columns - (onRow - 1) / 2f) * gap
+                points[key] = PointF2(x, top + (i / columns) * 42f)
+            }
+        }
+        return points
+    }
+
+    private fun packIslands(islands: List<Map<String, PointF2>>): MutableMap<String, PointF2> {
+        if (islands.size <= 1) return islands.firstOrNull()?.toMutableMap() ?: mutableMapOf()
+        val gap = 48f
+        val boxes = islands.map { points ->
+            val xs = points.values.map { it.x }
+            val ys = points.values.map { it.y }
+            floatArrayOf(xs.min(), ys.min(), xs.max() - xs.min() + gap, ys.max() - ys.min() + gap)
+        }
+        val rowWidth = max(boxes.maxOf { it[2] }, sqrt(boxes.sumOf { (it[2] * it[3]).toDouble() }).toFloat())
+        val points = LinkedHashMap<String, PointF2>()
+        var x = 0f
+        var y = 0f
+        var rowHeight = 0f
+        for ((i, island) in islands.withIndex()) {
+            val (left, top, width, height) = boxes[i]
+            if (x > 0f && x + width > rowWidth) { y += rowHeight; x = 0f; rowHeight = 0f }
+            for ((key, p) in island) points[key] = PointF2(x + p.x - left, y + p.y - top)
+            rowHeight = max(rowHeight, height)
+            x += width
+        }
+        return points
+    }
+
+    private fun layoutConnected(
+        keys: List<String>, edges: List<GraphEdge>, iterations: Int, seed: Long,
+    ): Map<String, PointF2> {
         val n = keys.size
         if (n == 0) return emptyMap()
         if (n == 1) return mapOf(keys[0] to PointF2(0f, 0f))

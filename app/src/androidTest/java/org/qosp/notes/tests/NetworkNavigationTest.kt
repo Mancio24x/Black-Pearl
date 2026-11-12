@@ -53,10 +53,9 @@ class NetworkNavigationTest : KoinComponent {
                     // A two-note fixture on the real graph View uses the same index, navigation and touch handler as the app.
                     graph.setGraph(listOf(sourceNode, targetNode), edges.filter { it.from == sourceNode.key && it.to == targetNode.key },
                         mapOf(sourceNode.key to PointF2(0f, -30f), targetNode.key to PointF2(0f, 30f)))
-                    val x = graph.width / 2f
-                    val normalFit = (graph.height - 68 * graph.resources.displayMetrics.density) / 60f
-                    val scale = normalFit.coerceIn(0.05f * graph.resources.displayMetrics.density, 2f * graph.resources.displayMetrics.density)
-                    val y = graph.height / 2f + 30f * scale
+                    val rendered = requireNotNull(graph.screenPosition(targetNode.key))
+                    val x = rendered.x
+                    val y = rendered.y
                     val movedX = x + graph.width / 5
                     fun touch(action: Int, px: Float) {
                         val now = SystemClock.uptimeMillis()
