@@ -126,7 +126,7 @@ class GraphPhysics(start: Map<String, PointF2>, edges: List<GraphEdge>) {
     }
 
     companion object {
-        /** Above this many nodes a frame would be too slow on older phones: only the dragged node moves. */
+        /** Maximum nodes in one live simulation. Large vaults simulate a neighbourhood around the dragged node. */
         const val MAX_LIVE_NODES = 300
 
         private const val K = 40.0

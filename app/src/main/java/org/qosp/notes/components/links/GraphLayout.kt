@@ -73,15 +73,17 @@ object GraphLayout {
         return points
     }
 
+    private data class Bounds(val left: Float, val top: Float, val width: Float, val height: Float)
+
     private fun packIslands(islands: List<Map<String, PointF2>>): MutableMap<String, PointF2> {
         if (islands.size <= 1) return islands.firstOrNull()?.toMutableMap() ?: mutableMapOf()
         val gap = 48f
         val boxes = islands.map { points ->
-            val xs = points.values.map { it.x }
-            val ys = points.values.map { it.y }
-            floatArrayOf(xs.min(), ys.min(), xs.max() - xs.min() + gap, ys.max() - ys.min() + gap)
+            val left = points.values.minOf { it.x }
+            val top = points.values.minOf { it.y }
+            Bounds(left, top, points.values.maxOf { it.x } - left + gap, points.values.maxOf { it.y } - top + gap)
         }
-        val rowWidth = max(boxes.maxOf { it[2] }, sqrt(boxes.sumOf { (it[2] * it[3]).toDouble() }).toFloat())
+        val rowWidth = max(boxes.maxOf { it.width }, sqrt(boxes.sumOf { (it.width * it.height).toDouble() }).toFloat())
         val points = LinkedHashMap<String, PointF2>()
         var x = 0f
         var y = 0f

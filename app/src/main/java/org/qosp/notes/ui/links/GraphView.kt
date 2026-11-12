@@ -1,6 +1,7 @@
 package org.qosp.notes.ui.links
 
 import android.animation.ValueAnimator
+import androidx.core.animation.doOnEnd
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.DashPathEffect
@@ -278,12 +279,14 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
             invalidate()
         }
         at(0f)
-        transition = ValueAnimator.ofFloat(0f, 1f).apply {
+        val animator = ValueAnimator.ofFloat(0f, 1f).apply {
             duration = 650
             interpolator = DecelerateInterpolator(1.6f)
             addUpdateListener { at(it.animatedValue as Float) }
-            start()
+            doOnEnd { if (transition === it) transition = null }
         }
+        transition = animator
+        animator.start()
     }
 
     private fun cancelTransition() {
@@ -315,9 +318,10 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
         }
     }
 
-    private fun radius(node: GraphNode): Float = when (node.kind) {
-        NodeKind.ATTACHMENT -> 2.5f * density
-        else -> (4f + 1.8f * sqrt(node.degree.toFloat())).coerceAtMost(18f) * density
+    private fun radius(node: GraphNode): Float {
+        val size = if (node.kind == NodeKind.ATTACHMENT) 2.5f
+            else (4f + 1.8f * sqrt(node.degree.toFloat())).coerceAtMost(18f)
+        return size * density * sqrt(scale / density).coerceIn(0.55f, 1.3f)
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -403,13 +407,13 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
                 ((elapsed - (replay.appearMs[node.key] ?: 0L)) / 200f).coerceIn(0f, 1f)
             caption.alpha = (255 * fade * reveal).roundToInt()
             halo.alpha = caption.alpha
-            drawLabel(canvas, node, x, y, radius(node))
+            drawLabel(canvas, node, x, y, radius(node), priority)
         }
         (pressedNode ?: highlighted)?.let { label(it, true) }
         for (node in labelOrder) if (node.key != focus) label(node, false)
     }
 
-    private fun drawLabel(canvas: Canvas, node: GraphNode, x: Float, y: Float, radius: Float) {
+    private fun drawLabel(canvas: Canvas, node: GraphNode, x: Float, y: Float, radius: Float, priority: Boolean) {
         val gap = radius + 4 * density
         val text = labelText.getOrPut(node) {
             val maxWidth = min(width * 0.58f, 210 * density)
@@ -438,7 +442,8 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
         }
         if (!place(near, middle) && !place(far, middle) && !place(x - w / 2, y - gap - h)
             && !place(x - w / 2, y + gap) && !place(near, y - gap - h) && !place(far, y + gap)) {
-            return
+            // On a dense cluster the active title gets the first free spot along the top.
+            if (!priority || !place((width - w) / 2f, 4 * density)) return
         }
         occupiedLabels.op(candidate, Region.Op.UNION)
         labels[node] = box
@@ -456,7 +461,7 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
             val d = hypot(x - dx - p.x * scale, y - dy - p.y * scale)
             if (d < distance) { distance = d; nearest = node }
         }
-        if (nearest != null && distance <= (4 + 1.8f * sqrt(nearest.degree.toFloat())).coerceAtMost(18f) * density)
+        if (nearest != null && distance <= radius(nearest))
             return nearest
         return labels.entries.lastOrNull { it.value.contains(x, y) }?.key ?: nearest
     }
