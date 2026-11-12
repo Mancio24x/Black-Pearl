@@ -219,4 +219,15 @@
     <string name="fmt_table">Table</string>
     <string name="fmt_top">Go to the top</string>
     <string name="fmt_bottom">Go to the end</string>
+    <string name="link_rename_title">Update links?</string>
+    <plurals name="link_rename_message">
+        <item quantity="one">%1$d note links to «%2$s». Make its link point to «%3$s»?</item>
+        <item quantity="other">%1$d notes link to «%2$s». Make their links point to «%3$s»?</item>
+    </plurals>
+    <string name="link_rename_update">Update</string>
+    <string name="link_rename_keep">No</string>
+    <plurals name="link_rename_done">
+        <item quantity="one">Links updated in %1$d note</item>
+        <item quantity="other">Links updated in %1$d notes</item>
+    </plurals>
 </resources>

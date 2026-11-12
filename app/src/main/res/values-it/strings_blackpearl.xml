@@ -220,4 +220,15 @@
     <string name="fmt_table">Tabella</string>
     <string name="fmt_top">Vai all\'inizio</string>
     <string name="fmt_bottom">Vai alla fine</string>
+    <string name="link_rename_title">Aggiornare i collegamenti?</string>
+    <plurals name="link_rename_message">
+        <item quantity="one">%1$d nota collega «%2$s». Vuoi che il collegamento punti a «%3$s»?</item>
+        <item quantity="other">%1$d note collegano «%2$s». Vuoi che i collegamenti puntino a «%3$s»?</item>
+    </plurals>
+    <string name="link_rename_update">Aggiorna</string>
+    <string name="link_rename_keep">No</string>
+    <plurals name="link_rename_done">
+        <item quantity="one">Collegamenti aggiornati in %1$d nota</item>
+        <item quantity="other">Collegamenti aggiornati in %1$d note</item>
+    </plurals>
 </resources>

@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import android.widget.Toast
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import org.qosp.notes.BuildConfig
@@ -79,6 +80,7 @@ import com.google.android.material.color.MaterialColors
 import org.qosp.notes.R
 import org.qosp.notes.components.links.LinkIndex
 import org.qosp.notes.components.links.LinkIndexRepository
+import org.qosp.notes.components.links.LinkRename
 import org.qosp.notes.data.model.Attachment
 import org.qosp.notes.data.model.Note
 import org.qosp.notes.data.model.NoteColor
@@ -185,6 +187,9 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     private var suggestionStrip: org.qosp.notes.ui.links.LinkSuggestionStrip? = null
     private var headingScrollDone = false
     private var createLinkDialog: android.app.Dialog? = null
+    private var renameDialog: android.app.Dialog? = null
+    /** Title when the title field got focus; links to it may need to follow the rename. */
+    private var titleBeforeEdit: String? = null
     private var renderedLinkIndex: LinkIndex? = null
 
     override val hasDefaultAnimation = false
@@ -561,6 +566,8 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         suggestionStrip = null
         createLinkDialog?.dismiss()
         createLinkDialog = null
+        renameDialog?.dismiss()
+        renameDialog = null
         // Dismiss the snackbar which is shown for deleted notes
         snackbar?.dismiss()
         itemTouchHelper.attachToRecyclerView(null)
@@ -1025,6 +1032,13 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
                 model.setNoteTitle(text.toString().trim())
             }
+            setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    if (titleBeforeEdit == null) titleBeforeEdit = data.note?.title
+                } else {
+                    offerLinkRename {}
+                }
+            }
         }
 
         editTextContent.apply {
@@ -1483,19 +1497,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
 
     override fun setupToolbar(): Unit = with(binding) {
         super.setupToolbar()
-        val onBackPressedHandler = {
-            if (findNavController().navigateUp()) {
-                // This is needed because "Notes" label briefly appears
-                // during the shared element transition when returning.
-                // Todo: Needs a better fix
-                toolbar.setTitleTextColor(Color.TRANSPARENT)
-
-                // This is needed because the view jumps around
-                // during the shared element transition when returning.
-                // Todo: Needs a better fix
-                notebookView.isVisible = false
-            }
-        }
+        val onBackPressedHandler = { offerLinkRename { leaveEditor() } }
 
         toolbar.setNavigationOnClickListener { onBackPressedHandler() }
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner) {
@@ -1503,6 +1505,57 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                 onBackPressedHandler()
                 onBackPressHandled = true
             }
+        }
+    }
+
+    private fun leaveEditor() {
+        if (view == null || !findNavController().navigateUp()) return
+        // This is needed because "Notes" label briefly appears
+        // during the shared element transition when returning.
+        // Todo: Needs a better fix
+        binding.toolbar.setTitleTextColor(Color.TRANSPARENT)
+
+        // This is needed because the view jumps around
+        // during the shared element transition when returning.
+        // Todo: Needs a better fix
+        binding.notebookView.isVisible = false
+    }
+
+    /**
+     * After a rename (title field left, or the editor closed), asks once whether the `[[links]]` to the old title in
+     * other notes should follow; then runs [then]. Nothing is asked when no other note links to the old title.
+     */
+    private fun offerLinkRename(then: () -> Unit) {
+        val note = data.note
+        val oldTitle = titleBeforeEdit
+        titleBeforeEdit = null
+        val newTitle = binding.editTextTitle.text.toString().trim()
+        if (note == null || note.isDeleted || oldTitle == null || renameDialog?.isShowing == true ||
+            !LinkRename.canRename(oldTitle, newTitle)
+        ) return then()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val notes = withContext(Dispatchers.IO) { noteRepository.getAll().first() }
+            val planned = withContext(Dispatchers.Default) {
+                LinkRename.plan(notes, note.id, oldTitle, newTitle, Instant.now().epochSecond)
+            }
+            if (planned.isEmpty() || view == null) return@launch then()
+            renameDialog = MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.link_rename_title)
+                .setMessage(resources.getQuantityString(R.plurals.link_rename_message, planned.size,
+                    planned.size, oldTitle, newTitle))
+                .setCancelable(false)
+                .setPositiveButton(R.string.link_rename_update) { _, _ ->
+                    val app = requireContext().applicationContext
+                    // the activity scope outlives this screen, which may close right after the answer
+                    requireActivity().lifecycleScope.launch {
+                        withContext(Dispatchers.IO) { noteRepository.updateNotes(*planned.toTypedArray()) }
+                        Toast.makeText(app, app.resources.getQuantityString(R.plurals.link_rename_done,
+                            planned.size, planned.size), Toast.LENGTH_SHORT).show()
+                    }
+                    then()
+                }
+                .setNegativeButton(R.string.link_rename_keep) { _, _ -> then() }
+                .show()
         }
     }
 
