@@ -15,6 +15,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -60,6 +61,7 @@ class AppLockFragment : BaseFragment(R.layout.fragment_appearance) {
 
     private var step by mutableStateOf<Step?>(null)
     private var error by mutableStateOf(false)
+    private var waitSeconds by mutableIntStateOf(0)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -110,14 +112,16 @@ class AppLockFragment : BaseFragment(R.layout.fragment_appearance) {
                         }
                         is Step.Verify -> PinEntry(
                             title = stringResource(R.string.lock_current_pin),
-                            message = stringResource(if (error) R.string.lock_wrong_pin_short else R.string.lock_enter_pin),
+                            message = if (waitSeconds > 0) pluralStringResource(R.plurals.lock_wait, waitSeconds, waitSeconds)
+                            else stringResource(if (error) R.string.lock_wrong_pin_short else R.string.lock_enter_pin),
                             isError = error,
                             pinLength = settings.pinLength.takeIf { it in PinHasher.MIN_LENGTH..PinHasher.MAX_LENGTH },
                         ) { pin ->
-                            when {
-                                !PinHasher.verify(pin, settings.pinHash) -> error = true
-                                current.then == null -> savePin(null)
-                                else -> go(current.then)
+                            // same attempt limit as the lock screen: this is not a way to guess the PIN
+                            when (val result = appLock.verifyPin(pin)) {
+                                is AppLock.PinResult.Blocked -> { error = true; waitSeconds = result.seconds }
+                                is AppLock.PinResult.Wrong -> { error = true; waitSeconds = 0 }
+                                AppLock.PinResult.Unlocked -> if (current.then == null) savePin(null) else go(current.then)
                             }
                         }
                         Step.Choose -> PinEntry(
@@ -140,6 +144,7 @@ class AppLockFragment : BaseFragment(R.layout.fragment_appearance) {
 
     private fun go(next: Step?) {
         error = false
+        waitSeconds = 0
         step = next
     }
 

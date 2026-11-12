@@ -75,10 +75,10 @@ class SearchFragment : AbstractNotesFragment(resId = R.layout.fragment_search) {
 
     override fun onNotesChanged(notes: List<Note>) {
         binding.indicatorTextView.text =
-            if (notes.isEmpty() && binding.editTextSearch.text?.isNotEmpty() == true) getString(R.string.indicator_no_results_found)
+            if (notes.isEmpty() && binding.editTextSearch.text?.isBlank() == false) getString(R.string.indicator_no_results_found)
             else getString(R.string.indicator_search_empty)
 
-        if (binding.editTextSearch.text?.isNotEmpty() == true)
+        if (binding.editTextSearch.text?.isBlank() == false)
             recyclerAdapter.submitList(notes)
         else
             recyclerAdapter.submitList(listOf())

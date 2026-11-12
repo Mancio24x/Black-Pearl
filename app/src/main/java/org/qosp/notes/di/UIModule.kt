@@ -24,7 +24,7 @@ import org.qosp.notes.ui.tags.dialog.TagDialogViewModel
 
 object UIModule {
     val uiModule = module {
-        single { AppLock() }
+        single { AppLock(wallClock = { System.currentTimeMillis() }) }
         viewModelOf(::EditorViewModel)
         viewModelOf(::NetworkViewModel)
         viewModelOf(::ActivityViewModel)

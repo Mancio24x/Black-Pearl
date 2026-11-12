@@ -35,7 +35,7 @@ class NotesWidgetViewsFactory(private val context: Context) : RemoteViewsService
         runBlocking {
             try {
                 notes = noteRepository.getNonDeletedOrArchived().first()
-                    .filter { it.isPinned }
+                    .filter { it.isPinned && !it.isHidden }
                     .sortedByDescending { it.modifiedDate }.take(20) // Show up to 20 notes
                 Log.d("NotesWidgetFactory", "Loaded ${notes.size} notes")
             } catch (e: Exception) {

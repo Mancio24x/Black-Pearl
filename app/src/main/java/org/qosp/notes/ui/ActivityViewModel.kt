@@ -211,8 +211,10 @@ class ActivityViewModel(
         vararg notes: Note,
         crossinline transform: suspend (Note) -> Note,
     ) = viewModelScope.launch(Dispatchers.IO) {
+        // Work on the current row, not on the copy the screen holds: it may be old (a bottom sheet open while a
+        // switch was toggled twice, or a sync / the editor saved something else) and writing it back would undo that.
         val notes = notes
-            .map { transform(it) }
+            .mapNotNull { stale -> noteRepository.getById(stale.id).first()?.let { transform(it) } }
             .toTypedArray()
 
         noteRepository.updateNotes(*notes)

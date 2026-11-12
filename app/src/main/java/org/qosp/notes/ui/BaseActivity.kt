@@ -3,6 +3,7 @@ package org.qosp.notes.ui
 import android.os.Build
 import android.view.KeyEvent
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.compose.foundation.layout.fillMaxSize
@@ -125,6 +126,8 @@ open class BaseActivity : AppCompatActivity() {
             }
         }
         addContentView(overlay, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        // no preview of the notes in screenshots or the recent apps while the lock is on; follows the setting at once
+        appLock.secure.collect(this) { applySecureScreen(it) }
         appLock.locked.collect(this) { locked ->
             overlay.isVisible = locked
             if (locked) {
@@ -136,9 +139,15 @@ open class BaseActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Android 13+: no preview of the notes in the recent apps while the lock is on
-        if (Build.VERSION.SDK_INT >= 33) setRecentsScreenshotEnabled(!appLock.settings.enabled)
+        applySecureScreen(appLock.secure.value)
         if (appLock.locked.value) offerBiometric()
+    }
+
+    private fun applySecureScreen(secure: Boolean) {
+        if (Build.VERSION.SDK_INT >= 33) setRecentsScreenshotEnabled(!secure)
+        // before Android 13 the only way to hide the recents preview is FLAG_SECURE (it also blocks screenshots)
+        if (secure) window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        else window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
     }
 
     // Back does not close the lock screen: it leaves the app

@@ -7,12 +7,14 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.AlarmManagerCompat
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.NavDeepLinkBuilder
 import kotlinx.coroutines.flow.first
 import org.qosp.notes.App
 import org.qosp.notes.R
+import org.qosp.notes.data.model.Note
 import org.qosp.notes.data.repo.NoteRepository
 import org.qosp.notes.data.repo.ReminderRepository
 import org.qosp.notes.ui.MainActivity
@@ -93,7 +95,8 @@ class ReminderManager(
             .first()
             .forEach { reminder ->
                 if (reminder.hasExpired()) {
-                    reminderRepository.deleteById(reminder.id)
+                    // came due while the phone was off: tell the user now (this also removes the row)
+                    sendNotification(reminder.id, reminder.noteId)
                     return@forEach
                 }
                 schedule(reminder.id, reminder.date, reminder.noteId)
@@ -105,12 +108,15 @@ class ReminderManager(
 
         var notificationTitle = ""
 
-        reminderRepository.getById(reminderId).first()?.let { notificationTitle = it.name }
-        reminderRepository.deleteById(reminderId)
-
-        if (notificationTitle.isEmpty()) {
-            noteRepository.getById(noteId).first()?.let { notificationTitle = it.title }
+        // The alarm outlives its reminder when the note was binned or deleted (e.g. by sync): show nothing then.
+        val reminder = reminderRepository.getById(reminderId).first()
+        val note = noteRepository.getById(noteId).first()
+        if (reminder == null || !shouldNotify(note)) {
+            if (reminder != null) reminderRepository.deleteById(reminderId)
+            return
         }
+        notificationTitle = reminder.name
+        if (notificationTitle.isEmpty()) notificationTitle = note?.title.orEmpty()
         // Black Pearl: with the app lock on, the notification does not say what the note is about
         if (AppLock.hidesNotesOutsideTheApp()) notificationTitle = context.getString(R.string.lock_notification_hidden)
 
@@ -135,6 +141,19 @@ class ReminderManager(
             .setAutoCancel(true)
             .build()
 
-        notificationManager.notify(reminderId.toInt(), notification)
+        // Without the permission (Android 13+) nothing would be shown: keep the row, it is tried again at boot.
+        if (!NotificationManagerCompat.from(context).areNotificationsEnabled()) return
+        try {
+            notificationManager.notify(reminderId.toInt(), notification)
+        } catch (e: Exception) {
+            return
+        }
+        // Only now the reminder is used up.
+        reminderRepository.deleteById(reminderId)
+    }
+
+    companion object {
+        /** A reminder is shown only for a note that still exists and is not in the bin. */
+        fun shouldNotify(note: Note?): Boolean = note != null && !note.isDeleted
     }
 }

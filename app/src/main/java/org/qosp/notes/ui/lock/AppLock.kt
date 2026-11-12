@@ -11,7 +11,16 @@ import org.qosp.notes.preferences.AppLockSettings
  * background: the default of one minute keeps those from asking for the PIN again).
  * Pure logic: the screens are in LockScreen / BaseActivity, the settings in PreferenceRepository.
  */
-class AppLock(private val clock: () -> Long = { android.os.SystemClock.elapsedRealtime() }) {
+class AppLock(
+    /** Clock for the PIN wait. It must survive a restart of the app, so production passes the wall clock. */
+    wallClock: (() -> Long)? = null,
+    private val clock: () -> Long = { android.os.SystemClock.elapsedRealtime() },
+) {
+    private val wall: () -> Long = wallClock ?: clock
+
+    /** Called when the wrong-PIN counter changes, so it can be saved (killing the app must not reset it). */
+    var onAttemptsChanged: ((failures: Int, blockedUntil: Long) -> Unit)? = null
+
 
     sealed interface PinResult {
         data object Unlocked : PinResult
@@ -20,6 +29,15 @@ class AppLock(private val clock: () -> Long = { android.os.SystemClock.elapsedRe
     }
 
     var settings = AppLockSettings()
+        set(value) {
+            field = value
+            _secure.value = value.enabled
+        }
+
+    private val _secure = MutableStateFlow(false)
+
+    /** True while the app lock is on: the screen must not appear in screenshots or the recent apps. */
+    val secure: StateFlow<Boolean> = _secure
 
     private val _locked = MutableStateFlow(false)
     val locked: StateFlow<Boolean> = _locked
@@ -32,8 +50,11 @@ class AppLock(private val clock: () -> Long = { android.os.SystemClock.elapsedRe
     private var blockedUntil = 0L
 
     /** Called once when the app process starts. */
-    fun start(settings: AppLockSettings) {
+    fun start(settings: AppLockSettings, failures: Int = 0, blockedUntil: Long = 0L) {
         this.settings = settings
+        this.failures = failures.coerceAtLeast(0)
+        // a clock moved back must not make the wait longer than it can ever be
+        this.blockedUntil = blockedUntil.coerceAtMost(wall() + BLOCK_SECONDS * 1000L)
         if (settings.enabled) lock()
     }
 
@@ -52,27 +73,43 @@ class AppLock(private val clock: () -> Long = { android.os.SystemClock.elapsedRe
         biometricPending = true
     }
 
-    fun tryPin(pin: String): PinResult {
+    fun tryPin(pin: String): PinResult = check(pin, unlockOnSuccess = true)
+
+    /**
+     * Checks the PIN without touching the lock (the "current PIN" step in Settings). Shares the attempt counter
+     * with [tryPin], so Settings is not a way around the limit.
+     */
+    fun verifyPin(pin: String): PinResult = check(pin, unlockOnSuccess = false)
+
+    private fun check(pin: String, unlockOnSuccess: Boolean): PinResult {
         blockedSeconds().takeIf { it > 0 }?.let { return PinResult.Blocked(it) }
         if (PinHasher.verify(pin, settings.pinHash)) {
-            unlock()
+            if (unlockOnSuccess) unlock() else resetAttempts()
             return PinResult.Unlocked
         }
         failures++
         if (failures % MAX_ATTEMPTS == 0) {
-            blockedUntil = clock() + BLOCK_SECONDS * 1000L
+            blockedUntil = wall() + BLOCK_SECONDS * 1000L
+            onAttemptsChanged?.invoke(failures, blockedUntil)
             return PinResult.Blocked(BLOCK_SECONDS)
         }
+        onAttemptsChanged?.invoke(failures, blockedUntil)
         return PinResult.Wrong(MAX_ATTEMPTS - failures % MAX_ATTEMPTS)
     }
 
     /** Seconds to wait after too many wrong PINs (0 = can try). */
-    fun blockedSeconds(): Int = ((blockedUntil - clock() + 999) / 1000).coerceAtLeast(0).toInt()
+    fun blockedSeconds(): Int = ((blockedUntil - wall() + 999) / 1000).coerceAtLeast(0).toInt()
+
+    private fun resetAttempts() {
+        if (failures == 0 && blockedUntil == 0L) return
+        failures = 0
+        blockedUntil = 0
+        onAttemptsChanged?.invoke(0, 0L)
+    }
 
     /** Fingerprint, face or the phone's own screen lock was accepted by Android. */
     fun unlock() {
-        failures = 0
-        blockedUntil = 0
+        resetAttempts()
         biometricPending = false
         _locked.value = false
     }
