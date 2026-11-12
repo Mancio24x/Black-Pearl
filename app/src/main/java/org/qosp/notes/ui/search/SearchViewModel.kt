@@ -30,7 +30,7 @@ class SearchViewModel(
         notebookRepository.getAll().distinctUntilChanged().flatMapLatest { notebooks ->
             searchKeyData.debounce(300).flatMapLatest { searchKey ->
                 noteRepository
-                    .getAll(sortMethod)
+                    .getNonDeleted(sortMethod)
                     .map { notes ->
                         getSearchResults(
                             searchKey.trim(),

@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.tfcporciuncula.flow.FlowSharedPreferences
 import kotlinx.coroutines.flow.Flow
@@ -32,6 +33,12 @@ data class AppLockSettings(
         val TIMEOUTS = listOf(0, 1, 5, 15)
     }
 }
+
+/** What is read at app start: the lock settings and the saved wrong-PIN counter. */
+data class AppLockState(val settings: AppLockSettings, val failures: Int = 0, val blockedUntil: Long = 0L)
+
+/** Stored-hash stand-in used when the real settings cannot be read: it matches no PIN. */
+const val UNREADABLE_PIN_HASH = "unreadable"
 
 data class CustomThemeColors(val paper: Int, val surface: Int, val accent: Int) {
     companion object {
@@ -117,17 +124,45 @@ class PreferenceRepository(
         }
     }
 
+    private fun Preferences.toAppLockSettings() = AppLockSettings(
+        pinHash = this[APP_LOCK_PIN],
+        pinLength = this[APP_LOCK_PIN_LENGTH] ?: 0,
+        biometric = this[APP_LOCK_BIOMETRIC] ?: true,
+        timeoutMinutes = this[APP_LOCK_TIMEOUT] ?: AppLockSettings.DEFAULT_TIMEOUT_MINUTES,
+    )
+
     /** App lock (Black Pearl): the PIN is only stored as a salted hash, see ui/lock/PinHasher. */
     fun getAppLock(): Flow<AppLockSettings> = dataStore.data
         .catch { if (it is IOException) emit(emptyPreferences()) else throw it }
-        .map {
-            AppLockSettings(
-                pinHash = it[APP_LOCK_PIN],
-                pinLength = it[APP_LOCK_PIN_LENGTH] ?: 0,
-                biometric = it[APP_LOCK_BIOMETRIC] ?: true,
-                timeoutMinutes = it[APP_LOCK_TIMEOUT] ?: AppLockSettings.DEFAULT_TIMEOUT_MINUTES,
-            )
+        .map { it.toAppLockSettings() }
+
+    /**
+     * Read at app start. Unlike [getAppLock] it never turns a read error into "no lock": it retries once and then
+     * returns settings with an unreadable PIN, so the app starts locked (fingerprint / phone screen lock still open it).
+     */
+    suspend fun loadAppLockAtStart(): AppLockState {
+        repeat(2) {
+            try {
+                val prefs = dataStore.data.first()
+                return AppLockState(
+                    prefs.toAppLockSettings(),
+                    prefs[APP_LOCK_FAILURES] ?: 0,
+                    prefs[APP_LOCK_BLOCKED_UNTIL] ?: 0L,
+                )
+            } catch (e: IOException) {
+                // try again
+            }
         }
+        return AppLockState(AppLockSettings(pinHash = UNREADABLE_PIN_HASH, pinLength = 0))
+    }
+
+    /** Wrong-PIN counter and the end of the wait (wall clock millis), kept so that killing the app does not reset them. */
+    suspend fun setAppLockAttempts(failures: Int, blockedUntil: Long) {
+        dataStore.edit {
+            it[APP_LOCK_FAILURES] = failures
+            it[APP_LOCK_BLOCKED_UNTIL] = blockedUntil
+        }
+    }
 
     suspend fun getAppLockOnce(): AppLockSettings = getAppLock().first()
 
@@ -166,6 +201,8 @@ class PreferenceRepository(
         val APP_LOCK_PIN_LENGTH = intPreferencesKey("app_lock_pin_length")
         val APP_LOCK_BIOMETRIC = booleanPreferencesKey("app_lock_biometric")
         val APP_LOCK_TIMEOUT = intPreferencesKey("app_lock_timeout_minutes")
+        val APP_LOCK_FAILURES = intPreferencesKey("app_lock_failures")
+        val APP_LOCK_BLOCKED_UNTIL = longPreferencesKey("app_lock_blocked_until")
         const val NEXTCLOUD_INSTANCE_URL = "NEXTCLOUD_INSTANCE_URL"
         const val NEXTCLOUD_USERNAME = "NEXTCLOUD_USERNAME"
         const val NEXTCLOUD_PASSWORD = "NEXTCLOUD_PASSWORD"

@@ -118,7 +118,11 @@ class App : Application(), ImageLoaderFactory {
     private fun startAppLock() {
         val appLock: AppLock = get()
         val preferences: PreferenceRepository = get()
-        appLock.start(runBlocking { preferences.getAppLock().first() })
+        val state = runBlocking { preferences.loadAppLockAtStart() }
+        appLock.start(state.settings, state.failures, state.blockedUntil)
+        appLock.onAttemptsChanged = { failures, blockedUntil ->
+            CoroutineScope(Dispatchers.IO).launch { preferences.setAppLockAttempts(failures, blockedUntil) }
+        }
         ProcessLifecycleOwner.get().lifecycle.addObserver(object : DefaultLifecycleObserver {
             override fun onStart(owner: LifecycleOwner) = appLock.onAppForeground()
             override fun onStop(owner: LifecycleOwner) = appLock.onAppBackground()

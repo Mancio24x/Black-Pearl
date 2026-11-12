@@ -303,3 +303,17 @@ Completed the editor suggestion strip and the Network destination, including gra
   "Update links?" (Update / No, not cancelable) lists how many notes; updates run in the activity scope and sync as usual.
 - Owner decision: ask before changing other notes (option A).
 - Tests: `LinkRenameTest` (5) — run with JUnit in a JVM prototype with a stub Note: 5/5 pass; Android build on CI.
+
+## 2026-11-12 — Fix review findings: lists, reminders, security
+- Lists: `ActivityViewModel.update` re-reads each note by id before applying the change (stale sheet snapshot); widget
+  skips hidden notes; search uses `getNonDeleted` and treats a blank query as empty.
+- Reminders: `rescheduleAll` shows expired reminders instead of deleting them; `sendNotification` returns if the reminder
+  row is gone or the note is missing/in the bin (`ReminderManager.shouldNotify`), and deletes the row only after `notify`
+  (kept if notifications are disabled; retried at next boot).
+- Security: `FLAG_SECURE` (+ `setRecentsScreenshotEnabled` on 33+) follows `AppLock.secure` at once; wrong-PIN counter and
+  wait saved in DataStore (`app_lock_failures`, `app_lock_blocked_until`, wall clock); start-up read retries and fails
+  closed (`loadAppLockAtStart`); Settings "current PIN" uses `AppLock.verifyPin` (same limit); new `data_extraction_rules.xml`
+  and `backup_rules.xml` exclude database, datastore, media and shared prefs from cloud backup and device transfer
+  (`allowBackup` unchanged; users move notes with the app's export).
+- Tests: `AppLockTest` (+6), `ReminderManagerTest` (2). Not run: no Android SDK here; CI compiles and runs them.
+- Not done: alarms are not cancelled at bin time (no context in the repository); the fire-time check covers it.
