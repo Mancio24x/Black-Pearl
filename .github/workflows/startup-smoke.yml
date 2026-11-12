@@ -1,0 +1,68 @@
+name: Startup smoke
+
+# Starts the REAL app (App.onCreate, welcome screen, Bible Study Kit, app lock) from a release build (R8 on) on an
+# emulator: device tests use a TestApplication and the screenshot job a debug build, so neither catches a crash
+# that only the published APK has. Two cases: fresh install, and update over the previous release with its data.
+on:
+  workflow_dispatch:
+    inputs:
+      previous:
+        description: 'Tag to update from'
+        required: false
+        default: 'v0.8.7'
+  pull_request:
+  push:
+    branches: [ 'ccr-*' ]
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v6
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Build release APKs (this commit and the previous release), x86_64 added for the emulator
+        env:
+          PREVIOUS: ${{ inputs.previous || 'v0.8.7' }}
+        run: |
+          set -e
+          keytool -genkeypair -keystore "$RUNNER_TEMP/smoke.jks" -storepass smokepass -keypass smokepass \
+            -alias smoke -keyalg RSA -validity 1000 -dname "CN=smoke" >/dev/null
+          build() { # $1 = source dir, $2 = output apk
+            ( cd "$1"
+              sed -i 's/abiFilters += listOf("arm64-v8a", "armeabi-v7a")/abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64")/' app/build.gradle.kts
+              ./gradlew --no-configuration-cache assembleRelease -Pkeystore="$RUNNER_TEMP/smoke.jks" -Pstorepass=smokepass \
+                -Pkeyalias=smoke -Pkeypass=smokepass )
+            cp "$(ls "$1"/app/build/outputs/apk/release/*.apk | head -1)" "$2"
+          }
+          build . "$RUNNER_TEMP/new.apk"
+          git worktree add "$RUNNER_TEMP/prev" "$PREVIOUS"
+          build "$RUNNER_TEMP/prev" "$RUNNER_TEMP/old.apk"
+          ls -la "$RUNNER_TEMP"/*.apk
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
+      - name: Start the app on an emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          target: google_apis
+          profile: pixel_6
+          disable-animations: true
+          script: scripts/startup-smoke.sh "$RUNNER_TEMP/old.apk" "$RUNNER_TEMP/new.apk"
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: startup-smoke
+          path: smoke/
