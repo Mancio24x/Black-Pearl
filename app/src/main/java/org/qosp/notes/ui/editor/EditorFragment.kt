@@ -35,6 +35,14 @@ import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
+import android.widget.LinearLayout
+import android.graphics.Typeface
+import androidx.core.widget.NestedScrollView
+import androidx.core.widget.doAfterTextChanged
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import org.qosp.notes.components.links.NoteOutline
+import org.qosp.notes.components.links.OutlineHeading
 import androidx.activity.addCallback
 import androidx.annotation.ColorInt
 import androidx.appcompat.widget.Toolbar
@@ -187,6 +195,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     private var suggestionStrip: org.qosp.notes.ui.links.LinkSuggestionStrip? = null
     private var headingScrollDone = false
     private var createLinkDialog: android.app.Dialog? = null
+    private var outlineSheet: BottomSheetDialog? = null
     private var renameDialog: android.app.Dialog? = null
     /** Title when the title field got focus; links to it may need to follow the rename. */
     private var titleBeforeEdit: String? = null
@@ -460,6 +469,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     private fun runNoteAction(id: Int) {
         data.note?.let { note ->
             when (id) {
+                R.id.action_outline -> showOutline()
                 R.id.action_convert_note -> {
                     if (note.isList) model.toTextNote() else model.toList()
                 }
@@ -566,6 +576,8 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         suggestionStrip = null
         createLinkDialog?.dismiss()
         createLinkDialog = null
+        outlineSheet?.dismiss()
+        outlineSheet = null
         renameDialog?.dismiss()
         renameDialog = null
         // Dismiss the snackbar which is shown for deleted notes
@@ -857,24 +869,123 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         val heading = args.scrollToHeading.trim()
         if (headingScrollDone || heading.isEmpty()) return
         val preview = binding.textViewContentPreview
-        val scrollView = binding.scrollView
         preview.post {
-            val layout = preview.layout ?: return@post
-            val text = preview.text as? Spanned ?: return@post
-            val start = text.getSpans(0, text.length, HeadingSpan::class.java)
-                .map { text.getSpanStart(it) to text.getSpanEnd(it) }
-                .sortedBy { it.first }
-                .firstOrNull { (s, e) -> s in 0 until e && text.substring(s, e).trim().equals(heading, ignoreCase = true) }
-                ?.first ?: return@post
-            var y = preview.totalPaddingTop + layout.getLineTop(layout.getLineForOffset(start))
-            var view: View = preview
-            while (view !== scrollView) {
-                y += view.top
-                view = view.parent as? View ?: return@post
-            }
+            val start = previewHeadingStart(heading, 0) ?: return@post
             // marked as done only now: while the note is in edit mode the preview has no layout yet
-            headingScrollDone = true
-            scrollView.smoothScrollTo(0, y)
+            if (scrollToOffset(preview, start)) headingScrollDone = true
+        }
+    }
+
+    /**
+     * Start of the [occurrence]-th rendered heading whose text is [text] in the preview. When no heading text matches
+     * (unusual markup) and the preview has exactly [expectedCount] headings, [fallbackIndex] picks it by position.
+     */
+    private fun previewHeadingStart(text: String, occurrence: Int, fallbackIndex: Int = -1, expectedCount: Int = -1): Int? {
+        val spanned = binding.textViewContentPreview.text as? Spanned ?: return null
+        val spans = spanned.getSpans(0, spanned.length, HeadingSpan::class.java)
+            .map { spanned.getSpanStart(it) to spanned.getSpanEnd(it) }
+            .filter { (s, e) -> s in 0 until e }
+            .distinctBy { it.first }
+            .sortedBy { it.first }
+        val key = NoteOutline.matchKey(text)
+        return spans.filter { (s, e) -> NoteOutline.matchKey(spanned.substring(s, e)) == key }.getOrNull(occurrence)?.first
+            ?: spans.takeIf { it.size == expectedCount }?.getOrNull(fallbackIndex)?.first
+    }
+
+    /** Scrolls the note so the line holding [offset] of [textView] is at the top. False while it has no layout. */
+    private fun scrollToOffset(textView: TextView, offset: Int): Boolean {
+        val layout = textView.layout ?: return false
+        val scrollView = binding.scrollView
+        var y = textView.totalPaddingTop + layout.getLineTop(layout.getLineForOffset(offset.coerceIn(0, textView.length())))
+        var view: View = textView
+        while (view !== scrollView) {
+            y += view.top
+            view = view.parent as? View ?: return false
+        }
+        scrollView.smoothScrollTo(0, y)
+        return true
+    }
+
+    /** Black Pearl: "Contents" sheet, the note's headings like Obsidian's Outline; a tap scrolls to that heading. */
+    private fun showOutline() {
+        if (outlineSheet?.isShowing == true) return
+        val headings = NoteOutline.headings(currentContent() ?: data.note?.content ?: return)
+        if (headings.isEmpty()) return
+        view?.hideKeyboard()
+        val ctx = requireContext()
+        val density = resources.displayMetrics.density
+        fun dp(v: Int) = (v * density).toInt()
+        val sheet = BottomSheetDialog(ctx)
+        val minLevel = headings.minOf { it.level }
+        val body = LinearLayout(ctx).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(16), dp(16), dp(24)) }
+        body.addView(TextView(ctx).apply {
+            setText(R.string.action_outline)
+            textSize = 22f
+            setPadding(dp(8), 0, dp(8), dp(8))
+        })
+        val list = LinearLayout(ctx).apply { orientation = LinearLayout.VERTICAL }
+        val ripple = android.util.TypedValue().also {
+            ctx.theme.resolveAttribute(android.R.attr.selectableItemBackground, it, true)
+        }.resourceId
+        fun fill(query: String) {
+            list.removeAllViews()
+            val q = NoteOutline.matchKey(query)
+            val shown = headings.withIndex().filter { q.isEmpty() || NoteOutline.matchKey(it.value.text).contains(q) }
+            if (shown.isEmpty()) {
+                list.addView(TextView(ctx).apply { setText(R.string.outline_no_match); setPadding(dp(8), dp(12), dp(8), dp(12)) })
+            }
+            for ((index, heading) in shown) {
+                list.addView(TextView(ctx).apply {
+                    text = heading.text
+                    textSize = 16f
+                    if (heading.level == minLevel) setTypeface(typeface, Typeface.BOLD)
+                    minHeight = dp(48)
+                    gravity = android.view.Gravity.CENTER_VERTICAL
+                    setPaddingRelative(dp(8) + (heading.level - minLevel) * dp(16), dp(8), dp(8), dp(8))
+                    setBackgroundResource(ripple)
+                    setOnClickListener {
+                        sheet.dismiss()
+                        jumpToHeading(headings, index)
+                    }
+                })
+            }
+        }
+        if (headings.size > 8) {
+            body.addView(com.google.android.material.textfield.TextInputLayout(ctx).apply {
+                hint = getString(R.string.outline_search)
+                addView(com.google.android.material.textfield.TextInputEditText(context).apply {
+                    isSingleLine = true
+                    doAfterTextChanged { fill(it?.toString().orEmpty()) }
+                })
+            })
+        }
+        body.addView(list)
+        fill("")
+        sheet.setContentView(NestedScrollView(ctx).apply { addView(body) })
+        sheet.behavior.skipCollapsed = true
+        sheet.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        sheet.setOnDismissListener { if (outlineSheet === sheet) outlineSheet = null }
+        outlineSheet = sheet
+        sheet.show()
+    }
+
+    private fun jumpToHeading(headings: List<OutlineHeading>, index: Int) {
+        val heading = headings[index]
+        if (model.inEditMode) {
+            val edit = binding.editTextContent
+            val length = edit.length()
+            if (heading.offset > length) return
+            val lineEnd = edit.text?.indexOf('\n', heading.offset)?.takeIf { it >= 0 } ?: length
+            edit.requestFocus()
+            edit.setSelection(lineEnd)
+            edit.post { scrollToOffset(edit, heading.offset) }
+        } else {
+            val key = NoteOutline.matchKey(heading.text)
+            val occurrence = headings.take(index).count { NoteOutline.matchKey(it.text) == key }
+            val preview = binding.textViewContentPreview
+            preview.post {
+                previewHeadingStart(heading.text, occurrence, index, headings.size)?.let { scrollToOffset(preview, it) }
+            }
         }
     }
 
@@ -1117,6 +1228,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     }
 
     private fun setupMenuItems(note: Note, hasReminders: Boolean) = mainMenu?.run {
+        findItem(R.id.action_outline)?.isVisible = !note.isList && NoteOutline.headings(note.content).size >= 2
         findItem(R.id.action_restore_note)?.isVisible = note.isDeleted
         findItem(R.id.action_change_color)?.apply {
             isVisible = !note.isDeleted

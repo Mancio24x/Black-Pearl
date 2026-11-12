@@ -91,7 +91,7 @@ object WikiLinks {
      * Fenced code blocks: a line starting with ``` or ~~~ (at most 3 spaces before it) opens, the next line starting
      * with the same fence closes (or end of text).
      */
-    private fun fencedRanges(text: String): List<IntRange> {
+    internal fun fencedRanges(text: String): List<IntRange> {
         val ranges = ArrayList<IntRange>()
         var lineStart = 0
         var openAt = -1

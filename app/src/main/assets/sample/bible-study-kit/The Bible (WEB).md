@@ -7,14 +7,14 @@ links: [[010 Faith MOC|Faith MOC ]]
 I am using the [WEB Bible](https://worldenglish.bible/) due to its generous copyrights.
 
 ## Content
-**Pentateuch (or the Law)**
+### Pentateuch (or the Law)
 * [[Genesis]]
 * [[Exodus]]
 * [[Leviticus]]
 * [[Numbers]]
 * [[Deuteronomy]]
 
-**Historical Books**
+### Historical Books
 * [[Joshua]]
 * [[Judges]]
 * [[Ruth]]
@@ -28,21 +28,21 @@ I am using the [WEB Bible](https://worldenglish.bible/) due to its generous copy
 * [[Nehemiah]]
 * [[Esther]]
 
-**Books of Wisdom (or "Poetry")**
+### Books of Wisdom (or "Poetry")
 * [[Job]]
 * [[Psalm]]
 * [[Proverbs]]
 * [[Ecclesiastes]]
 * [[Song of Solomon]]
 
-**Major Prophets**
+### Major Prophets
 * [[Isaiah]]
 * [[Jeremiah]]
 * [[Lamentations]]
 * [[Ezekiel]]
 * [[Daniel]]
 
-**Minor Prophets**
+### Minor Prophets
 * [[Hosea]]
 * [[Joel]]
 * [[Amos]]
@@ -57,16 +57,16 @@ I am using the [WEB Bible](https://worldenglish.bible/) due to its generous copy
 * [[Malachi]]
 
 ***
-**Gospels**
+### Gospels
 * [[Matthew]]
 * [[Mark]]
 * [[Luke]]
 * [[John]]
 
-**Church History**
+### Church History
 * [[Acts]]
 
-**Pauline Epistles**
+### Pauline Epistles
 * [[Romans]]
 * [[1 Corinthians]]
 * [[2 Corinthians]]
@@ -81,7 +81,7 @@ I am using the [WEB Bible](https://worldenglish.bible/) due to its generous copy
 * [[Titus]]
 * [[Philemon]]
 
-**General Epistles**
+### General Epistles
 * [[Hebrews]]
 * [[James]]
 * [[1 Peter]]
@@ -91,5 +91,5 @@ I am using the [WEB Bible](https://worldenglish.bible/) due to its generous copy
 * [[3 John]]
 * [[Jude]]
 
-**Apocalyptic Writing (Prophecy)**
+### Apocalyptic Writing (Prophecy)
 * [[Revelation]]

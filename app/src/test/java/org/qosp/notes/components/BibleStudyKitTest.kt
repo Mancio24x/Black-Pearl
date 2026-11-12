@@ -13,6 +13,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.qosp.notes.components.links.LinkIndex
+import org.qosp.notes.components.links.NoteOutline
 import org.qosp.notes.components.links.WikiLinks
 import org.qosp.notes.data.model.Note
 import org.qosp.notes.data.model.Notebook
@@ -54,6 +55,15 @@ class BibleStudyKitTest {
         assertEquals(7L, note.notebookId)
         assertTrue(note.isLocalOnly)
         assertTrue(WikiLinks.find(note.content).size >= 66)
+    }
+
+    @Test
+    fun theBibleNoteHasItsBookGroupsInTheContents() {
+        val headings = NoteOutline.headings(File(root, "The Bible (WEB).md").readText()).map { it.text }
+        for (group in listOf("Pentateuch (or the Law)", "Gospels", "Pauline Epistles", "Apocalyptic Writing (Prophecy)")) {
+            assertTrue(group, group in headings)
+        }
+        assertEquals(13, headings.size) // title, Copyright, Content and the 10 book groups
     }
 
     @Test

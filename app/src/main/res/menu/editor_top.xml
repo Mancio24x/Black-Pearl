@@ -10,6 +10,13 @@
         android:title="@string/action_change_mode"
         android:visible="false"
         app:showAsAction="always"/>
+    <!-- Black Pearl: the note's headings (shown when it has at least two) -->
+    <item
+            android:id="@+id/action_outline"
+            android:icon="@drawable/ic_outline"
+            android:title="@string/action_outline"
+            android:visible="false"
+            app:showAsAction="always"/>
     <item
             android:id="@+id/action_pin_note"
             android:icon="@drawable/ic_pin"

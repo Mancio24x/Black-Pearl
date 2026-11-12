@@ -233,4 +233,7 @@
     </plurals>
     <string name="message_sync_aborted_incomplete_listing">Sync stopped: many synced notes are missing from the folder or account. No note was deleted. If you removed them on purpose, choose the sync folder or account again in Settings.</string>
     <string name="network_controls">Graph search and filters</string>
+    <string name="action_outline">Contents</string>
+    <string name="outline_search">Search headings</string>
+    <string name="outline_no_match">No heading matches</string>
 </resources>
