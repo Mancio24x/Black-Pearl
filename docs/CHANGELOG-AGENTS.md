@@ -413,3 +413,17 @@ Completed the editor suggestion strip and the Network destination, including gra
   skips notes already there instead of adding a second copy; a deleted kit notebook is created again.
 - Tests: `BibleStudyKitTest` +2 (resume without duplicates, deleted notebook). Build (unit tests, lint, APK) and
   Startup smoke green on CI. Outline ("Indice") work is stashed, resumes after this release.
+
+## 2026-11-12 — Startup smoke: update an app full of notes, record memory
+- Goal: make the 0.8.8 "crash after update" case realistic (many user notes + ~1300 kit notes on first start).
+- `scripts/startup-smoke.sh`: 4th case "update-with-notes": clean install of the previous release, 250 notes of
+  ~8 KB (~2 MB) added through explicit `ACTION_SEND text/plain` intents to `MainActivity` (the editor inserts the
+  shared text at once), run by a script pushed to the device; then update, launch, 90 s of `dumpsys meminfo`
+  sampling (peak/final TOTAL PSS and Java heap) and a second start. TotalTime of every launch, device RAM/heap
+  props and (with `adb root`) database size go to `smoke/summary.txt` + job summary.
+- `.github/workflows/startup-smoke.yml`: emulator `ram-size: 2048M`; optional manual input `heap` lowers
+  `dalvik.vm.heapgrowthlimit` (adb root + framework restart), off by default because the restart is not proven
+  reliable on CI.
+- Tests: `bash -n` and shellcheck clean; note generator and meminfo parsing checked locally. Not run on an emulator
+  yet (no SDK here): first CI run is the real check. Open: seeding time (~5 min estimated) and whether every
+  share intent becomes a note are unverified until that run (the database size line shows it).
