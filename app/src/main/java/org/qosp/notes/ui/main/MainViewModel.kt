@@ -2,7 +2,7 @@ package org.qosp.notes.ui.main
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
@@ -27,10 +27,14 @@ class MainViewModel(
         notebookIdFlow.flatMapLatest { id ->
             when (id) {
                 // the Bible Study Kit has its own notebook and stays out of "All notes"
-                null -> combine(
-                    noteRepository.getNonDeletedOrArchived(sortMethod),
-                    preferenceRepository.getBibleKitNotebookId(),
-                ) { notes, kitId -> if (kitId == null) notes else notes.filter { it.notebookId != kitId } }
+                // (filtered in SQL, so its ~5 MB of notes are never read here)
+                null -> preferenceRepository.getBibleKitNotebookId().distinctUntilChanged().flatMapLatest { kitId ->
+                    if (kitId == null) {
+                        noteRepository.getNonDeletedOrArchived(sortMethod)
+                    } else {
+                        noteRepository.getNonDeletedOrArchivedExcept(kitId, sortMethod)
+                    }
+                }
                 R.id.nav_default_notebook.toLong() -> noteRepository.getNotesWithoutNotebook(sortMethod)
                 else -> noteRepository.getByNotebook(id, sortMethod)
             }

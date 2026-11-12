@@ -190,6 +190,12 @@ class NoteRepositoryImpl(
         return noteId
     }
 
+    override suspend fun insertLocalNotes(notes: List<Note>): List<Long> {
+        if (notes.isEmpty()) return emptyList()
+        Log.d(tag, "insertLocalNotes: Creating ${notes.size} local notes in one transaction")
+        return noteDao.insertAll(notes.map { it.toEntity() })
+    }
+
     override suspend fun updateNotes(vararg notes: Note, sync: Boolean) = notes.forEach { updateNote(it, sync) }
 
     private suspend fun updateNote(note: Note, sync: Boolean) {
@@ -283,6 +289,10 @@ class NoteRepositoryImpl(
 
     override fun getNonDeletedOrArchived(sortMethod: SortMethod): Flow<List<Note>> {
         return noteDao.getNonDeletedOrArchived(sortMethod)
+    }
+
+    override fun getNonDeletedOrArchivedExcept(notebookId: Long, sortMethod: SortMethod): Flow<List<Note>> {
+        return noteDao.getNonDeletedOrArchivedExcept(notebookId, sortMethod)
     }
 
     override fun getAll(sortMethod: SortMethod): Flow<List<Note>> {

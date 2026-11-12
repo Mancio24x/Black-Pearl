@@ -10,6 +10,12 @@ import org.qosp.notes.preferences.SortMethod
 
 interface NoteRepository {
     suspend fun insertNote(note: Note, sync: Boolean = true): Long
+
+    /**
+     * Inserts many local-only notes (e.g. bundled samples) in one database transaction, never synced.
+     * Open note lists re-query once instead of once per note. Returns the new ids, in order.
+     */
+    suspend fun insertLocalNotes(notes: List<Note>): List<Long>
     suspend fun updateNotes(vararg notes: Note, sync: Boolean = true)
     suspend fun moveNotesToBin(vararg notes: Note, sync: Boolean = true)
     suspend fun restoreNotes(vararg notes: Note)
@@ -23,6 +29,7 @@ interface NoteRepository {
     fun getArchived(sortMethod: SortMethod = defaultOf()): Flow<List<Note>>
     fun getNonDeleted(sortMethod: SortMethod = defaultOf()): Flow<List<Note>>
     fun getNonDeletedOrArchived(sortMethod: SortMethod = defaultOf()): Flow<List<Note>>
+    fun getNonDeletedOrArchivedExcept(notebookId: Long, sortMethod: SortMethod = defaultOf()): Flow<List<Note>>
     fun getAll(sortMethod: SortMethod = defaultOf()): Flow<List<Note>>
     fun getByNotebook(notebookId: Long, sortMethod: SortMethod = defaultOf()): Flow<List<Note>>
     fun getNonRemoteNotes(provider: CloudService, sortMethod: SortMethod = defaultOf()): Flow<List<Note>>

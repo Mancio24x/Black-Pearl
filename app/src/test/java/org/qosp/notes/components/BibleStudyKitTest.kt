@@ -75,8 +75,8 @@ class BibleStudyKitTest {
     fun addedOnceInItsOwnNotebook() = runTest {
         val context = mockk<Context>().also { every { it.assets } returns assets() }
         val notes = mockk<NoteRepository>()
-        val inserted = ArrayList<Note>()
-        coEvery { notes.insertNote(capture(inserted), any()) } returns 1L
+        val chunks = ArrayList<List<Note>>()
+        coEvery { notes.insertLocalNotes(capture(chunks)) } answers { firstArg<List<Note>>().map { 1L } }
         val notebooks = mockk<NotebookRepository>()
         val notebook = slot<Notebook>()
         coEvery { notebooks.insert(capture(notebook)) } returns 42L
@@ -87,11 +87,14 @@ class BibleStudyKitTest {
         BibleStudyKit.addOnce(context, notes, notebooks, preferences)
 
         assertEquals(BibleStudyKit.NOTEBOOK, notebook.captured.name)
+        val inserted = chunks.flatten()
         assertEquals(1300, inserted.size)
+        assertTrue(chunks.all { it.size <= BibleStudyKit.CHUNK })
+        assertEquals(7, chunks.size)
         assertTrue(inserted.all { it.notebookId == 42L && it.isLocalOnly })
         coVerify { preferences.setBibleKitNotebookId(42L) }
         coVerify { preferences.setBibleKitAdded() }
-        coVerify(exactly = 1300) { notes.insertNote(any(), false) }
+        coVerify(exactly = 0) { notes.insertNote(any(), any()) }
     }
 
     @Test
@@ -100,8 +103,8 @@ class BibleStudyKitTest {
         val all = BibleStudyKit.files(assets())
         val already = all.take(500).map { BibleStudyKit.noteFrom(it, "", 7L) }
         val notes = mockk<NoteRepository>()
-        val inserted = ArrayList<Note>()
-        coEvery { notes.insertNote(capture(inserted), any()) } returns 1L
+        val chunks = ArrayList<List<Note>>()
+        coEvery { notes.insertLocalNotes(capture(chunks)) } answers { firstArg<List<Note>>().map { 1L } }
         every { notes.getByNotebook(7L, any()) } returns flowOf(already)
         val notebooks = mockk<NotebookRepository>()
         every { notebooks.getById(7L) } returns flowOf(Notebook(BibleStudyKit.NOTEBOOK, 7L))
@@ -111,10 +114,13 @@ class BibleStudyKitTest {
 
         BibleStudyKit.addOnce(context, notes, notebooks, preferences)
 
+        val inserted = chunks.flatten()
         assertEquals(800, inserted.size)
+        assertTrue(chunks.all { it.size <= BibleStudyKit.CHUNK })
         assertTrue(inserted.all { it.notebookId == 7L })
         assertTrue(inserted.none { n -> already.any { it.title == n.title } })
         coVerify(exactly = 0) { notebooks.insert(any()) }
+        coVerify(exactly = 0) { notes.insertNote(any(), any()) }
         coVerify { preferences.setBibleKitAdded() }
     }
 
@@ -122,7 +128,8 @@ class BibleStudyKitTest {
     fun aDeletedKitNotebookIsCreatedAgain() = runTest {
         val context = mockk<Context>().also { every { it.assets } returns assets() }
         val notes = mockk<NoteRepository>()
-        coEvery { notes.insertNote(any(), any()) } returns 1L
+        val chunks = ArrayList<List<Note>>()
+        coEvery { notes.insertLocalNotes(capture(chunks)) } answers { firstArg<List<Note>>().map { 1L } }
         val notebooks = mockk<NotebookRepository>()
         every { notebooks.getById(7L) } returns flowOf(null)
         coEvery { notebooks.insert(any()) } returns 9L
@@ -133,7 +140,11 @@ class BibleStudyKitTest {
         BibleStudyKit.addOnce(context, notes, notebooks, preferences)
 
         coVerify { preferences.setBibleKitNotebookId(9L) }
-        coVerify(exactly = 1300) { notes.insertNote(match { it.notebookId == 9L }, false) }
+        val inserted = chunks.flatten()
+        assertEquals(1300, inserted.size)
+        assertTrue(chunks.all { it.size <= BibleStudyKit.CHUNK })
+        assertTrue(inserted.all { it.notebookId == 9L })
+        coVerify(exactly = 0) { notes.insertNote(any(), any()) }
     }
 
     @Test
@@ -144,6 +155,7 @@ class BibleStudyKitTest {
         coEvery { preferences.isBibleKitAdded() } returns true
         BibleStudyKit.addOnce(mockk(), notes, notebooks, preferences)
         coVerify(exactly = 0) { notes.insertNote(any(), any()) }
+        coVerify(exactly = 0) { notes.insertLocalNotes(any()) }
         coVerify(exactly = 0) { notebooks.insert(any()) }
     }
 }

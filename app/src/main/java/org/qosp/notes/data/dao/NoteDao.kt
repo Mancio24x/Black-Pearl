@@ -30,6 +30,10 @@ interface NoteDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(note: NoteEntity): Long
 
+    /** Inserts all [notes] in one transaction (one table invalidation for open Flows). */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(notes: List<NoteEntity>): List<Long>
+
     @Update
     suspend fun update(vararg notes: NoteEntity)
 
@@ -119,6 +123,21 @@ interface NoteDao {
                 SELECT * FROM notes WHERE isArchived = 0 AND isDeleted = 0
                 ORDER BY isPinned DESC, $column $order
             """
+            )
+        )
+    }
+
+    /** Like [getNonDeletedOrArchived] but leaves out the notes of [notebookId] (e.g. the Bible Study Kit). */
+    fun getNonDeletedOrArchivedExcept(notebookId: Long, sortMethod: SortMethod): Flow<List<Note>> {
+        val (column, order) = getOrderByMethod(sortMethod)
+        return rawGetQuery(
+            SimpleSQLiteQuery(
+                """
+                SELECT * FROM notes WHERE isArchived = 0 AND isDeleted = 0
+                AND (notebookId IS NULL OR notebookId != ?)
+                ORDER BY isPinned DESC, $column $order
+            """,
+                arrayOf<Any>(notebookId)
             )
         )
     }
