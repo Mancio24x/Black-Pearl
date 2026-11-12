@@ -400,3 +400,16 @@ Completed the editor suggestion strip and the Network destination, including gra
   Values checked against the files (69 links in "The Bible (WEB)", 13 notes link to Gen-01). Android build on CI.
 - Checked on the files: 7336 links, all but 2 resolve to a kit note by title (aliases are not needed).
 - Known limit: deleting the notebook moves its notes to "All notes".
+
+## 2026-11-12 — 0.8.8 crash at start after update; startup smoke test
+- Owner report: 0.8.8 closed at once on start; uninstall + reinstall fixed it (so: data of the older version).
+  Not reproduced on an API 35 emulator (fresh install, update from v0.8.7 with its welcome/sample data, restart):
+  the trigger is in data the test cannot rebuild (PIN, sync, many notes?). Root cause still unknown.
+- Gap found: device tests run with `TestApplication` and the screenshot job uses a debug build, so the real
+  `App.onCreate` of the published (R8) APK was never started on CI. New workflow `startup-smoke.yml` +
+  `scripts/startup-smoke.sh` (release build signed with a throwaway key, x86_64 added only for the emulator).
+- Defensive fixes: sample note / Bible Study Kit loading runs in `runCatching` (a failure is logged and retried at
+  the next start, never kills the process); an interrupted first run of the kit resumes in the saved notebook and
+  skips notes already there instead of adding a second copy; a deleted kit notebook is created again.
+- Tests: `BibleStudyKitTest` +2 (resume without duplicates, deleted notebook). Build (unit tests, lint, APK) and
+  Startup smoke green on CI. Outline ("Indice") work is stashed, resumes after this release.

@@ -17,6 +17,7 @@ Create `local.properties` with `sdk.dir=/path/to/Android/sdk` (never commit it).
 | Install on a connected phone | `./gradlew installDebug` |
 | All device tests (emulator/device) | `./gradlew connectedDebugAndroidTest` (CI: "UI preview" runs them all) |
 | UI screenshots (emulator/device running) | `./gradlew assembleDebug -PTESTLAB_BUILD=true && scripts/capture-ui.sh` → `ui-shots/` (CI: workflow "UI preview") |
+| Real app start, release build (R8) | CI workflow "Startup smoke" (every PR): fresh install, update from the previous release, second start; fails on `FATAL EXCEPTION` / ANR. Local: build both APKs, then `scripts/startup-smoke.sh old.apk new.apk` |
 | Release APK (signed) | see "Release signing" |
 
 CI (`.github/workflows/build.yml`) runs: `testDebugUnitTest`, `lintDebug` (report only), `assembleDebug`.
