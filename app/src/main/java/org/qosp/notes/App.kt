@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.qosp.notes.components.BibleNotebook
 import org.qosp.notes.components.BibleStudyKit
 import org.qosp.notes.components.SampleNote
 import org.koin.android.ext.android.get
@@ -115,11 +116,17 @@ class App : Application(), ImageLoaderFactory {
     // Black Pearl: the notebook shipped in the APK appears once among the notes
     private fun addSampleNote() {
         // a failure here must never stop the app from starting: the samples are only a bonus, tried again next start
+        val library: BibleNotebook = get()
+        library.starting()
         CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
             runCatching { SampleNote.addOnce(this@App, get(), get()) }
                 .onFailure { Log.w("App", "Could not add the sample note", it) }
-            runCatching { BibleStudyKit.addOnce(this@App, get(), get(), get()) }
+            runCatching {
+                library.prepare()
+                BibleStudyKit.addOnce(this@App, get(), get(), get())
+            }
                 .onFailure { Log.w("App", "Could not add the Bible Study Kit", it) }
+            library.started()
         }
     }
 

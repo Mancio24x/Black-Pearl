@@ -22,7 +22,7 @@ object BibleStudyKit {
     /** Notes added per database transaction. */
     const val CHUNK = 200
 
-    private fun titleOf(path: String) = path.substringAfterLast('/').removeSuffix(".md")
+    fun titleOf(path: String) = path.substringAfterLast('/').removeSuffix(".md")
 
     /** A kit file (asset path relative to [DIR]) as a note of the kit notebook. */
     fun noteFrom(path: String, markdown: String, notebookId: Long?): Note = Note(
@@ -38,6 +38,7 @@ object BibleStudyKit {
         fun walk(rel: String) {
             val full = if (rel.isEmpty()) dir else "$dir/$rel"
             for (name in assets.list(full).orEmpty().sorted()) {
+                if (name.startsWith(".")) continue
                 val child = if (rel.isEmpty()) name else "$rel/$name"
                 if (name.endsWith(".md")) out.add(child) else walk(child)
             }

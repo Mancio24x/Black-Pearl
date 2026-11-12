@@ -457,3 +457,5 @@ Completed the editor suggestion strip and the Network destination, including gra
   are not rewritten).
 - Tests: `NoteOutlineTest` (9, run on a JVM prototype: pass), `BibleStudyKitTest.theBibleNoteHasItsBookGroupsInTheContents`.
   Android build and UI on CI.
+
+- 2026-11-12 · Taccuino biblico. BibleNotebook riunisce gli ID esistenti con Room, MainViewModel attende la riparazione e usa l'ordine dei 66 libri, l'importazione dello ZIP evita le copie e riporta gli indici mancanti. NoteImporter conserva i percorsi e risolve i collegamenti Markdown omonimi del vault. Aggiunti test di aggiornamento, ordinamento, Home e collegamenti. Verifica locale del catalogo e del diff. Gradle locale bloccato dal download della distribuzione, suite Android delegate alla CI della PR.

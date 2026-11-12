@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -14,6 +15,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import org.qosp.notes.components.BibleNotebook
 import org.qosp.notes.data.model.Note
 import org.qosp.notes.data.repo.NoteRepository
 import org.qosp.notes.preferences.AppPreferences
@@ -34,7 +36,9 @@ class MainViewModelTest {
     @After
     fun tearDown() = Dispatchers.resetMain()
 
-    private fun viewModel() = MainViewModel(notes, mockk(), prefs, mockk())
+    private val ready = MutableStateFlow(true)
+    private val library = mockk<BibleNotebook>().also { every { it.ready } returns ready }
+    private fun viewModel() = MainViewModel(notes, mockk(), prefs, mockk(), library)
 
     @Test
     fun allNotesExcludesTheKitNotebookInTheQuery() = runTest(UnconfinedTestDispatcher()) {
@@ -43,8 +47,12 @@ class MainViewModelTest {
         every { notes.getNonDeletedOrArchivedExcept(7L, any()) } returns flowOf(mine)
 
         val vm = viewModel()
+        ready.value = false
         val job = launch { vm.data.collect {} }
         vm.initialize(null)
+        assertEquals(emptyList<Note>(), vm.data.value.notes)
+        verify(exactly = 0) { notes.getNonDeletedOrArchived(any()) }
+        ready.value = true
 
         assertEquals(mine, vm.data.value.notes)
         verify { notes.getNonDeletedOrArchivedExcept(7L, any()) }

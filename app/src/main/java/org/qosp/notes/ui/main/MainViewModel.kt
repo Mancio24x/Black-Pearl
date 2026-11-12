@@ -3,10 +3,13 @@ package org.qosp.notes.ui.main
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import org.qosp.notes.R
+import org.qosp.notes.components.BibleNotebook
 import org.qosp.notes.data.repo.NoteRepository
 import org.qosp.notes.data.repo.NotebookRepository
 import org.qosp.notes.data.sync.core.BackendProvider
@@ -19,24 +22,23 @@ class MainViewModel(
     private val notebookRepository: NotebookRepository,
     preferenceRepository: PreferenceRepository,
     backendProvider: BackendProvider,
+    private val library: BibleNotebook,
 ) : AbstractNotesViewModel(preferenceRepository, backendProvider) {
 
     private val notebookIdFlow: MutableStateFlow<Long?> = MutableStateFlow(null)
 
     override val provideNotes = { sortMethod: SortMethod ->
         notebookIdFlow.flatMapLatest { id ->
-            when (id) {
-                // the Bible Study Kit has its own notebook and stays out of "All notes"
-                // (filtered in SQL, so its ~5 MB of notes are never read here)
-                null -> preferenceRepository.getBibleKitNotebookId().distinctUntilChanged().flatMapLatest { kitId ->
-                    if (kitId == null) {
-                        noteRepository.getNonDeletedOrArchived(sortMethod)
-                    } else {
-                        noteRepository.getNonDeletedOrArchivedExcept(kitId, sortMethod)
+            library.ready.filter { it }.flatMapLatest {
+                preferenceRepository.getBibleKitNotebookId().distinctUntilChanged().flatMapLatest { kitId ->
+                    when {
+                        id == null && kitId != null -> noteRepository.getNonDeletedOrArchivedExcept(kitId, sortMethod)
+                        id == null -> noteRepository.getNonDeletedOrArchived(sortMethod)
+                        id == R.id.nav_default_notebook.toLong() -> noteRepository.getNotesWithoutNotebook(sortMethod)
+                        id == kitId -> noteRepository.getByNotebook(id, sortMethod).map { library.inReadingOrder(it) }
+                        else -> noteRepository.getByNotebook(id, sortMethod)
                     }
                 }
-                R.id.nav_default_notebook.toLong() -> noteRepository.getNotesWithoutNotebook(sortMethod)
-                else -> noteRepository.getByNotebook(id, sortMethod)
             }
         }
     }

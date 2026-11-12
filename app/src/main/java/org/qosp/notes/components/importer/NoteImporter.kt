@@ -75,8 +75,16 @@ object NoteImporter {
 
         val plainNotes = plain.filterNot { it.first.extension in duplicates }
         context.useNotebookRoot(plainNotes.map { it.first })
-        for ((entry, text) in plainNotes) {
-            val note = runCatching { TextFormats.read(entry, text, context) }.getOrNull() ?: continue
+        val parsed = plainNotes.mapNotNull { (entry, text) ->
+            runCatching { TextFormats.read(entry, text, context) }.getOrNull()?.let { Triple(entry, text, it) }
+        }
+        context.indexMarkdown(parsed.filter { it.third.format == "Markdown" }.map { it.first to it.third.title })
+        for ((entry, text, first) in parsed) {
+            val title = context.noteTitle(entry)
+            val note = if (title == null) first else {
+                val linked = if ("[[" in text || "](" in text) TextFormats.read(entry, text, context) ?: first else first
+                linked.copy(title = title, notebook = context.folderFor(entry).ifEmpty { null })
+            }
             notes += note
             formats += note.format
         }
@@ -103,6 +111,31 @@ class ImportContext(val entries: List<ImportEntry>) {
     private val byPath = entries.associateBy { it.path.lowercase() }
     private val byName = entries.groupBy { it.name.lowercase() }
     private var notebookRoot = ""
+    private var noteTitles: Map<ImportEntry, String> = emptyMap()
+
+    fun folderFor(entry: ImportEntry) = entry.folder.removePrefix(notebookRoot).trim('/')
+    fun noteTitle(entry: ImportEntry) = noteTitles[entry]
+
+    fun indexMarkdown(notes: List<Pair<ImportEntry, String>>) {
+        val named = notes.map { (entry, title) -> entry to title.ifBlank { entry.stem } }
+        val duplicates = named.groupingBy { it.second.lowercase() }.eachCount()
+        noteTitles = named.associate { (entry, title) ->
+            val path = folderFor(entry)
+            entry to if (duplicates.getValue(title.lowercase()) > 1 && path.isNotEmpty()) {
+                path.replace("/", " › ") + " › " + title
+            } else title
+        }
+    }
+
+    fun noteTarget(from: ImportEntry, target: String): String? {
+        if (noteTitles.isEmpty()) return null
+        val decoded = runCatching { URLDecoder.decode(target.replace("+", "%2B"), "UTF-8") }.getOrDefault(target)
+        val name = if (decoded.endsWith(".md", true)) decoded else "$decoded.md"
+        val candidates = listOf("${from.folder}/$name", "$notebookRoot/$name", name)
+        val exact = candidates.firstNotNullOfOrNull { find(it)?.let(noteTitles::get) }
+        if (exact != null || '/' in name) return exact
+        return byName[name.lowercase()].orEmpty().mapNotNull(noteTitles::get).singleOrNull()
+    }
 
     fun find(path: String): ImportEntry? = byPath[normalizePath(path).lowercase()]
 

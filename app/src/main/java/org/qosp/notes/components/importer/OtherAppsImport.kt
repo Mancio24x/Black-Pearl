@@ -5,6 +5,7 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.qosp.notes.components.BibleNotebook
 import org.qosp.notes.App
 import org.qosp.notes.components.backup.BackupManager
 import org.qosp.notes.components.backup.DefaultMigrationHandler
@@ -24,14 +25,19 @@ import java.util.UUID
  * Imports the files the user picked (from other note apps, or a Black Pearl / Quillpad backup).
  * Notes are added, never replaced: existing notes, notebooks and tags are kept and reused by name.
  */
-class OtherAppsImport(private val context: Context, private val backupManager: BackupManager) {
+class OtherAppsImport(
+    private val context: Context,
+    private val backupManager: BackupManager,
+    private val bible: BibleNotebook? = null,
+) {
 
-    class Outcome(val notes: Int, val formats: Set<String>)
+    class Outcome(val notes: Int, val formats: Set<String>, val kits: List<BibleNotebook.ImportSummary>)
 
     suspend fun import(uris: List<Uri>): Outcome = withContext(Dispatchers.IO) {
         val work = File(context.cacheDir, "import").apply { deleteRecursively(); mkdirs() }
         try {
             var count = 0
+            val kits = mutableListOf<BibleNotebook.ImportSummary>()
             val formats = linkedSetOf<String>()
             uris.forEachIndexed { index, uri ->
                 val name = displayName(uri) ?: "file$index"
@@ -45,12 +51,18 @@ class OtherAppsImport(private val context: Context, private val backupManager: B
                     count += backup.notes.size
                     formats += "Black Pearl"
                 } else {
-                    val result = NoteImporter.read(entries)
+                    val kit = bible?.importArchive(entries)
+                    if (kit != null) {
+                        kits += kit.first
+                        count += kit.first.added
+                        formats += "Bible Study Kit"
+                    }
+                    val result = NoteImporter.read(if (kit == null) entries else entries.filterNot { it in kit.second })
                     count += write(result.notes)
                     formats += result.formats
                 }
             }
-            Outcome(count, formats)
+            Outcome(count, formats, kits)
         } finally {
             work.deleteRecursively()
         }

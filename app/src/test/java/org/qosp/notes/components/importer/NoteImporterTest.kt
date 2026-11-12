@@ -223,6 +223,19 @@ class NoteImporterTest {
     }
 
     @Test
+    fun resolvesDuplicateMarkdownNamesByFolder() {
+        fun md(path: String, text: String) = ImportEntry(path) { text.byteInputStream() }
+        val result = NoteImporter.read(listOf(
+            md("Vault/A/01.md", "# Chapter\nFirst"),
+            md("Vault/B/01.md", "# Chapter\nSecond"),
+            md("Vault/A/Index.md", "[[01#Verse|Local]] and [Other](../B/01.md#Verse)"),
+        ))
+        assertEquals("First", result.note("A › Chapter").content)
+        assertEquals("Second", result.note("B › Chapter").content)
+        assertEquals("[[A › Chapter#Verse|Local]] and [[B › Chapter#Verse|Other]]", result.note("Index").content)
+    }
+
+    @Test
     fun plainTextIsConvertedToMarkdown() {
         val result = NoteImporter.read(looseFiles("txt"))
         assertEquals(setOf("TXT"), result.formats)
