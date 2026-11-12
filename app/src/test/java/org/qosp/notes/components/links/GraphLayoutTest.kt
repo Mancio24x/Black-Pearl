@@ -90,4 +90,41 @@ class GraphLayoutTest {
         assertEquals(300, pos.size)
         assertTrue("took $ms ms", ms < 1500)
     }
+
+    /** Shaped like the Bible Study Kit: one hub, 66 books, ~20 chapters each, chapters linked in a row. */
+    private fun kitLikeGraph(): Pair<List<GraphNode>, List<GraphEdge>> {
+        val nodes = ArrayList<GraphNode>()
+        val edges = ArrayList<GraphEdge>()
+        nodes.add(GraphNode("hub", "Bible", 0, 66))
+        var id = 1L
+        for (b in 1..66) {
+            nodes.add(GraphNode("b$b", "Book $b", id++, 21))
+            edges.add(GraphEdge("hub", "b$b"))
+            for (c in 1..19) {
+                nodes.add(GraphNode("b$b-$c", "Book $b-$c", id++, 2))
+                edges.add(GraphEdge("b$b", "b$b-$c"))
+                if (c > 1) edges.add(GraphEdge("b$b-${c - 1}", "b$b-$c"))
+            }
+        }
+        return nodes to edges
+    }
+
+    @Test
+    fun aKitSizedGraphIsOneCompactRoundGroupAndFast() {
+        val (nodes, edges) = kitLikeGraph()
+        val started = System.currentTimeMillis()
+        val pos = GraphLayout.layout(nodes, edges, GraphLayout.iterationsFor(nodes.size))
+        val ms = System.currentTimeMillis() - started
+        assertEquals(nodes.size, pos.size)
+        assertTrue("took $ms ms", ms < 5000)
+        val cx = pos.values.map { it.x }.average()
+        val cy = pos.values.map { it.y }.average()
+        val radii = pos.values.map { hypot(it.x - cx, it.y - cy) }.sorted()
+        val r90 = radii[radii.size * 9 / 10]
+        // the old layout left the kit at ~0.75 * K * sqrt(n): long spokes and scattered groups
+        assertTrue("r90 $r90", r90 < 0.45 * 40 * Math.sqrt(nodes.size.toDouble()))
+        // the hub stays in the middle
+        val hub = pos.getValue("hub")
+        assertTrue("hub at ${hypot(hub.x - cx, hub.y - cy)}", hypot(hub.x - cx, hub.y - cy) < r90 / 3)
+    }
 }

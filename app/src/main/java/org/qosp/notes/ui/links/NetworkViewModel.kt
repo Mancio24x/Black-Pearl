@@ -44,7 +44,6 @@ class NetworkViewModel(repository: LinkIndexRepository) : ViewModel() {
 
     val graph = combine(index, options) { current, o ->
         val (nodes, edges) = LinkGraph.build(current, o.unlinked, o.focus, o.depth, o.tags, o.attachments)
-        val iterations = (12_000 / nodes.size.coerceAtLeast(1)).coerceIn(2, 180)
-        NetworkGraph(nodes, edges, GraphLayout.layout(nodes, edges, iterations))
+        NetworkGraph(nodes, edges, GraphLayout.layout(nodes, edges, GraphLayout.iterationsFor(nodes.size)))
     }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NetworkGraph())
 }

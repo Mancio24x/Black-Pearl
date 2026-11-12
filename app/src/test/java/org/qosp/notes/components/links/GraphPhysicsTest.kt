@@ -77,4 +77,24 @@ class GraphPhysicsTest {
         single.drag("a", PointF2(10f, 0f))
         assertFalse(single.step())
     }
+
+    @Test
+    fun draggingAHubPullsAllItsLinksEvenInALargeGraph() {
+        // 1 hub + 600 linked notes: more than the old 300-note live limit
+        val nodes = listOf(GraphNode("hub", "Hub", 0, 600)) + (1..600).map { GraphNode("n$it", "N$it", it.toLong(), 1) }
+        val edges = (1..600).map { GraphEdge("hub", "n$it") }
+        val layout = GraphLayout.layout(nodes, edges, GraphLayout.iterationsFor(nodes.size))
+        val p = GraphPhysics(layout, edges)
+        val s = layout.getValue("hub")
+        for (f in 1..40) {
+            p.drag("hub", PointF2(s.x + 10f * f.coerceAtMost(30), s.y))
+            p.step()
+        }
+        val still = (1..600).count { k ->
+            val a = layout.getValue("n$k")
+            val b = p.position("n$k")!!
+            b.x - a.x < 20f
+        }
+        assertEquals("linked notes that did not follow the hub", 0, still)
+    }
 }

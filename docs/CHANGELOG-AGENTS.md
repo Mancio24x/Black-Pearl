@@ -477,3 +477,15 @@ Completed the editor suggestion strip and the Network destination, including gra
   Network) the first note was opened from.
 - Tests: `BibleStudyKitTest` +2 (copy removed / changed, attachment and user notes kept / extra empty notebook
   deleted; nothing before the kit is added). Android build and device tests on CI.
+
+## 2026-11-12 — Network: compact, centred layout; dragging pulls all links
+- Owner request: the kit's graph was a scattered mess and dragging moved only part of the links. Causes: the O(n²)
+  layout was given `12000 / n` iterations (9 for the kit), and live dragging simulated at most 300 nodes.
+- `GraphLayout`: repulsion only between notes closer than `CUTOFF` (3K) found with a grid (`forEachClosePair`,
+  linear), a constant `PULL` towards the centre, start on a breadth-first sunflower spiral; `iterationsFor(n)`
+  (80–300). `separate` uses the grid too. Kit (JVM prototype on the real files): r90 1091 → 388, edge median 106 → 35,
+  ~1 s on a laptop JVM for 300 iterations.
+- `GraphPhysics`: same forces via the grid (other groups still only collision-avoid within K), `MAX_LIVE_NODES`
+  300 → 4000, so the whole kit moves with a dragged note.
+- Tests: `GraphLayoutTest.aKitSizedGraphIsOneCompactRoundGroupAndFast`, `GraphPhysicsTest.draggingAHubPullsAllItsLinksEvenInALargeGraph`;
+  all GraphLayout/GraphPhysics tests (15) pass on the JVM prototype. Android build, device tests and frame time on CI/device.
