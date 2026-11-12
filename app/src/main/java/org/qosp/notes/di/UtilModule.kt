@@ -7,6 +7,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.qosp.notes.App
 import org.qosp.notes.BuildConfig
+import org.qosp.notes.components.BibleNotebook
 import org.qosp.notes.components.MediaStorageManager
 import org.qosp.notes.components.backup.BackupManager
 import org.qosp.notes.components.workers.BinCleaningWorker
@@ -46,6 +47,7 @@ object UtilModule {
                 runInTransaction = { block -> database.withTransaction { block() } },
             )
         }
+        single { BibleNotebook(androidContext(), get(), get()) }
         singleOf(::ReminderManager)
         singleOf(::ConnectionManager)
         singleOf(::Toaster)

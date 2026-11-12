@@ -22,6 +22,7 @@ import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.qosp.notes.App
 import org.qosp.notes.R
+import org.qosp.notes.components.BibleNotebook
 import org.qosp.notes.components.importer.OtherAppsImport
 import org.qosp.notes.data.model.Note
 import org.qosp.notes.preferences.BackupStrategy
@@ -38,6 +39,7 @@ class BackupService : LifecycleService() {
 
     val preferenceRepository: PreferenceRepository by inject()
     val backupManager: BackupManager by inject()
+    private val bible: BibleNotebook by inject()
 
     private var notificationManager: NotificationManager? = null
 
@@ -218,10 +220,15 @@ class BackupService : LifecycleService() {
             .setOngoing(true)
         startForeground(notificationId, notificationBuilder.build())
 
-        val outcome = runCatching { OtherAppsImport(applicationContext, backupManager).import(uris) }
+        val outcome = runCatching { OtherAppsImport(applicationContext, backupManager, bible).import(uris) }
         val message = outcome.fold(
             onSuccess = {
-                if (it.notes == 0) getString(R.string.import_nothing_found)
+                if (it.kits.isNotEmpty()) {
+                    it.kits.joinToString("\n") { kit ->
+                        getString(R.string.bible_import_books, kit.books, kit.books + kit.missing.size) +
+                            if (kit.missing.isEmpty()) "" else " · " + kit.missing.joinToString(", ")
+                    }
+                } else if (it.notes == 0) getString(R.string.import_nothing_found)
                 else resources.getQuantityString(R.plurals.import_done, it.notes, it.notes)
             },
             onFailure = { getString(R.string.import_failed) },
@@ -230,6 +237,7 @@ class BackupService : LifecycleService() {
             notificationId,
             notificationBuilder
                 .setContentTitle(message)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(message))
                 .setContentText(outcome.exceptionOrNull()?.message ?: outcome.getOrNull()?.formats?.joinToString(", "))
                 .setProgress(0, 0, false)
                 .setOngoing(false)

@@ -188,6 +188,15 @@ class PreferenceRepository(
     }
 
     /** Black Pearl: the Bible Study Kit is added only once (see components/BibleStudyKit). */
+    suspend fun isBibleKitReconciled() = dataStore.data.first()[BIBLE_KIT_RECONCILED] == true
+
+    suspend fun setBibleKitReconciled(id: Long) {
+        dataStore.edit {
+            it[BIBLE_KIT_NOTEBOOK_ID] = id
+            it[BIBLE_KIT_RECONCILED] = true
+        }
+    }
+
     suspend fun isBibleKitAdded(): Boolean = dataStore.data.first()[BIBLE_KIT_ADDED] ?: false
 
     suspend fun setBibleKitAdded() {
@@ -202,6 +211,7 @@ class PreferenceRepository(
     }
 
     companion object {
+        private val BIBLE_KIT_RECONCILED = booleanPreferencesKey("bible_kit_reconciled_v1")
         val BIBLE_KIT_ADDED = booleanPreferencesKey("bible_study_kit_added")
         val BIBLE_KIT_NOTEBOOK_ID = longPreferencesKey("bible_study_kit_notebook_id")
         val SAMPLE_NOTE_ADDED = booleanPreferencesKey("sample_note_added")

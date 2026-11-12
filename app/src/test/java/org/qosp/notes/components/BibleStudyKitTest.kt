@@ -39,11 +39,19 @@ class BibleStudyKitTest {
     @Test
     fun shipsTheWholeKitWithUniqueTitles() {
         val paths = BibleStudyKit.files(assets())
-        assertEquals(1300, paths.size)
+        assertEquals(1299, paths.size)
         val titles = paths.map { it.substringAfterLast('/').removeSuffix(".md") }
         assertEquals(titles.size, titles.map { it.lowercase() }.toSet().size)
         assertTrue(BibleStudyKit.START in titles)
         assertTrue("Gen-01" in titles)
+    }
+
+    @Test
+    fun booksAndChaptersHaveCanonicalNumericOrder() {
+        val rank = BibleNotebook.readingOrder(BibleStudyKit.files(assets()))
+        val wanted = listOf("The Bible (WEB)", "+Start here", "Genesis", "Gen-01", "Gen-10", "Exodus", "Psalm",
+            "Ps-09", "Ps-11", "Ps-100", "Revelation", "Rev-22")
+        assertEquals(wanted, wanted.sortedBy { rank.getValue(it) })
     }
 
     @Test
@@ -98,7 +106,7 @@ class BibleStudyKitTest {
 
         assertEquals(BibleStudyKit.NOTEBOOK, notebook.captured.name)
         val inserted = chunks.flatten()
-        assertEquals(1300, inserted.size)
+        assertEquals(1299, inserted.size)
         assertTrue(chunks.all { it.size <= BibleStudyKit.CHUNK })
         assertEquals(7, chunks.size)
         assertTrue(inserted.all { it.notebookId == 42L && it.isLocalOnly })
@@ -125,7 +133,7 @@ class BibleStudyKitTest {
         BibleStudyKit.addOnce(context, notes, notebooks, preferences)
 
         val inserted = chunks.flatten()
-        assertEquals(800, inserted.size)
+        assertEquals(799, inserted.size)
         assertTrue(chunks.all { it.size <= BibleStudyKit.CHUNK })
         assertTrue(inserted.all { it.notebookId == 7L })
         assertTrue(inserted.none { n -> already.any { it.title == n.title } })
@@ -151,7 +159,7 @@ class BibleStudyKitTest {
 
         coVerify { preferences.setBibleKitNotebookId(9L) }
         val inserted = chunks.flatten()
-        assertEquals(1300, inserted.size)
+        assertEquals(1299, inserted.size)
         assertTrue(chunks.all { it.size <= BibleStudyKit.CHUNK })
         assertTrue(inserted.all { it.notebookId == 9L })
         coVerify(exactly = 0) { notes.insertNote(any(), any()) }

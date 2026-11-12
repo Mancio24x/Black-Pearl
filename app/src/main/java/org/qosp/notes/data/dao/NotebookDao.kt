@@ -17,6 +17,9 @@ interface NotebookDao {
     @Delete
     suspend fun delete(vararg notebooks: Notebook)
 
+    @Query("DELETE FROM notebooks WHERE id = :id AND NOT EXISTS (SELECT 1 FROM notes WHERE notebookId = :id)")
+    suspend fun deleteIfEmpty(id: Long)
+
     @Update
     suspend fun update(vararg notebooks: Notebook)
 

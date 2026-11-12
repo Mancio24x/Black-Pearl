@@ -1,5 +1,6 @@
 package org.qosp.notes.components.importer
 
+import org.qosp.notes.components.links.WikiLinks
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
@@ -75,7 +76,17 @@ object MarkdownLinks {
     private val scheme = Regex("""^[a-zA-Z][a-zA-Z0-9+.-]*:""")
 
     fun resolve(markdown: String, entry: ImportEntry, context: ImportContext, files: NoteFiles): String {
-        var out = wikiEmbed.replace(markdown) { m -> // Obsidian: ![[photo.png]] or ![[photo.png|300]]
+        val internal = StringBuilder(markdown)
+        if (context.noteTitle(entry) != null) {
+            for (link in WikiLinks.find(markdown).asReversed()) {
+                val target = context.noteTarget(entry, link.target) ?: continue
+                if (target == link.target) continue
+                val heading = link.heading?.let { "#$it" }.orEmpty()
+                val label = link.label ?: link.target.substringAfterLast('/').removeSuffix(".md")
+                internal.replace(link.range.first, link.range.last + 1, "[[$target$heading|$label]]")
+            }
+        }
+        var out = wikiEmbed.replace(internal) { m -> // Obsidian: ![[photo.png]] or ![[photo.png|300]]
             val target = m.groupValues[1].substringBefore('|').substringBefore('#').trim()
             val found = context.resolve(entry, target) ?: return@replace m.value
             val file = ImportedFile.of(found)
@@ -92,9 +103,14 @@ object MarkdownLinks {
                 else -> context.resolve(entry, url)?.let { files.image(ImportedFile.of(it), alt) } ?: m.value
             }
         }
+        val code = WikiLinks.excludedRanges(out)
         out = fileLink.replace(out) { m -> // links to other notes or to files of the export
             val (label, url) = m.destructured
-            if (scheme.containsMatchIn(url) || url.startsWith("#")) return@replace m.value
+            if (code.any { m.range.first in it } || scheme.containsMatchIn(url) || url.startsWith("#")) return@replace m.value
+            context.noteTarget(entry, url.substringBefore('#'))?.let { target ->
+                val heading = url.substringAfter('#', "").let { if (it.isEmpty()) "" else "#$it" }
+                return@replace "[[$target$heading|${label.ifBlank { target }}]]"
+            }
             val found = context.resolve(entry, url) ?: return@replace m.value
             if (found.extension !in NoteImporter.noteExtensions) files.add(ImportedFile.of(found))
             label.ifBlank { found.stem }

@@ -25,6 +25,9 @@ import org.qosp.notes.preferences.SortMethod.TITLE_ASC
 import org.qosp.notes.preferences.SortMethod.TITLE_DESC
 import java.time.Instant
 
+/** Only the columns needed to recognise legacy kit copies. */
+data class KitCandidate(val id: Long, val notebookId: Long?, val title: String, val content: String)
+
 @Dao
 interface NoteDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -33,6 +36,18 @@ interface NoteDao {
     /** Inserts all [notes] in one transaction (one table invalidation for open Flows). */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(notes: List<NoteEntity>): List<Long>
+
+    @Query("SELECT id, notebookId, title, content FROM notes WHERE title IN (:titles)")
+    suspend fun kitCandidates(titles: List<String>): List<KitCandidate>
+
+    @Query("SELECT title FROM notes WHERE notebookId = :id")
+    suspend fun notebookTitles(id: Long): List<String>
+
+    @Query("UPDATE notes SET notebookId = :destination WHERE notebookId = :source")
+    suspend fun mergeNotebook(source: Long, destination: Long)
+
+    @Query("UPDATE notes SET notebookId = :destination WHERE id IN (:ids)")
+    suspend fun moveIntoNotebook(ids: List<Long>, destination: Long)
 
     @Update
     suspend fun update(vararg notes: NoteEntity)
