@@ -444,3 +444,16 @@ Completed the editor suggestion strip and the Network destination, including gra
 - Tests: `bash -n` and shellcheck clean; note generator and meminfo parsing checked locally. Not run on an emulator
   yet (no SDK here): first CI run is the real check. Open: seeding time (~5 min estimated) and whether every
   share intent becomes a note are unverified until that run (the database size line shows it).
+
+## 2026-11-12 — Note contents ("Indice"), like Obsidian's Outline
+- `NoteOutline` (pure Kotlin): ATX headings with level, shown text (links → label, emphasis/code marks dropped,
+  `^block` ids removed) and line offset; fenced/indented code and YAML front matter skipped; setext not listed.
+  `WikiLinks.fencedRanges` made `internal` for it.
+- Editor: top-bar "Contents/Indice" button when a text note has ≥ 2 headings; bottom sheet indented by level, search
+  field above 8 headings; tap scrolls the preview to that heading (k-th occurrence of the same text; by position when
+  the counts match) or, in edit mode, puts the cursor at the end of the heading line. `scrollToHeadingOnce` now
+  shares `previewHeadingStart` / `scrollToOffset`.
+- Kit: the 10 bold book groups of "The Bible (WEB)" are now `###` headings (new installs only; existing kit notes
+  are not rewritten).
+- Tests: `NoteOutlineTest` (9, run on a JVM prototype: pass), `BibleStudyKitTest.theBibleNoteHasItsBookGroupsInTheContents`.
+  Android build and UI on CI.
