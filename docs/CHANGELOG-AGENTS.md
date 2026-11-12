@@ -294,3 +294,12 @@ Completed the editor suggestion strip and the Network destination, including gra
   are not tags; a tag needs a letter or digit and not only digits (`#-`, `#_`, `#//` are not tags); `#a/` gives `a`;
   decomposed accents stay in the name. Display-only (note text never changed).
 - Tests: 6 new cases in `InlineTagsTest` (all 11 cases checked in a JVM prototype; JUnit on CI).
+
+## 2026-11-12 — Links follow a renamed note (asks first)
+- New `components/links/LinkRename.kt`: rewrites only the target of `[[Old]]`, `[[Old|label]]`, `[[Old#H]]`,
+  `[[folder/Old.md]]` (label, heading, prefix, `.md`, spaces kept); skips code, embeds, notes in the bin, the renamed
+  note itself, and does nothing while another note still has the old title or the new title is not linkable.
+- `EditorFragment`: title remembered when its field gets focus; on leaving the field or closing the note a dialog
+  "Update links?" (Update / No, not cancelable) lists how many notes; updates run in the activity scope and sync as usual.
+- Owner decision: ask before changing other notes (option A).
+- Tests: `LinkRenameTest` (5) — run with JUnit in a JVM prototype with a stub Note: 5/5 pass; Android build on CI.
