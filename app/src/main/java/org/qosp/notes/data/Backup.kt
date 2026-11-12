@@ -25,6 +25,12 @@ data class Backup(
     fun serialize() = Json.encodeToString(this)
 
     companion object {
-        fun fromString(serialized: String): Backup = Json.decodeFromString(serialized)
+        /** Lenient on read so backups from newer or older versions (extra fields, new enum values) still restore. */
+        private val readJson = Json {
+            ignoreUnknownKeys = true
+            coerceInputValues = true
+        }
+
+        fun fromString(serialized: String): Backup = readJson.decodeFromString(serialized)
     }
 }

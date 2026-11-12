@@ -303,3 +303,19 @@ Completed the editor suggestion strip and the Network destination, including gra
   "Update links?" (Update / No, not cancelable) lists how many notes; updates run in the activity scope and sync as usual.
 - Owner decision: ask before changing other notes (option A).
 - Tests: `LinkRenameTest` (5) — run with JUnit in a JVM prototype with a stub Note: 5/5 pass; Android build on CI.
+
+## 2026-11-12 — Backup/restore safety fixes (review data.md #1 #2 #3 #5 #6 #7 #9, lists.md #7)
+- `BackupManager.restoreNotesFromBackup`: backup `idMappings` are no longer restored (restored notes are new local
+  notes; the next sync uploads them). The DB part runs in one Room transaction (`runInTransaction`, wired in
+  `di/UtilModule` with `withTransaction`, room-ktx already a dependency); notes/tags are inserted with sync
+  off inside it; reminder alarms are scheduled after commit. `notesByIds()` added.
+- `BackupService`: restore errors caught -> existing "restore failed" notification (cancellation rethrown); "back up
+  selected notes" passes a `LongArray` of ids (`NOTE_IDS`) instead of `Note` parcelables; notes loaded in the service.
+- `data/Backup.kt`: `fromString` uses `Json { ignoreUnknownKeys; coerceInputValues }`; write format unchanged.
+- New `components/backup/BackupRules.kt`: zip restore accepts only `backup.json` and `media/<name>` (no dirs, sub-dirs,
+  `..`, `.`, `/` or `\`, `._*`; others skipped); `uniqueName` never returns a taken name (used by
+  `AttachmentHandler.IncludeFiles` and restore); `remapMediaLinks` rewrites inline
+  `content://<any authority>/media_files/<name>` links in note content to the restored file.
+- Tests: `BackupRulesTest` (6) and 3 new `BackupTest` cases: 10/10 pass in a JVM prototype with stubbed Room/Parcelize.
+  Unverified: Android compile, `withTransaction` on device, `NoteLifecycleTest` (instrumented). Not done: process-death
+  part of lists.md #7 (picker result after `notesToBackup` is lost still makes a full backup).

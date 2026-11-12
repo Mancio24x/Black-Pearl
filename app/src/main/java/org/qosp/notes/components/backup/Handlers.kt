@@ -39,16 +39,13 @@ sealed interface AttachmentHandler {
                 .firstOrNull()
 
             if (existingFile == null) {
-                var fileName = getAttachmentFilename(context, uri) ?: return null
+                val originalName = getAttachmentFilename(context, uri) ?: return null
 
-                when {
-                    !attachmentsMap.containsKey(fileName) -> count[fileName] = 0
-                    else -> {
-                        val id = (count[fileName] ?: 0) + 1
-                        count[fileName] = id
-                        fileName = "${id}_$fileName"
-                    }
+                // Never reuse a name already in the map (e.g. a real file called "1_a.jpg"), or one file would be lost
+                val fileName = BackupRules.uniqueName(originalName, (count[originalName] ?: 0) + 1) {
+                    attachmentsMap.containsKey(it)
                 }
+                if (fileName != originalName) count[originalName] = fileName.substringBefore('_').toInt()
                 attachmentsMap[fileName] = uri
 
                 return old.copy(fileName = fileName, path = "")
