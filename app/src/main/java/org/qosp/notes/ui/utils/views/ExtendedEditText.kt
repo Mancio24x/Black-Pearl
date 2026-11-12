@@ -4,13 +4,13 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
+import android.os.Bundle
 import android.os.Parcelable
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.getSystemService
-import androidx.core.os.bundleOf
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryOwner
 import kotlinx.parcelize.Parcelize
@@ -140,6 +140,14 @@ class ExtendedEditText : AppCompatEditText {
         onUndoRedoListener = listener
     }
 
+    /** Forgets the undo/redo history, e.g. after a programmatic edit that the history did not record. */
+    fun clearUndoRedoHistory() {
+        history.clear()
+        historyIndex = 0
+        onUndoRedoListener?.listen(canUndo(), canRedo())
+        saveHistory()
+    }
+
     fun canUndo(): Boolean = historyIndex > 0
 
     fun canRedo(): Boolean = historyIndex < history.size
@@ -179,10 +187,13 @@ class ExtendedEditText : AppCompatEditText {
     private fun saveHistory() {
         registry?.unregisterSavedStateProvider(HISTORY)
         registry?.registerSavedStateProvider(HISTORY) {
-            bundleOf(
-                HISTORY to history,
-                HISTORY_INDEX to historyIndex,
-            )
+            Bundle().apply {
+                // an oversized history could exceed the saved-state size limit: drop it instead of crashing
+                val size = history.sumOf { it.textBefore.length + it.textAfter.length }
+                val keep = size <= MAX_SAVED_HISTORY_CHARS
+                putParcelableArrayList(HISTORY, ArrayList(if (keep) history else emptyList()))
+                putInt(HISTORY_INDEX, if (keep) historyIndex else 0)
+            }
         }
     }
 
@@ -209,6 +220,10 @@ class ExtendedEditText : AppCompatEditText {
             if (textSetAtLeastOnce) {
                 history.add(change)
                 historyIndex++
+                if (history.size > MAX_HISTORY_ENTRIES) {
+                    history.removeAt(0)
+                    historyIndex--
+                }
             }
 
             onUndoRedoListener?.listen(canUndo(), canRedo())
@@ -227,6 +242,8 @@ class ExtendedEditText : AppCompatEditText {
     companion object {
         const val HISTORY = "HISTORY"
         const val HISTORY_INDEX = "HISTORY_INDEX"
+        private const val MAX_HISTORY_ENTRIES = 500
+        private const val MAX_SAVED_HISTORY_CHARS = 100_000
     }
 }
 

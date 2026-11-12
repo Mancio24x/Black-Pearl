@@ -273,9 +273,10 @@ class MusicServiceBinder(
         }
     }
 
-    fun initializePlayer(attachment: Attachment) {
-        val attachmentUri = attachment.uri(applicationContext) ?: return
-        source = if (source != attachmentUri) attachmentUri else return
+    /** Returns false when the audio file cannot be opened (missing, unreadable or permission revoked). */
+    fun initializePlayer(attachment: Attachment): Boolean {
+        val attachmentUri = attachment.uri(applicationContext) ?: return false
+        source = if (source != attachmentUri) attachmentUri else return true
 
         stopPlaying(shouldStopService = false, shouldReleasePlayer = false)
 
@@ -299,18 +300,32 @@ class MusicServiceBinder(
             setOnCompletionListener {
                 if (!isLooping) setState(State.COMPLETED)
             }
-            setDataSource(applicationContext, source)
-            setState(State.INITIALIZED)
-            prepareAsync()
-            setState(State.PREPARING)
+            setOnErrorListener { _, _, _ ->
+                source = Uri.EMPTY
+                setState(State.IDLE)
+                true
+            }
+            try {
+                setDataSource(applicationContext, source)
+                setState(State.INITIALIZED)
+                prepareAsync()
+                setState(State.PREPARING)
+            } catch (e: Exception) {
+                source = Uri.EMPTY
+                reset()
+                setState(State.IDLE)
+                stopPlaying(shouldStopService = true, shouldReleasePlayer = false)
+                return false
+            }
         }
 
-        notificationId = notificationId ?: notificationManager?.generateId() ?: return
+        notificationId = notificationId ?: notificationManager?.generateId() ?: return true
 
         initializeNotificationBuilder(attachment, attachmentUri)
         applicationContext.startService(
             getIntentForAction(MusicService.IntentAction.START_FOREGROUND)
         )
+        return true
     }
 
     fun startPlaying() {

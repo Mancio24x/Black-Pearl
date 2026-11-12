@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import me.msoul.datastore.defaultOf
 import org.qosp.notes.data.model.Attachment
@@ -68,7 +70,7 @@ class EditorViewModel(
         }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(5000, replayExpirationMillis = 0),
             initialValue = Data(),
         )
 
@@ -169,11 +171,17 @@ class EditorViewModel(
         )
     }
 
+    private val updateMutex = Mutex()
+
     private inline fun update(crossinline transform: suspend (Note) -> Note) {
         viewModelScope.launch(Dispatchers.IO) {
-            val note = data.value.note ?: return@launch
-            val new = transform(note)
-            noteRepository.updateNotes(new)
+            // Serialize writes and read the latest stored note inside the lock, so quick edits
+            // never build on a stale snapshot.
+            updateMutex.withLock {
+                val id = noteIdFlow.value ?: return@withLock
+                val note = noteRepository.getById(id).first() ?: return@withLock
+                noteRepository.updateNotes(transform(note))
+            }
         }
     }
 
