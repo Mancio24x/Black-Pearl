@@ -55,12 +55,11 @@ launch() { # $1 = case name; starts the launcher, passes the welcome screen, wai
 }
 
 # --- case 4 helpers ---------------------------------------------------------------------------------------------
-# How notes get into the OLD app: it is a release build (not debuggable, so no run-as and no direct database write
-# through the app), but MainActivity accepts ACTION_SEND text/plain and the editor inserts the shared text as a new
-# note at once (EditorViewModel.initialize -> insertNote). So each note is one explicit `am start` SEND intent with
-# EXTRA_TITLE/EXTRA_TEXT, run by a script ON the device (no adb round trip per note, and the text is read from a
-# pushed file so no shell quoting of the content). This goes through the real app code path. Slower options were
-# ruled out: typing with `input text` (minutes per KB) and backup/import (needs the system file picker).
+# How notes get into the OLD app: written straight into its Room database with adb root (google_apis emulator
+# images allow it). Share intents were tried first but the old app saved none of them (database ~140 KB after 250
+# "notes"), so the case measured only the kit. Now: stop the app, pull notes_database (+ -wal/-shm), insert the rows
+# on the host with python3's sqlite3, checkpoint, push it back with the app's owner and SELinux label, and COUNT the
+# rows to prove they are there. The colour value is copied from a row the old app wrote itself (its sample note).
 seed_files() { # writes $NOTES Markdown notes of ~$NOTE_KB KB each into $1 (letters, digits, punctuation only)
   mkdir -p "$1"
   awk -v n="$NOTES" -v kb="$NOTE_KB" -v dir="$1" 'BEGIN {
@@ -76,25 +75,48 @@ seed_files() { # writes $NOTES Markdown notes of ~$NOTE_KB KB each into $1 (lett
     }
   }'
 }
-seed_notes() { # adds the notes to the installed (old) app through share intents
-  local dir=$OUT/seed-notes; seed_files "$dir"
-  du -sh "$dir" | sed 's/^/seed text: /'
-  adb shell rm -rf /data/local/tmp/seed; adb push "$dir" /data/local/tmp/seed >/dev/null
-  cat > "$OUT/seed.sh" <<EOF
-i=1
-while [ \$i -le $NOTES ]; do
-  am start -W -a android.intent.action.SEND -t text/plain -n $PKG/org.qosp.notes.ui.MainActivity \\
-    --es android.intent.extra.TITLE "Seed note \$i" --es android.intent.extra.TEXT "\$(cat /data/local/tmp/seed/\$i.md)" >/dev/null
-  sleep 0.5
-  # a fresh process every 25 notes, so editor screens do not pile up in the old app
-  if [ \$((i % 25)) -eq 0 ]; then sleep 1; am force-stop $PKG; echo "seeded \$i"; fi
-  i=\$((i+1))
-done
-sleep 2; am force-stop $PKG
+DBDIR=/data/data/$PKG/databases
+db_pull() { # $1 = local dir; copies the database files of the stopped app
+  rm -rf "$1"; mkdir -p "$1"
+  for f in notes_database notes_database-wal notes_database-shm; do adb pull "$DBDIR/$f" "$1/$f" >/dev/null 2>&1; done
+  [ -s "$1/notes_database" ]
+}
+db_count() { # $1 = local database file; prints "total kit-free" note counts
+  python3 - "$1" <<'EOF'
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+print(c.execute("SELECT COUNT(*) FROM notes").fetchone()[0], c.execute("SELECT COUNT(*) FROM notes WHERE title LIKE 'Seed note %'").fetchone()[0])
 EOF
-  adb push "$OUT/seed.sh" /data/local/tmp/seed.sh >/dev/null
-  local t0=$SECONDS; adb shell sh /data/local/tmp/seed.sh
-  note "update-with-notes: $NOTES notes of ~$NOTE_KB KB added to the old app in $((SECONDS - t0)) s"
+}
+seed_notes() { # adds $NOTES notes to the installed (old, stopped) app's database
+  local dir=$OUT/seed-notes db=$OUT/seed-db; seed_files "$dir"
+  du -sh "$dir" | sed 's/^/seed text: /'
+  adb root >/dev/null 2>&1; sleep 3; adb wait-for-device
+  adb shell am force-stop $PKG; sleep 1
+  if ! db_pull "$db"; then echo "::warning::update-with-notes: cannot read the old app's database (no adb root?)"; return 1; fi
+  python3 - "$db/notes_database" "$dir" "$NOTES" <<'EOF'
+import os, sqlite3, sys, time
+path, src, n = sys.argv[1], sys.argv[2], int(sys.argv[3])
+c = sqlite3.connect(path)
+row = c.execute("SELECT color FROM notes LIMIT 1").fetchone()
+color = row[0] if row else '"Default"'
+now = int(time.time())
+with c:
+    for i in range(1, n + 1):
+        text = open(os.path.join(src, f"{i}.md")).read()
+        c.execute("""INSERT INTO notes (title, content, isList, taskList, isArchived, isDeleted, isPinned, isHidden,
+            isMarkdownEnabled, isLocalOnly, isCompactPreview, screenAlwaysOn, creationDate, modifiedDate, deletionDate,
+            attachments, color, notebookId) VALUES (?, ?, 0, '[]', 0, 0, 0, 0, 1, 1, 0, 0, ?, ?, NULL, '[]', ?, NULL)""",
+            (f"Seed note {i}", text, now - n + i, now - n + i, color))
+c.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+c.close()
+EOF
+  local owner; owner=$(adb shell stat -c %u:%g "$DBDIR" | tr -d '\r')
+  adb shell rm -f "$DBDIR/notes_database-wal" "$DBDIR/notes_database-shm"
+  adb push "$db/notes_database" "$DBDIR/notes_database" >/dev/null
+  adb shell chown "$owner" "$DBDIR/notes_database"; adb shell restorecon "$DBDIR/notes_database"
+  # read it back from the device: the count proves the notes are really there
+  db_pull "$db" && note "update-with-notes before update: notes total/seeded $(db_count "$db/notes_database")"
 }
 db_stats() { # $1 = label; database size, only readable with adb root (best effort, never fails the job)
   local s; s=$(adb shell "ls -l /data/data/$PKG/databases/ 2>/dev/null" | awk '/notes_database/ {print $NF": "$5" B"}' | tr '\n' ' ')
@@ -137,9 +159,8 @@ update_with_notes() {
   adb install -g "$OLD" || { echo "::error::$c: install of the old APK failed"; FAILED=1; return; }
   adb shell am start -W -n $PKG/org.qosp.notes.ui.launcher.LauncherActivity >/dev/null
   sleep 6; tap_text "Continue" || tap_text "Continua"; sleep 10
-  adb logcat -c; seed_notes; adb logcat -d > "$OUT/$c-seed-logcat.txt"
-  crashed "$OUT/$c-seed-logcat.txt" && echo "::warning::$c: the OLD app crashed while notes were added (see seed logcat)"
-  adb root >/dev/null 2>&1; sleep 3; adb wait-for-device; db_stats "$c before update"
+  seed_notes || echo "::warning::$c: notes could not be added; this case measures the kit alone"
+  db_stats "$c before update"
   adb install -r -g "$NEW" || { echo "::error::$c: update to the new APK failed"; FAILED=1; return; }
   adb logcat -c
   start_app "$c"
@@ -156,6 +177,8 @@ update_with_notes() {
     echo "$c: started fine"
   fi
   db_stats "$c after kit"
+  adb shell am force-stop $PKG; sleep 1
+  db_pull "$OUT/after-db" && note "update-with-notes after kit: notes total/seeded $(db_count "$OUT/after-db/notes_database")"
   adb shell am force-stop $PKG; adb logcat -c
   start_app "$c-restart"; sleep 10
   adb logcat -d > "$OUT/$c-restart-logcat.txt"

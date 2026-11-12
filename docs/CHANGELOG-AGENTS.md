@@ -457,3 +457,10 @@ Completed the editor suggestion strip and the Network destination, including gra
   are not rewritten).
 - Tests: `NoteOutlineTest` (9, run on a JVM prototype: pass), `BibleStudyKitTest.theBibleNoteHasItsBookGroupsInTheContents`.
   Android build and UI on CI.
+
+## 2026-11-12 — Startup smoke: "update-with-notes" really seeds the notes
+- The share-intent seeding saved nothing in the old app (database ~140 KB after 250 "notes"), so the case measured
+  only the kit. Now `scripts/startup-smoke.sh` stops the old app, pulls `notes_database` with adb root, inserts the
+  notes on the host (python3 sqlite3, colour copied from the old app's own sample note), checkpoints, pushes it back
+  with owner + `restorecon`, and prints the note counts before the update and after the kit.
+- Checked locally: the seed and count snippets on a database built from schema v5 (1 + 3 rows → "4 3"). CI run decides.
