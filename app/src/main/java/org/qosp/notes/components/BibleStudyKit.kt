@@ -19,9 +19,14 @@ object BibleStudyKit {
     const val NOTEBOOK = "Bible Study Kit"
     const val START = "+Start here"
 
+    /** Notes added per database transaction. */
+    const val CHUNK = 200
+
+    private fun titleOf(path: String) = path.substringAfterLast('/').removeSuffix(".md")
+
     /** A kit file (asset path relative to [DIR]) as a note of the kit notebook. */
     fun noteFrom(path: String, markdown: String, notebookId: Long?): Note = Note(
-        title = path.substringAfterLast('/').removeSuffix(".md"),
+        title = titleOf(path),
         content = markdown.replace("\r\n", "\n"),
         notebookId = notebookId,
         isLocalOnly = true,
@@ -61,9 +66,14 @@ object BibleStudyKit {
             }
         val present = if (savedId == notebookId) notes.getByNotebook(notebookId).first().mapTo(HashSet()) { it.title }
         else emptySet()
-        for (path in paths) {
-            val note = noteFrom(path, assets.open("$DIR/$path").use { it.readBytes().decodeToString() }, notebookId)
-            if (note.title !in present) notes.insertNote(note, sync = false)
+        // Chunks of [CHUNK] notes, one transaction each: open note lists re-query a few times instead of 1300,
+        // and only one chunk of file text is in memory at a time.
+        paths.filter { titleOf(it) !in present }.chunked(CHUNK).forEach { chunk ->
+            notes.insertLocalNotes(
+                chunk.map { path ->
+                    noteFrom(path, assets.open("$DIR/$path").use { it.readBytes().decodeToString() }, notebookId)
+                },
+            )
         }
         preferences.setBibleKitAdded()
     }

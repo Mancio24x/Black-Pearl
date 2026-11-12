@@ -413,3 +413,12 @@ Completed the editor suggestion strip and the Network destination, including gra
   skips notes already there instead of adding a second copy; a deleted kit notebook is created again.
 - Tests: `BibleStudyKitTest` +2 (resume without duplicates, deleted notebook). Build (unit tests, lint, APK) and
   Startup smoke green on CI. Outline ("Indice") work is stashed, resumes after this release.
+
+## 2026-11-12 — Bible Study Kit added in a few transactions (start-up memory)
+- Cause found: the kit's 1300 one-by-one inserts each invalidated `notes`, so every open Flow (main list, link
+  index, widget) re-queried all notes hundreds of times on first start -> memory pressure / possible OOM.
+- `NoteDao.insertAll` + `NoteRepository.insertLocalNotes` (one transaction, no sync). `BibleStudyKit.addOnce`
+  inserts the missing notes in chunks of 200 (7 transactions), reading file text per chunk; resume logic and order
+  (notebook id saved first, `setBibleKitAdded()` last) unchanged. No schema change.
+- Tests: `BibleStudyKitTest` now captures `insertLocalNotes` chunks (1300 / 800 resumed, chunk <= 200,
+  `insertNote` never called). Not run here (no Android SDK); CI runs them.

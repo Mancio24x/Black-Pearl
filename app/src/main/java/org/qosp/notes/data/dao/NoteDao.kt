@@ -30,6 +30,10 @@ interface NoteDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(note: NoteEntity): Long
 
+    /** Inserts all [notes] in one transaction (one table invalidation for open Flows). */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(notes: List<NoteEntity>): List<Long>
+
     @Update
     suspend fun update(vararg notes: NoteEntity)
 
