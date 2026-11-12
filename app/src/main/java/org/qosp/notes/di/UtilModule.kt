@@ -1,5 +1,6 @@
 package org.qosp.notes.di
 
+import androidx.room.withTransaction
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.workmanager.dsl.workerOf
 import org.koin.core.module.dsl.singleOf
@@ -10,6 +11,7 @@ import org.qosp.notes.components.MediaStorageManager
 import org.qosp.notes.components.backup.BackupManager
 import org.qosp.notes.components.workers.BinCleaningWorker
 import org.qosp.notes.components.workers.SyncWorker
+import org.qosp.notes.data.AppDatabase
 import org.qosp.notes.ui.reminders.ReminderManager
 import org.qosp.notes.ui.utils.ConnectionManager
 import org.qosp.notes.ui.utils.Toaster
@@ -31,6 +33,7 @@ object UtilModule {
         }
 
         single {
+            val database = get<AppDatabase>()
             BackupManager(
                 BuildConfig.VERSION_CODE,
                 noteRepository = get(),
@@ -40,6 +43,7 @@ object UtilModule {
                 idMappingRepository = get(),
                 reminderManager = get(),
                 context = androidContext(),
+                runInTransaction = { block -> database.withTransaction { block() } },
             )
         }
         singleOf(::ReminderManager)
