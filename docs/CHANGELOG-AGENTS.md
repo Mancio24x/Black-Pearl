@@ -303,3 +303,8 @@ Completed the editor suggestion strip and the Network destination, including gra
   "Update links?" (Update / No, not cancelable) lists how many notes; updates run in the activity scope and sync as usual.
 - Owner decision: ask before changing other notes (option A).
 - Tests: `LinkRenameTest` (5) — run with JUnit in a JVM prototype with a stub Note: 5/5 pass; Android build on CI.
+
+## fix(editor): stale editor data, serialized edits, undo history, recorder/music crashes
+- Files: ui/editor/EditorViewModel.kt, ui/editor/EditorFragment.kt, ui/utils/views/ExtendedEditText.kt, ui/recorder/RecorderService.kt, ui/media/MusicService.kt, ui/media/MediaActivity.kt, strings_blackpearl.xml (en, it).
+- Fixes: #1 `replayExpirationMillis = 0` (no stale replay on resubscribe); #6 Mutex + latest note read inside the lock; #2 undo history cleared after `editContent`; #3 history saved as parcelable list, capped (500 entries, 100k chars saved); #4 MediaRecorder stop/prepare/start guarded; #5 audio open errors caught, toast + finish; link rename re-reads notes and re-plans on "Update".
+- Tests: none added (Android-only code); no build possible here (no Android SDK). Unverified: all of it, CI must compile and test.

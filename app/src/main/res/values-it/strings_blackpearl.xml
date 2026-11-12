@@ -226,6 +226,7 @@
         <item quantity="other">%1$d note collegano «%2$s». Vuoi che i collegamenti puntino a «%3$s»?</item>
     </plurals>
     <string name="link_rename_update">Aggiorna</string>
+    <string name="audio_open_error">Impossibile aprire il file audio.</string>
     <string name="link_rename_keep">No</string>
     <plurals name="link_rename_done">
         <item quantity="one">Collegamenti aggiornati in %1$d nota</item>

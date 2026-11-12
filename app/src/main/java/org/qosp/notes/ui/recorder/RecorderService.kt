@@ -58,8 +58,24 @@ class RecorderServiceBinder(
     val isRecording get() = state == RecorderService.RecorderState.RECORDING
 
     fun killRecorder(shouldStopService: Boolean = false) {
-        mediaRecorder?.stop()
-        mediaRecorder?.release()
+        mediaRecorder?.let { recorder ->
+            if (state == RecorderService.RecorderState.RECORDING) {
+                // stop() throws when no audio was captured yet (stopped right after start)
+                try {
+                    recorder.stop()
+                } catch (e: RuntimeException) {
+                    outputFile?.delete()
+                }
+            } else {
+                // never started: stop() would throw, and the file is empty
+                outputFile?.delete()
+            }
+            try {
+                recorder.release()
+            } catch (e: RuntimeException) {
+                // nothing left to release
+            }
+        }
         mediaRecorder = null
         state = RecorderService.RecorderState.DEAD
         totalSeconds = 0L
@@ -89,8 +105,14 @@ class RecorderServiceBinder(
 
     fun startRecording() {
         if (state == RecorderService.RecorderState.RECORDING) return
-        mediaRecorder?.prepare()
-        mediaRecorder?.start()
+        try {
+            mediaRecorder?.prepare()
+            mediaRecorder?.start()
+        } catch (e: Exception) {
+            // IOException (prepare) or IllegalStateException/RuntimeException (start, e.g. mic busy)
+            killRecorder()
+            return
+        }
         state = RecorderService.RecorderState.RECORDING
 
         lifecycleScope.launch {

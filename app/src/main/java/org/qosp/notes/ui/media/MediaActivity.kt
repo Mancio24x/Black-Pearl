@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.IBinder
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
@@ -56,7 +57,11 @@ class MediaActivity : BaseActivity() {
 
             when (attachment.type) {
                 Attachment.Type.AUDIO -> {
-                    musicService?.initializePlayer(attachment)
+                    if (musicService?.initializePlayer(attachment) == false) {
+                        Toast.makeText(applicationContext, R.string.audio_open_error, Toast.LENGTH_LONG).show()
+                        finish()
+                        return
+                    }
                     collectMusicServiceFlow()
                 }
                 else -> {
