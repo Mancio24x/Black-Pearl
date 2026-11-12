@@ -495,7 +495,7 @@ Completed the editor suggestion strip and the Network destination, including gra
   zoomed. Measured on the kit (JVM prototype, 300 × 120 units drag): notes ≥ 3 links away moved p95 23 / max 62
   and stayed displaced.
 - `GraphPhysics`: repulsion softened near contact (`SOFT` 20), light pull back to each note's resting place
-  (`ANCHOR`), `MAX_STEP` 12 → 8, `FRICTION` 0.6 → 0.55. Far notes now p95 15 / max 32; dragged note's links still
+  (`ANCHOR`, only while a note is held: on release the current positions become the resting places, so a dragged note stays where it is left), `MAX_STEP` 12 → 8, `FRICTION` 0.6 → 0.55. Far notes now p95 15 / max 32; dragged note's links still
   follow (median 164). `forEachClosePair` uses a sorted grid (`CloseGrid`, binary search) instead of per-frame hash
   maps: ~4.6 → ~2.9 ms per step for the kit on the laptop JVM.
 - `GraphView.entryCamera`: networks of 60+ notes open fitted to the 60 % of notes nearest the centre; "Recenter"

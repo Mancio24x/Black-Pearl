@@ -20,7 +20,7 @@ class GraphPhysics(start: Map<String, PointF2>, edges: List<GraphEdge>) {
     private val vy = DoubleArray(n)
     private val fx = DoubleArray(n)
     private val fy = DoubleArray(n)
-    // where each note rests: a light pull back keeps notes far from the dragged one from wandering off
+    // where each note rests while one is held: a light pull back keeps notes far from the dragged one from wandering
     private val homeX = x.copyOf()
     private val homeY = y.copyOf()
     private val restX = DoubleArray(n)
@@ -66,6 +66,9 @@ class GraphPhysics(start: Map<String, PointF2>, edges: List<GraphEdge>) {
     /** Lets go of the held node; the graph keeps moving a little and then stops. */
     fun release() {
         pinned = -1
+        // where things are now is the new resting place: a released note stays where it was left
+        x.copyInto(homeX)
+        y.copyInto(homeY)
     }
 
     fun stop() {
