@@ -12,12 +12,44 @@ import kotlin.math.sqrt
 /** Plain 2D point (no android.graphics so the layout is JVM-testable). */
 data class PointF2(val x: Float, val y: Float)
 
-/** Fruchterman-Reingold force-directed layout, deterministic for a given [seed]. */
+internal fun gridCellKey(cx: Long, cy: Long): Long = (cx shl 32) xor (cy and 0xffffffffL)
+
+/**
+ * Calls [action] once for every pair of points closer than [radius], using a grid of [radius]-sized cells: the work
+ * grows with the number of points, not with its square, so thousands of notes stay fast.
+ */
+internal inline fun forEachClosePair(x: DoubleArray, y: DoubleArray, radius: Double, action: (Int, Int) -> Unit) {
+    val n = x.size
+    val cells = HashMap<Long, MutableList<Int>>()
+    val cx = LongArray(n) { Math.floor(x[it] / radius).toLong() }
+    val cy = LongArray(n) { Math.floor(y[it] / radius).toLong() }
+    for (i in 0 until n) cells.getOrPut(gridCellKey(cx[i], cy[i])) { ArrayList(4) }.add(i)
+    for (i in 0 until n) {
+        for (ox in -1L..1L) for (oy in -1L..1L) {
+            val cell = cells[gridCellKey(cx[i] + ox, cy[i] + oy)] ?: continue
+            for (j in cell) if (j > i) action(i, j)
+        }
+    }
+}
+
+/**
+ * Force-directed layout, deterministic for a given [seed]. Linked notes pull together; notes push away only from
+ * notes nearby ([CUTOFF]); a steady pull towards the centre keeps each linked group one round cluster, like
+ * Obsidian's graph, instead of a spread of long spokes.
+ */
 object GraphLayout {
-    private const val K = 40.0
+    internal const val K = 40.0
     private const val MIN_DIST = 0.01
     private const val MIN_SEPARATION = 10.0
-    private const val GRAVITY = 0.05
+
+    /** Notes farther apart than this do not push each other. */
+    internal const val CUTOFF = K * 3
+
+    /** Constant pull of every note towards the centre of its group. */
+    internal const val PULL = 30.0
+
+    /** Iterations that keep the layout around a second on a phone for large vaults. */
+    fun iterationsFor(nodeCount: Int): Int = (400_000 / nodeCount.coerceAtLeast(1)).coerceIn(80, 300)
 
     fun layout(
         nodes: List<GraphNode>,
@@ -110,34 +142,54 @@ object GraphLayout {
         val pairs = edges.mapNotNull { e ->
             val a = indexOf[e.from]
             val b = indexOf[e.to]
-            if (a == null || b == null || a == b) null else a to b
+            if (a == null || b == null || a == b) null else if (a < b) a to b else b to a
+        }.distinct()
+        val adjacency = Array(n) { ArrayList<Int>() }
+        for ((a, b) in pairs) {
+            adjacency[a].add(b)
+            adjacency[b].add(a)
         }
 
+        // Start breadth-first from the most linked note, on a sunflower spiral: linked notes begin close together
+        // and the group is already round, so the forces only tidy it up.
+        val order = IntArray(n)
+        val seen = BooleanArray(n)
+        var filled = 0
+        val first = (0 until n).maxByOrNull { adjacency[it].size } ?: 0
+        order[filled++] = first
+        seen[first] = true
+        var head = 0
+        while (head < filled) {
+            for (next in adjacency[order[head++]]) if (!seen[next]) {
+                seen[next] = true
+                order[filled++] = next
+            }
+        }
         val rnd = Random(seed)
-        val radius = K * sqrt(n.toDouble()) / 2.0
         val x = DoubleArray(n)
         val y = DoubleArray(n)
-        for (i in 0 until n) {
-            val angle = 2 * PI * i / n
-            val r = radius * (0.8 + 0.4 * rnd.nextDouble())
-            x[i] = r * cos(angle)
-            y[i] = r * sin(angle)
+        val golden = PI * (3 - sqrt(5.0))
+        for (k in 0 until n) {
+            val i = order[k]
+            val r = K * 0.6 * sqrt(k + 0.5)
+            x[i] = r * cos(k * golden) + rnd.nextDouble() - 0.5
+            y[i] = r * sin(k * golden) + rnd.nextDouble() - 0.5
         }
 
         val dx = DoubleArray(n)
         val dy = DoubleArray(n)
-        val t0 = max(K, K * sqrt(n.toDouble()) / 4.0)
+        val t0 = K * 2
         val steps = max(iterations, 1)
 
         for (iter in 0 until steps) {
-            val t = t0 * (1.0 - iter.toDouble() / steps)
+            val t = t0 * (1.0 - iter.toDouble() / steps) + 0.5
             dx.fill(0.0)
             dy.fill(0.0)
-            for (i in 0 until n) {
-                for (j in i + 1 until n) {
-                    var vx = x[i] - x[j]
-                    var vy = y[i] - y[j]
-                    var d = sqrt(vx * vx + vy * vy)
+            forEachClosePair(x, y, CUTOFF) { i, j ->
+                var vx = x[i] - x[j]
+                var vy = y[i] - y[j]
+                var d = sqrt(vx * vx + vy * vy)
+                if (d < CUTOFF) {
                     if (d < MIN_DIST) {
                         // coincident: separate along a deterministic direction
                         val a = 2 * PI * (i * 31 + j) / 97.0
@@ -145,7 +197,7 @@ object GraphLayout {
                         vy = sin(a)
                         d = MIN_DIST
                     }
-                    val f = K * K / d
+                    val f = K * K / d * (1 - d / CUTOFF)
                     val fx = vx / d * f
                     val fy = vy / d * f
                     dx[i] += fx
@@ -167,8 +219,9 @@ object GraphLayout {
                 dy[b] += fy
             }
             for (i in 0 until n) {
-                dx[i] -= x[i] * GRAVITY
-                dy[i] -= y[i] * GRAVITY
+                val r = max(sqrt(x[i] * x[i] + y[i] * y[i]), MIN_DIST)
+                dx[i] -= x[i] / r * PULL
+                dy[i] -= y[i] / r * PULL
                 val d = max(sqrt(dx[i] * dx[i] + dy[i] * dy[i]), MIN_DIST)
                 val step = min(d, t)
                 x[i] += dx[i] / d * step
@@ -185,15 +238,13 @@ object GraphLayout {
 
     /** Final relaxation so no two nodes overlap: pushes too-close pairs apart, stops when none is left. */
     private fun separate(x: DoubleArray, y: DoubleArray) {
-        val n = x.size
         repeat(60) {
             var moved = false
-            for (i in 0 until n) {
-                for (j in i + 1 until n) {
-                    var vx = x[i] - x[j]
-                    var vy = y[i] - y[j]
-                    var d = sqrt(vx * vx + vy * vy)
-                    if (d >= MIN_SEPARATION) continue
+            forEachClosePair(x, y, MIN_SEPARATION) { i, j ->
+                var vx = x[i] - x[j]
+                var vy = y[i] - y[j]
+                var d = sqrt(vx * vx + vy * vy)
+                if (d < MIN_SEPARATION) {
                     if (d < MIN_DIST) {
                         val a = 2 * PI * (i * 31 + j) / 97.0
                         vx = cos(a)

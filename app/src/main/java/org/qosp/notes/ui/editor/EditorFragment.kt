@@ -59,6 +59,7 @@ import androidx.fragment.app.clearFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_DRAG
@@ -857,10 +858,16 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
             .show()
     }
 
-    private fun openLinkedNote(id: Long, heading: String?) {
+    /**
+     * Opens a linked note in place of this one, so reading on from note to note (chapter after chapter) does not
+     * pile up screens: Back leaves the notes and returns to the list the first note was opened from.
+     */
+    private fun openLinkedNote(id: Long, heading: String?) = offerLinkRename {
+        if (view == null) return@offerLinkRename
         findNavController().navigate(
             R.id.fragment_editor,
-            bundleOf("transitionName" to "editor_$id", "noteId" to id, "scrollToHeading" to (heading ?: ""))
+            bundleOf("transitionName" to "editor_$id", "noteId" to id, "scrollToHeading" to (heading ?: "")),
+            navOptions { popUpTo(R.id.fragment_editor) { inclusive = true } },
         )
     }
 

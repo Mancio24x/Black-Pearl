@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import me.msoul.datastore.defaultOf
 import org.qosp.notes.data.model.IdMapping
 import org.qosp.notes.data.model.Note
+import org.qosp.notes.data.model.NoteIdTitle
 import org.qosp.notes.data.sync.core.BaseResult
 import org.qosp.notes.preferences.CloudService
 import org.qosp.notes.preferences.SortMethod
@@ -16,6 +17,12 @@ interface NoteRepository {
      * Open note lists re-query once instead of once per note. Returns the new ids, in order.
      */
     suspend fun insertLocalNotes(notes: List<Note>): List<Long>
+
+    /** Id and title of the notes not in the bin that are outside [notebookId] (text not loaded). */
+    suspend fun getIdTitlesOutside(notebookId: Long): List<NoteIdTitle>
+
+    /** Titles of the notes of [notebookId] that are not in the bin. */
+    suspend fun getTitlesIn(notebookId: Long): Set<String>
     suspend fun updateNotes(vararg notes: Note, sync: Boolean = true)
     suspend fun moveNotesToBin(vararg notes: Note, sync: Boolean = true)
     suspend fun restoreNotes(vararg notes: Note)

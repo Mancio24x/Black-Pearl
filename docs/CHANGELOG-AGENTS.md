@@ -457,3 +457,35 @@ Completed the editor suggestion strip and the Network destination, including gra
   are not rewritten).
 - Tests: `NoteOutlineTest` (9, run on a JVM prototype: pass), `BibleStudyKitTest.theBibleNoteHasItsBookGroupsInTheContents`.
   Android build and UI on CI.
+
+## 2026-11-12 — Startup smoke: "update-with-notes" really seeds the notes
+- The share-intent seeding saved nothing in the old app (database ~140 KB after 250 "notes"), so the case measured
+  only the kit. Now `scripts/startup-smoke.sh` stops the old app, pulls `notes_database` with adb root, inserts the
+  notes on the host (python3 sqlite3, colour copied from the old app's own sample note), checkpoints, pushes it back
+  with owner + `restorecon`, and prints the note counts before the update and after the kit.
+- Checked locally: the seed and count snippets on a database built from schema v5 (1 + 3 rows → "4 3"). CI run decides.
+
+## 2026-11-12 — Kit copies merged; linked notes replace the screen
+- Owner report: two Bible Study Kits, one filling "All notes" (copies outside the kit notebook, e.g. from a backup
+  restored over the fresh kit) and one in its notebook. `BibleStudyKit.removeCopies` (run at every start after
+  `addOnce`, never fatal) deletes a note outside the kit notebook only when its title is a kit file, the kit notebook
+  has that title, the text is exactly the shipped one, and it has no attachments/tags and is not a checklist; then
+  deletes empty extra "Bible Study Kit" notebooks. Light queries `NoteDao.getIdTitlesOutside` / `getTitlesIn`
+  (id + title only). A copy of the old "The Bible (WEB)" (bold groups) differs from the new asset and stays.
+- Owner request: reading chapter after chapter, Back must leave the notes. `EditorFragment.openLinkedNote` now
+  navigates with `popUpTo(fragment_editor, inclusive)` (after the rename offer), so Back returns to the list (or
+  Network) the first note was opened from.
+- Tests: `BibleStudyKitTest` +2 (copy removed / changed, attachment and user notes kept / extra empty notebook
+  deleted; nothing before the kit is added). Android build and device tests on CI.
+
+## 2026-11-12 — Network: compact, centred layout; dragging pulls all links
+- Owner request: the kit's graph was a scattered mess and dragging moved only part of the links. Causes: the O(n²)
+  layout was given `12000 / n` iterations (9 for the kit), and live dragging simulated at most 300 nodes.
+- `GraphLayout`: repulsion only between notes closer than `CUTOFF` (3K) found with a grid (`forEachClosePair`,
+  linear), a constant `PULL` towards the centre, start on a breadth-first sunflower spiral; `iterationsFor(n)`
+  (80–300). `separate` uses the grid too. Kit (JVM prototype on the real files): r90 1091 → 388, edge median 106 → 35,
+  ~1 s on a laptop JVM for 300 iterations.
+- `GraphPhysics`: same forces via the grid (other groups still only collision-avoid within K), `MAX_LIVE_NODES`
+  300 → 4000, so the whole kit moves with a dragged note.
+- Tests: `GraphLayoutTest.aKitSizedGraphIsOneCompactRoundGroupAndFast`, `GraphPhysicsTest.draggingAHubPullsAllItsLinksEvenInALargeGraph`;
+  all GraphLayout/GraphPhysics tests (15) pass on the JVM prototype. Android build, device tests and frame time on CI/device.

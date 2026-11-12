@@ -10,6 +10,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import androidx.sqlite.db.SimpleSQLiteQuery
 import kotlinx.coroutines.flow.Flow
+import org.qosp.notes.data.model.NoteIdTitle
 import org.qosp.notes.data.model.Note
 import org.qosp.notes.data.model.NoteEntity
 import org.qosp.notes.data.model.NoteTagJoin
@@ -48,6 +49,14 @@ interface NoteDao {
     suspend fun permanentlyDeleteNotesInBin()
 
     @Transaction
+    /** Notes not in the bin and outside [notebookId], id and title only (no text loaded). */
+    @Query("SELECT id, title FROM notes WHERE isDeleted = 0 AND (notebookId IS NULL OR notebookId != :notebookId)")
+    suspend fun getIdTitlesOutside(notebookId: Long): List<NoteIdTitle>
+
+    /** Titles of the notes of [notebookId] that are not in the bin. */
+    @Query("SELECT title FROM notes WHERE isDeleted = 0 AND notebookId = :notebookId")
+    suspend fun getTitlesIn(notebookId: Long): List<String>
+
     @Query("SELECT * FROM notes WHERE id = :noteId")
     fun getById(noteId: Long): Flow<Note?>
 

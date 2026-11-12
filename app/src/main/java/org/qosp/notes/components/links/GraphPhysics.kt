@@ -27,8 +27,8 @@ class GraphPhysics(start: Map<String, PointF2>, edges: List<GraphEdge>) {
         val b = indexOf[e.to]
         if (a == null || b == null || a == b) null else if (a < b) a to b else b to a
     }.distinct()
-    // The layout packs independent components side by side. Between components only use
-    // short-range collision avoidance, so dragging a cluster doesn't sweep away unrelated notes.
+    // The layout packs independent groups side by side. Between groups only use short-range collision avoidance,
+    // so dragging a cluster doesn't sweep away unrelated notes.
     private val component = IntArray(n) { it }
     private var pinned = -1
     private var heat = 0.0
@@ -103,17 +103,17 @@ class GraphPhysics(start: Map<String, PointF2>, edges: List<GraphEdge>) {
         return true
     }
 
-    /** Same forces as [GraphLayout]: every pair repels, links pull, a light pull towards the centre. */
+    /** Same forces as [GraphLayout]: nearby notes repel, links pull, a steady pull towards the centre. */
     private fun forces(outX: DoubleArray, outY: DoubleArray) {
         outX.fill(0.0)
         outY.fill(0.0)
-        for (i in 0 until n) {
-            for (j in i + 1 until n) {
-                val ux = x[i] - x[j]
-                val uy = y[i] - y[j]
-                val d = max(sqrt(ux * ux + uy * uy), MIN_DIST)
-                val strength = if (component[i] == component[j]) 1.0 else max(0.0, 1.0 - d / K)
-                val f = strength * K * K / (d * d)
+        forEachClosePair(x, y, CUTOFF) { i, j ->
+            val ux = x[i] - x[j]
+            val uy = y[i] - y[j]
+            val d = max(sqrt(ux * ux + uy * uy), MIN_DIST)
+            val strength = if (component[i] == component[j]) 1 - d / CUTOFF else max(0.0, 1 - d / K)
+            if (strength > 0) {
+                val f = K * K / (d * d) * strength
                 outX[i] += ux * f
                 outY[i] += uy * f
                 outX[j] -= ux * f
@@ -131,17 +131,19 @@ class GraphPhysics(start: Map<String, PointF2>, edges: List<GraphEdge>) {
             outY[b] += uy * f
         }
         for (i in 0 until n) {
-            outX[i] -= x[i] * GRAVITY
-            outY[i] -= y[i] * GRAVITY
+            val r = max(sqrt(x[i] * x[i] + y[i] * y[i]), MIN_DIST)
+            outX[i] -= x[i] / r * PULL
+            outY[i] -= y[i] / r * PULL
         }
     }
 
     companion object {
-        /** Maximum nodes in one live simulation. Large vaults simulate a neighbourhood around the dragged node. */
-        const val MAX_LIVE_NODES = 300
+        /** Maximum nodes in one live simulation. Larger vaults simulate a neighbourhood around the dragged node. */
+        const val MAX_LIVE_NODES = 4000
 
-        private const val K = 40.0
-        private const val GRAVITY = 0.05
+        private const val K = GraphLayout.K
+        private const val CUTOFF = GraphLayout.CUTOFF
+        private const val PULL = GraphLayout.PULL
         private const val MIN_DIST = 1.0
         private const val GAIN = 0.04
         private const val FRICTION = 0.6
