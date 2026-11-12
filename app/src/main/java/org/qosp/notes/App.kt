@@ -114,9 +114,12 @@ class App : Application(), ImageLoaderFactory {
 
     // Black Pearl: the notebook shipped in the APK appears once among the notes
     private fun addSampleNote() {
-        CoroutineScope(Dispatchers.IO).launch {
-            SampleNote.addOnce(this@App, get(), get())
-            BibleStudyKit.addOnce(this@App, get(), get(), get())
+        // a failure here must never stop the app from starting: the samples are only a bonus, tried again next start
+        CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
+            runCatching { SampleNote.addOnce(this@App, get(), get()) }
+                .onFailure { Log.w("App", "Could not add the sample note", it) }
+            runCatching { BibleStudyKit.addOnce(this@App, get(), get(), get()) }
+                .onFailure { Log.w("App", "Could not add the Bible Study Kit", it) }
         }
     }
 

@@ -2,6 +2,7 @@ package org.qosp.notes.components
 
 import android.content.Context
 import android.content.res.AssetManager
+import kotlinx.coroutines.flow.first
 import org.qosp.notes.data.model.Note
 import org.qosp.notes.data.model.Notebook
 import org.qosp.notes.data.repo.NoteRepository
@@ -50,12 +51,19 @@ object BibleStudyKit {
         val assets = context.assets
         val paths = files(assets)
         if (paths.isEmpty()) return
-        val notebookId = notebooks.insert(Notebook(name = NOTEBOOK))
-        // remembered first: if the app is killed half way, the notes already added still stay out of "All notes"
-        preferences.setBibleKitNotebookId(notebookId)
+        // An earlier start may have been stopped half way (app closed while the 1300 notes were being added):
+        // go on in the same notebook and skip the notes already there, instead of adding a second copy.
+        val savedId = preferences.getBibleKitNotebookId().first()
+        val notebookId = savedId?.takeIf { notebooks.getById(it).first() != null }
+            ?: notebooks.insert(Notebook(name = NOTEBOOK)).also {
+                // remembered first: if the app is killed half way, the notes already added still stay out of "All notes"
+                preferences.setBibleKitNotebookId(it)
+            }
+        val present = if (savedId == notebookId) notes.getByNotebook(notebookId).first().mapTo(HashSet()) { it.title }
+        else emptySet()
         for (path in paths) {
-            val markdown = assets.open("$DIR/$path").use { it.readBytes().decodeToString() }
-            notes.insertNote(noteFrom(path, markdown, notebookId), sync = false)
+            val note = noteFrom(path, assets.open("$DIR/$path").use { it.readBytes().decodeToString() }, notebookId)
+            if (note.title !in present) notes.insertNote(note, sync = false)
         }
         preferences.setBibleKitAdded()
     }
