@@ -413,3 +413,13 @@ Completed the editor suggestion strip and the Network destination, including gra
   skips notes already there instead of adding a second copy; a deleted kit notebook is created again.
 - Tests: `BibleStudyKitTest` +2 (resume without duplicates, deleted notebook). Build (unit tests, lint, APK) and
   Startup smoke green on CI. Outline ("Indice") work is stashed, resumes after this release.
+
+## 2026-11-12 — "All notes" leaves the Bible Study Kit out in SQL
+- `NoteDao.getNonDeletedOrArchivedExcept(notebookId, sortMethod)` (same query/order as `getNonDeletedOrArchived`
+  + `AND (notebookId IS NULL OR notebookId != ?)`, bound arg), exposed in `NoteRepository`/`NoteRepositoryImpl`.
+  `MainViewModel` "All notes" switches query on `getBibleKitNotebookId()` instead of reading the ~5 MB kit and
+  filtering in Kotlin on every DB change. Same visible result.
+- Not changed: search (`SearchViewModel`, `getNonDeleted` = all non-deleted incl. archived and kit notes, filtered in
+  Kotlin) and widget (`NotesWidgetViewsFactory`, reads all non-deleted/non-archived, keeps pinned non-hidden).
+- Tests: new `ui/main/MainViewModelTest` (mockk; kit id -> excluding query, null -> plain query). Not run locally
+  (no Android SDK); CI runs it.

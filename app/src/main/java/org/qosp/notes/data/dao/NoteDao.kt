@@ -123,6 +123,21 @@ interface NoteDao {
         )
     }
 
+    /** Like [getNonDeletedOrArchived] but leaves out the notes of [notebookId] (e.g. the Bible Study Kit). */
+    fun getNonDeletedOrArchivedExcept(notebookId: Long, sortMethod: SortMethod): Flow<List<Note>> {
+        val (column, order) = getOrderByMethod(sortMethod)
+        return rawGetQuery(
+            SimpleSQLiteQuery(
+                """
+                SELECT * FROM notes WHERE isArchived = 0 AND isDeleted = 0
+                AND (notebookId IS NULL OR notebookId != ?)
+                ORDER BY isPinned DESC, $column $order
+            """,
+                arrayOf<Any>(notebookId)
+            )
+        )
+    }
+
     fun getAll(sortMethod: SortMethod): Flow<List<Note>> {
         val (column, order) = getOrderByMethod(sortMethod)
         return rawGetQuery(
