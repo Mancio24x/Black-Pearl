@@ -168,4 +168,45 @@ class BibleStudyKitTest {
         coVerify(exactly = 0) { notes.insertLocalNotes(any()) }
         coVerify(exactly = 0) { notebooks.insert(any()) }
     }
+
+    @Test
+    fun copiesOfTheKitOutsideItsNotebookAreRemovedButChangedOnesStay() = runTest {
+        val context = mockk<Context>().also { every { it.assets } returns assets() }
+        val gen = File(root, "Scripture (WEB)/01 - Genesis/Gen-01.md").readText()
+        val john = File(root, "Scripture (WEB)/43 - John/John-03.md").readText()
+        val copy = BibleStudyKit.noteFrom("Gen-01.md", gen, null).copy(id = 11)
+        val changed = BibleStudyKit.noteFrom("John-03.md", john + "\nmy note", null).copy(id = 12)
+        val withPhoto = BibleStudyKit.noteFrom("x/John-03.md", john, null)
+            .copy(id = 13, attachments = listOf(org.qosp.notes.data.model.Attachment(path = "p")))
+        val mine = Note(title = "Shopping", content = "milk", id = 14)
+        val notes = mockk<NoteRepository>(relaxed = true)
+        coEvery { notes.getTitlesIn(7L) } returns setOf("Gen-01", "John-03")
+        coEvery { notes.getTitlesIn(8L) } returns emptySet()
+        coEvery { notes.getIdTitlesOutside(7L) } returns listOf(copy, changed, withPhoto, mine)
+            .map { org.qosp.notes.data.model.NoteIdTitle(it.id, it.title) }
+        for (n in listOf(copy, changed, withPhoto, mine)) every { notes.getById(n.id) } returns flowOf(n)
+        val notebooks = mockk<NotebookRepository>(relaxed = true)
+        every { notebooks.getById(7L) } returns flowOf(Notebook(BibleStudyKit.NOTEBOOK, 7L))
+        val extra = Notebook(BibleStudyKit.NOTEBOOK, 8L)
+        every { notebooks.getAll() } returns flowOf(listOf(Notebook(BibleStudyKit.NOTEBOOK, 7L), extra, Notebook("Mine", 9L)))
+        val preferences = mockk<PreferenceRepository>()
+        coEvery { preferences.isBibleKitAdded() } returns true
+        every { preferences.getBibleKitNotebookId() } returns flowOf(7L)
+
+        assertEquals(1, BibleStudyKit.removeCopies(context, notes, notebooks, preferences))
+
+        coVerify(exactly = 1) { notes.deleteNotes(copy) }
+        coVerify(exactly = 1) { notes.deleteNotes(any()) }
+        coVerify(exactly = 1) { notebooks.delete(extra) }
+        coVerify(exactly = 1) { notebooks.delete(any()) }
+    }
+
+    @Test
+    fun nothingIsRemovedBeforeTheKitIsAdded() = runTest {
+        val notes = mockk<NoteRepository>(relaxed = true)
+        val preferences = mockk<PreferenceRepository>()
+        coEvery { preferences.isBibleKitAdded() } returns false
+        assertEquals(0, BibleStudyKit.removeCopies(mockk(), notes, mockk(), preferences))
+        coVerify(exactly = 0) { notes.deleteNotes(any()) }
+    }
 }

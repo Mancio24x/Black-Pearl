@@ -77,4 +77,39 @@ object BibleStudyKit {
         }
         preferences.setBibleKitAdded()
     }
+
+    /**
+     * Removes copies of kit notes that ended up outside the kit notebook (for example restored from a backup made
+     * while the kit was already there): they filled "All notes" with a second kit. A copy goes only when it is still
+     * exactly the shipped text, has no attachments and no tags, and the kit notebook has a note with the same title,
+     * so nothing the user wrote or changed is touched. Also removes empty extra "Bible Study Kit" notebooks.
+     * Returns how many notes were removed.
+     */
+    suspend fun removeCopies(
+        context: Context,
+        notes: NoteRepository,
+        notebooks: NotebookRepository,
+        preferences: PreferenceRepository,
+    ): Int {
+        if (!preferences.isBibleKitAdded()) return 0
+        val kitId = preferences.getBibleKitNotebookId().first() ?: return 0
+        if (notebooks.getById(kitId).first() == null) return 0
+        val assets = context.assets
+        val pathByTitle = files(assets).associateBy { titleOf(it) }
+        val inKit = notes.getTitlesIn(kitId)
+        var removed = 0
+        for (row in notes.getIdTitlesOutside(kitId)) {
+            val path = pathByTitle[row.title] ?: continue
+            if (row.title !in inKit) continue
+            val note = notes.getById(row.id).first() ?: continue
+            val shipped = assets.open("$DIR/$path").use { it.readBytes().decodeToString() }.replace("\r\n", "\n")
+            if (note.content != shipped || note.attachments.isNotEmpty() || note.tags.isNotEmpty() || note.isList) continue
+            notes.deleteNotes(note)
+            removed++
+        }
+        for (extra in notebooks.getAll().first()) {
+            if (extra.id != kitId && extra.name == NOTEBOOK && notes.getTitlesIn(extra.id).isEmpty()) notebooks.delete(extra)
+        }
+        return removed
+    }
 }

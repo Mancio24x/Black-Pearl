@@ -464,3 +464,16 @@ Completed the editor suggestion strip and the Network destination, including gra
   notes on the host (python3 sqlite3, colour copied from the old app's own sample note), checkpoints, pushes it back
   with owner + `restorecon`, and prints the note counts before the update and after the kit.
 - Checked locally: the seed and count snippets on a database built from schema v5 (1 + 3 rows → "4 3"). CI run decides.
+
+## 2026-11-12 — Kit copies merged; linked notes replace the screen
+- Owner report: two Bible Study Kits, one filling "All notes" (copies outside the kit notebook, e.g. from a backup
+  restored over the fresh kit) and one in its notebook. `BibleStudyKit.removeCopies` (run at every start after
+  `addOnce`, never fatal) deletes a note outside the kit notebook only when its title is a kit file, the kit notebook
+  has that title, the text is exactly the shipped one, and it has no attachments/tags and is not a checklist; then
+  deletes empty extra "Bible Study Kit" notebooks. Light queries `NoteDao.getIdTitlesOutside` / `getTitlesIn`
+  (id + title only). A copy of the old "The Bible (WEB)" (bold groups) differs from the new asset and stays.
+- Owner request: reading chapter after chapter, Back must leave the notes. `EditorFragment.openLinkedNote` now
+  navigates with `popUpTo(fragment_editor, inclusive)` (after the rename offer), so Back returns to the list (or
+  Network) the first note was opened from.
+- Tests: `BibleStudyKitTest` +2 (copy removed / changed, attachment and user notes kept / extra empty notebook
+  deleted; nothing before the kit is added). Android build and device tests on CI.
