@@ -14,20 +14,50 @@ data class PointF2(val x: Float, val y: Float)
 
 internal fun gridCellKey(cx: Long, cy: Long): Long = (cx shl 32) xor (cy and 0xffffffffL)
 
+/** Points sorted by grid cell, so the points of one cell are found by binary search without per-frame maps. */
+internal class CloseGrid(x: DoubleArray, y: DoubleArray, radius: Double) {
+    val keys: LongArray
+    val order: IntArray
+    val cx: LongArray
+    val cy: LongArray
+
+    init {
+        val n = x.size
+        cx = LongArray(n) { Math.floor(x[it] / radius).toLong() }
+        cy = LongArray(n) { Math.floor(y[it] / radius).toLong() }
+        val cell = LongArray(n) { gridCellKey(cx[it], cy[it]) }
+        order = (0 until n).sortedBy { cell[it] }.toIntArray()
+        keys = LongArray(n) { cell[order[it]] }
+    }
+
+    /** First position in [order] whose cell key is >= [key]. */
+    fun lowerBound(key: Long): Int {
+        var lo = 0
+        var hi = keys.size
+        while (lo < hi) {
+            val mid = (lo + hi) ushr 1
+            if (keys[mid] < key) lo = mid + 1 else hi = mid
+        }
+        return lo
+    }
+}
+
 /**
- * Calls [action] once for every pair of points closer than [radius], using a grid of [radius]-sized cells: the work
- * grows with the number of points, not with its square, so thousands of notes stay fast.
+ * Calls [action] once for every pair of points that may be closer than [radius] (same or neighbouring grid cell;
+ * callers check the distance): the work grows with the number of points, not with its square, so thousands of notes
+ * stay fast.
  */
 internal inline fun forEachClosePair(x: DoubleArray, y: DoubleArray, radius: Double, action: (Int, Int) -> Unit) {
+    val grid = CloseGrid(x, y, radius)
     val n = x.size
-    val cells = HashMap<Long, MutableList<Int>>()
-    val cx = LongArray(n) { Math.floor(x[it] / radius).toLong() }
-    val cy = LongArray(n) { Math.floor(y[it] / radius).toLong() }
-    for (i in 0 until n) cells.getOrPut(gridCellKey(cx[i], cy[i])) { ArrayList(4) }.add(i)
     for (i in 0 until n) {
         for (ox in -1L..1L) for (oy in -1L..1L) {
-            val cell = cells[gridCellKey(cx[i] + ox, cy[i] + oy)] ?: continue
-            for (j in cell) if (j > i) action(i, j)
+            val key = gridCellKey(grid.cx[i] + ox, grid.cy[i] + oy)
+            var at = grid.lowerBound(key)
+            while (at < n && grid.keys[at] == key) {
+                val j = grid.order[at++]
+                if (j > i) action(i, j)
+            }
         }
     }
 }

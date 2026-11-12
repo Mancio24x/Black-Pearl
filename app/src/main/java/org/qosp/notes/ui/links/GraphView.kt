@@ -237,7 +237,19 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
         val linked = original.filterKeys { !neighbours[it].isNullOrEmpty() }
         val linkedFit = fittedCamera(linked.values)
         // A large collection of orphans must not make the actual links illegible on entry.
-        return if (linked.size >= 2 && linkedFit.scale > fit.scale * 1.8f) linkedFit else fit
+        val base = if (linked.size >= 2 && linkedFit.scale > fit.scale * 1.8f) linked.values else original.values
+        // Large networks open on their crowded middle (the notes nearest the centre), not shrunk to fit the last
+        // note at the edge; pinch or "Recenter" shows everything.
+        return fittedCamera(core(base))
+    }
+
+    /** With many notes, the [CORE_SHARE] of them nearest their centre; otherwise all of them. */
+    private fun core(points: Collection<PointF2>): Collection<PointF2> {
+        if (points.size < CORE_MIN_NOTES) return points
+        val cx = points.sumOf { it.x.toDouble() } / points.size
+        val cy = points.sumOf { it.y.toDouble() } / points.size
+        return points.sortedBy { (it.x - cx) * (it.x - cx) + (it.y - cy) * (it.y - cy) }
+            .take((points.size * CORE_SHARE).toInt().coerceAtLeast(2))
     }
 
     private data class Camera(val scale: Float, val x: Float, val y: Float)
@@ -596,5 +608,7 @@ class GraphView(context: Context, attrs: AttributeSet? = null) : View(context, a
 
     private companion object {
         const val MAX_LABEL_ATTEMPTS = 160
+        const val CORE_MIN_NOTES = 60
+        const val CORE_SHARE = 0.6
     }
 }
