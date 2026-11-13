@@ -240,4 +240,7 @@
     <string name="appearance_themes">Temi</string>
     <string name="appearance_more_themes">Altri temi</string>
     <string name="appearance_fewer_themes">Meno temi</string>
+    <string name="preferences_note_font_terminal">Terminale</string>
+    <string name="preferences_note_font_poster">Manifesto</string>
+    <string name="appearance_font_sample">Nota 123</string>
 </resources>

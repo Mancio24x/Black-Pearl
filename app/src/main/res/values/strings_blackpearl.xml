@@ -239,4 +239,7 @@
     <string name="appearance_themes">Themes</string>
     <string name="appearance_more_themes">More themes</string>
     <string name="appearance_fewer_themes">Fewer themes</string>
+    <string name="preferences_note_font_terminal">Terminal</string>
+    <string name="preferences_note_font_poster">Poster</string>
+    <string name="appearance_font_sample">Note 123</string>
 </resources>

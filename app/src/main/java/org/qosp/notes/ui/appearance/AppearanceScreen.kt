@@ -32,6 +32,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.Font
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -157,7 +160,7 @@ fun AppearanceScreen(
 
         SectionTitle(stringResource(R.string.appearance_shape_font))
         ChoiceRow(stringResource(R.string.preferences_card_shape), CardShape.entries, prefs.cardShape, onShape)
-        ChoiceRow(stringResource(R.string.preferences_note_font), NoteFont.entries, prefs.noteFont, onFont)
+        FontChoice(prefs.noteFont, onFont)
         ChoiceRow(stringResource(R.string.preferences_fab_size), FabSize.entries, prefs.fabSize, onFab)
         Spacer(Modifier.height(24.dp))
     }
@@ -183,6 +186,51 @@ private fun ThemeGrid(items: List<ColorScheme>, selected: ColorScheme, custom: C
                     ThemeCard(item, swatch, selected == item, Modifier.weight(1f)) { onScheme(item) }
                 }
                 if (row.size == 1) Spacer(Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+/** The note font as Compose draws it, so each choice is shown in its own letters before it is picked. */
+private fun NoteFont.family(): FontFamily = when (this) {
+    NoteFont.INTER -> FontFamily(Font(R.font.inter_regular))
+    NoteFont.SYSTEM -> FontFamily.SansSerif
+    NoteFont.SERIF -> FontFamily.Serif
+    NoteFont.MONO -> FontFamily.Monospace
+    NoteFont.TERMINAL -> FontFamily(Font(R.font.vt323_regular))
+    NoteFont.POSTER -> FontFamily(Font(R.font.anton_regular))
+}
+
+/** Font choice as small cards, three per row: "Aa", the name and a sample, each written in that font. */
+@Composable
+private fun FontChoice(selected: NoteFont, onPick: (NoteFont) -> Unit) {
+    val scheme = MaterialTheme.colorScheme
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(stringResource(R.string.preferences_note_font), style = MaterialTheme.typography.titleSmall)
+        NoteFont.entries.chunked(3).forEach { row ->
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                row.forEach { font ->
+                    val name = stringResource(font.nameResource)
+                    val isSelected = font == selected
+                    val family = remember(font) { font.family() }
+                    Surface(
+                        onClick = { onPick(font) },
+                        modifier = Modifier.weight(1f).semantics { contentDescription = name; this.selected = isSelected; role = Role.RadioButton },
+                        shape = RoundedCornerShape(18.dp),
+                        color = if (isSelected) scheme.secondaryContainer else scheme.surfaceContainerLow,
+                        border = BorderStroke(if (isSelected) 2.dp else 1.dp, if (isSelected) scheme.primary else scheme.outlineVariant),
+                    ) {
+                        Column(Modifier.padding(horizontal = 10.dp, vertical = 8.dp)) {
+                            Text("Aa", fontFamily = family, fontSize = 26.sp, maxLines = 1)
+                            Text(name, fontFamily = family, style = MaterialTheme.typography.labelLarge, maxLines = 1)
+                            Text(
+                                stringResource(R.string.appearance_font_sample), fontFamily = family,
+                                style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant, maxLines = 1,
+                            )
+                        }
+                    }
+                }
+                repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
             }
         }
     }
