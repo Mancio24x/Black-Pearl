@@ -252,7 +252,6 @@ dependencies {
     implementation(libs.koin.androidx.navigation)
 
     // Yaml parsing
-    implementation(libs.yamlkt)
 
     // Coil
     implementation(libs.coil)
