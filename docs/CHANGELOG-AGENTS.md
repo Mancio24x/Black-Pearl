@@ -579,3 +579,8 @@ Completed the editor suggestion strip and the Network destination, including gra
   smoke test still taps "Continue" for old builds (no-op on new ones); `capture-ui.sh` no longer shoots the welcome.
 - Tests: Android build + Koin test + startup smoke on CI.
 
+## 2026-11-13 — Automatic releases; steadier startup smoke
+- Owner rule recorded in `docs/DECISIONS.md` (22): release automatically when `main` has app changes and CI is green.
+- `scripts/startup-smoke.sh`: `app_pid` waits for the emulator and retries `pidof` (3×). Two push runs had failed with
+  "adb: device offline" right after launch (emulator, not the app: same code passed on the PR runs).
+
