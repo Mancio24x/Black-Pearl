@@ -173,6 +173,10 @@ class HtmlViewerFragment : BaseFragment(R.layout.fragment_html_viewer) {
         (activity as? org.qosp.notes.ui.MainActivity)?.supportActionBar?.subtitle = null
         val web = binding.viewerWeb
         (web.parent as? android.view.ViewGroup)?.removeView(web)
+        // The page lives up to 2 s more (below): its events (page finished, alert...) must not reach this closed
+        // screen, whose view no longer exists.
+        web.webViewClient = WebViewClient()
+        web.webChromeClient = null
         // Destroy only after the page has handed over its last save (callback), with a fallback timeout.
         web.evaluateJavascript(FLUSH) { runCatching { web.destroy() } }
         web.postDelayed({ runCatching { web.destroy() } }, 2000)
