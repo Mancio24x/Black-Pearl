@@ -237,4 +237,7 @@
     <string name="action_outline">Indice</string>
     <string name="outline_search">Cerca tra i titoli</string>
     <string name="outline_no_match">Nessun titolo corrisponde</string>
+    <string name="appearance_themes">Temi</string>
+    <string name="appearance_more_themes">Altri temi</string>
+    <string name="appearance_fewer_themes">Meno temi</string>
 </resources>

@@ -502,3 +502,11 @@ Completed the editor suggestion strip and the Network destination, including gra
   and pinch still show everything.
 - Tests: GraphLayout/GraphPhysics tests (15) pass on the JVM prototype; Android on CI. Smoothness on a real phone
   still to be confirmed by the owner.
+
+## 2026-11-13 — Appearance: 8 themes in view, 6 more on demand
+- Owner request: the theme gallery (22 large cards) pushed Shape and font too far down. Now `MAIN_THEMES` (Perla nera,
+  Salvia, Mare aperto, Lavanda, Rosa petalo, Giallo, Rosso, Sabbia) in two columns, then a "More themes / Altri temi"
+  toggle with `MORE_THEMES` (Pergamena, Corallo, Abisso, Grafite, Notte viola, Segui il sistema). Cards are lower
+  (preview 100 → 68 dp, one-line description). Enum constants are untouched (stored by name): a hidden theme still in
+  use keeps working and is listed under "More themes", which then starts open. "My theme" card unchanged.
+- Tests: none for this Compose screen; CI build and the UI preview screenshots (Appearance) show it.

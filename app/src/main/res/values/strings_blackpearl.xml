@@ -236,4 +236,7 @@
     <string name="action_outline">Contents</string>
     <string name="outline_search">Search headings</string>
     <string name="outline_no_match">No heading matches</string>
+    <string name="appearance_themes">Themes</string>
+    <string name="appearance_more_themes">More themes</string>
+    <string name="appearance_fewer_themes">Fewer themes</string>
 </resources>
