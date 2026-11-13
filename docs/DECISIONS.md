@@ -81,6 +81,18 @@ Newest last. Format: date — decision — why.
 22. **2026-11-13 — Releases are automatic.** Owner rule: whenever `main` has new app changes (not only docs/CI) and CI is green, the agent
     dispatches `release.yml` (next patch version, Italian notes) without asking, then sends the APK link. A red CI
     is fixed first. Supersedes the "owner publishes drafts" part of decision 9.
+23. **2026-11-13 — HTML viewer (drawer "HTML").** Separate from notes and Network. Documents are copied to private
+   storage (`files/html/docs/<id>/`, zip import with zip-slip and size limits); library index and progress are plain
+   files (`index.json`, `progress/<id>.json`, atomic writes), **not Room**: no schema change, nothing to migrate, the
+   notes database and backups are untouched (HTML progress is not part of the backup zip). Each document is served by
+   `HtmlDocServer` under its own fake https origin `d<id>.docs.blackpearl.invalid`, so localStorage / IndexedDB are
+   isolated per document (the file name is never the key); other documents' origins, `file:` and `content:` are refused,
+   external links are blocked with an "open in browser" action. WebView: JS on, file/content access off, no
+   permissions granted, one native method only (`BlackPearlProgress.save(json)`, stored under the open document).
+   Progress is 3 levels, all in `assets/html/bp-boot.js`: (1) localStorage mirrored and refilled when missing,
+   (2) form fields + scroll, (3) attribute changes by scripts (class, style, disabled, hidden, open, aria-*) keyed by
+   element path. Restore sets values directly: no clicks, no events replayed. `androidx.webkit` not added: the
+   request interception is done with `shouldInterceptRequest` (equivalent to WebViewAssetLoader, no dependency).
 
 ## Linked notes and the Network
 
