@@ -40,23 +40,23 @@ class MediaStorageManagerTest: KoinComponent {
             }
 
         noteRepository.deleteNotes(notes[1])
-        mediaStorageManager.cleanUpStorage()
+        mediaStorageManager.cleanUpStorage(minAgeMillis = 0)
 
         var actual = mediaStorageManager.listMediaFiles().size
         var expected = attachments.size - (notes[1].attachments - notes[0].attachments - notes[2].attachments).size
 
-        mediaStorageManager.cleanUpStorage() // Should delete two files
+        mediaStorageManager.cleanUpStorage(minAgeMillis = 0) // Should delete two files
         assertTrue(
             "Deleted note's attachments were not cleaned up properly.",
             actual == expected
         )
 
         noteRepository.deleteNotes(*notes.toTypedArray())
-        mediaStorageManager.cleanUpStorage()
+        mediaStorageManager.cleanUpStorage(minAgeMillis = 0)
 
         actual = mediaStorageManager.listMediaFiles().size
         expected = 0
-        mediaStorageManager.cleanUpStorage() // Should delete all
+        mediaStorageManager.cleanUpStorage(minAgeMillis = 0) // Should delete all
         assertTrue(
             "After deleting all notes no media files should exist",
             actual == expected

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -177,7 +178,8 @@ class EditorViewModel(
     private inline fun update(crossinline transform: suspend (Note) -> Note) {
         // UNDISPATCHED: the call takes the lock or joins its (FIFO) queue at once on the caller's thread, so writes
         // are applied in call order (typing "ab" then "abc" never ends as "ab").
-        viewModelScope.launch(Dispatchers.IO, start = CoroutineStart.UNDISPATCHED) {
+        // NonCancellable: a write already asked for is finished even if the editor closes at that moment.
+        viewModelScope.launch(Dispatchers.IO + NonCancellable, start = CoroutineStart.UNDISPATCHED) {
             // Serialize writes and read the latest stored note inside the lock, so quick edits
             // never build on a stale snapshot.
             updateMutex.withLock {

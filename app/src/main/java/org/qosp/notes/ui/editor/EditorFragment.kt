@@ -1410,8 +1410,10 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                     }
                 }
 
-                nextTaskId = data.note.taskList.maxOfOrNull { it.id }?.plus(1) ?: 0L
             }
+
+            // also after "Convert to list", whose items get ids 0..n-1: a new item must not reuse one of them
+            if (isFirstLoad || isConverted) nextTaskId = data.note.taskList.maxOfOrNull { it.id }?.plus(1) ?: 0L
 
             // We only want to update the task list when the user converts the note from text to list
             if (isConverted) {
@@ -1426,6 +1428,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                 editTextContent.withOnlyTextWatcher<MarkwonEditorTextWatcher> {
                     setText(data.note.content)
                 }
+                contentLoadedInEditor = true
             }
             recyclerTasks.isVisible = isList
 
