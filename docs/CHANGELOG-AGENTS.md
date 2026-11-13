@@ -520,3 +520,13 @@ Completed the editor suggestion strip and the Network destination, including gra
   `NoteDao.getNonDeletedOrArchivedExcept(notebookIds: List<Long>)` (`NOT IN`).
 - Tests: `SampleNoteTest` +3 (added in its notebook; older install moved, filed copy kept; moved once),
   `MainViewModelTest` updated to the id list. Android build on CI.
+
+## 2026-11-13 — Note fonts: Terminal and Poster, chooser with previews
+- Owner request: more fonts, each choice already shown in its own design before tapping, plus a computer-terminal
+  style and an Impact style. Added bundled OFL fonts `res/font/vt323_regular.ttf` (VT323, terminal) and
+  `res/font/anton_regular.ttf` (Anton, Impact-like; Impact itself is commercial), licences in
+  `docs/licenses/VT323-OFL.txt`, `Anton-OFL.txt`. `NoteFont.TERMINAL` / `POSTER` appended (stored by name),
+  styles `NoteFont.Terminal` / `NoteFont.Poster`.
+- Appearance: `FontChoice` replaces the font chips with cards, three per row, each drawing "Aa", its name and
+  "Nota 123" in that font (`NoteFont.family()` maps to Compose fonts).
+- Tests: none for this Compose screen; CI build + UI preview screenshot of Appearance.

@@ -51,6 +51,8 @@
     <style name="NoteFont.System" parent=""><item name="noteFontFamily">sans-serif</item></style>
     <style name="NoteFont.Serif" parent=""><item name="noteFontFamily">serif</item></style>
     <style name="NoteFont.Mono" parent=""><item name="noteFontFamily">monospace</item></style>
+    <style name="NoteFont.Terminal" parent=""><item name="noteFontFamily">@font/vt323_regular</item></style>
+    <style name="NoteFont.Poster" parent=""><item name="noteFontFamily">@font/anton_regular</item></style>
 
     <!-- Note list "Soft" design (1A) -->
     <style name="TextAppearance.BlackPearl.ListTitle" parent="TextAppearance.Material3.HeadlineMedium">

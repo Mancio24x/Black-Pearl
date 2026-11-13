@@ -92,6 +92,9 @@ enum class NoteFont(override val nameResource: Int, val styleResource: Int) : Ha
     SYSTEM(R.string.preferences_note_font_system, R.style.NoteFont_System),
     SERIF(R.string.preferences_note_font_serif, R.style.NoteFont_Serif),
     MONO(R.string.preferences_note_font_mono, R.style.NoteFont_Mono),
+    // Black Pearl: bundled OFL fonts (docs/licenses): VT323 looks like an old computer terminal, Anton like Impact
+    TERMINAL(R.string.preferences_note_font_terminal, R.style.NoteFont_Terminal),
+    POSTER(R.string.preferences_note_font_poster, R.style.NoteFont_Poster),
 }
 
 enum class SortMethod(override val nameResource: Int) : HasNameResource, EnumPreference by key("sort_method") {
