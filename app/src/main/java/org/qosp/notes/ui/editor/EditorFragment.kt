@@ -1,6 +1,5 @@
 package org.qosp.notes.ui.editor
 
-import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.content.Intent
 import android.graphics.Canvas
@@ -176,6 +175,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     private var contentHasFocus: Boolean = false
     private var isNoteDeleted: Boolean = false
     private var markwonTextWatcher: TextWatcher? = null
+    private var tableTaps: GestureDetector? = null
     private var onBackPressHandled: Boolean = false
 
     @ColorInt
@@ -799,7 +799,6 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     // --- Black Pearl: tables edited in a spreadsheet grid (see TableEditorDialog) ---
 
     /** Tap a table in the preview, or tap inside a table's text while writing, to edit it in the grid. */
-    @SuppressLint("ClickableViewAccessibility")
     private fun setupTableEditor() {
         binding.textViewContentPreview.setTag(
             R.id.tag_table_click_listener,
@@ -821,7 +820,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                 return false
             }
         })
-        binding.editTextContent.setOnTouchListener { _, event -> taps.onTouchEvent(event); false }
+        tableTaps = taps // fed by the text field's only touch listener, see setupMarkdown
         setFragmentResultListener(TableEditorDialog.RESULT) { _, bundle -> applyTableResult(bundle) }
     }
 
@@ -1652,7 +1651,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         markwonTextWatcher = TaskBoxTextWatcher(
             MarkwonEditorTextWatcher.withPreRender(markwonEditor, Executors.newCachedThreadPool(), content)
         ) { boxColors }
-        content.enableTaskBoxTaps { content.isMarkdownEnabled }
+        content.enableTaskBoxTaps({ content.isMarkdownEnabled }) { tableTaps?.onTouchEvent(it) }
     }
 
     private fun enableMarkdownTextWatcher() = with(binding) {

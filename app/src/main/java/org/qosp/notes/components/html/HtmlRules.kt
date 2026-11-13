@@ -93,6 +93,9 @@ object HtmlRules {
     /** True for urls the viewer may load as the page or sub-resource of document [host]. */
     fun isOwnUrl(url: String, host: String) = url.startsWith("https://$host/")
 
+    /** False for files the browser asks for by itself (the site icon): their absence is not an error to show. */
+    fun warnsWhenMissing(rel: String) = !rel.equals("favicon.ico", ignoreCase = true)
+
     enum class Sort { NAME, IMPORTED, OPENED }
 
     fun sortAndFilter(docs: List<HtmlDocument>, sort: Sort, query: String): List<HtmlDocument> {

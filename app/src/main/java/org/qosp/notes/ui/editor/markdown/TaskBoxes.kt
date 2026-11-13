@@ -133,15 +133,18 @@ class TaskBoxTextWatcher(
     }
 }
 
-/** Taps on a box tick / untick it; any other touch goes to the text field as usual. */
+/**
+ * Taps on a box tick / untick it; any other touch goes to the text field as usual, after [otherwise] has seen it
+ * (a view has one touch listener only: the editor's other tap handling must come through here).
+ */
 @SuppressLint("ClickableViewAccessibility")
-fun EditText.enableTaskBoxTaps(isEnabled: () -> Boolean) {
+fun EditText.enableTaskBoxTaps(isEnabled: () -> Boolean, otherwise: (MotionEvent) -> Unit = {}) {
     var pressed: TaskBox? = null
     var downX = 0f
     var downY = 0f
-    setOnTouchListener { _, event ->
-        if (!isEnabled()) return@setOnTouchListener false
-        when (event.actionMasked) {
+    fun onBoxTouch(event: MotionEvent): Boolean {
+        if (!isEnabled()) return false
+        return when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
                 pressed = taskBoxAt(event.x, event.y)
                 downX = event.x
@@ -149,7 +152,7 @@ fun EditText.enableTaskBoxTaps(isEnabled: () -> Boolean) {
                 pressed != null
             }
             MotionEvent.ACTION_UP -> {
-                val box = pressed ?: return@setOnTouchListener false
+                val box = pressed ?: return false
                 pressed = null
                 val slop = textSize
                 if (abs(event.x - downX) < slop && abs(event.y - downY) < slop && taskBoxAt(event.x, event.y) == box) {
@@ -162,6 +165,7 @@ fun EditText.enableTaskBoxTaps(isEnabled: () -> Boolean) {
             else -> pressed != null
         }
     }
+    setOnTouchListener { _, event -> onBoxTouch(event).also { handled -> if (!handled) otherwise(event) } }
 }
 
 private fun EditText.taskBoxAt(x: Float, y: Float): TaskBox? {
