@@ -637,3 +637,15 @@ Completed the editor suggestion strip and the Network destination, including gra
 - **Not checked on a device**: all of the above. Checked and not bugs: no other single-slot listener is overwritten;
   focus request on list notes; `updateEditMode` row enabling. Open: task squares are not tappable in reading mode
   (by design; the owner's report may have meant this), `HtmlRules.bootScript` does not check that progress is JSON.
+
+## 2026-11-13 — fix: editor crash while Markdown highlighting renders a table
+
+- Found by the "UI preview" run on `main` 6d33aba (41 device tests passed, then the screenshot run crashed):
+  `NullPointerException ... List.size()` in `TableRowSpan.<init>` ← `TablePlugin$TableVisitor.visitRow` ←
+  `MarkwonEditorTextWatcher$WithPreRender`. Cause (by reading): the editor pre-rendered on
+  `Executors.newCachedThreadPool()`, so two renders of quick edits could run at once on the same Markwon instance,
+  whose table visitor is not thread-safe. Old code (same in Quillpad), intermittent; not caused by #66/#67.
+- Fix: `newPreRenderExecutor()` (`ui/editor/markdown/PreRenderExecutor.kt`), one thread at most, used in
+  `EditorFragment.setupMarkdown`.
+- Tests: new `PreRenderExecutorTest` (renders never overlap), `*TaskBox*`; passed locally. The crash itself is a
+  race and was not reproduced locally; **not checked on a device**.
