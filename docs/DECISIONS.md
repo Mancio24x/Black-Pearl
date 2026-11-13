@@ -78,6 +78,9 @@ Newest last. Format: date — decision — why.
     no back-stack tricks); state in the `AppLock` singleton driven by `ProcessLifecycleOwner`. Default timeout 1 minute
     so camera / file picker / share do not ask for the PIN again. New dependencies: `androidx.biometric`,
     `lifecycle-process`. The database is not encrypted: the lock protects the app's screens, not the files.
+22. **2026-11-13 — Releases are automatic.** Owner rule: whenever `main` has new changes and CI is green, the agent
+    dispatches `release.yml` (next patch version, Italian notes) without asking, then sends the APK link. A red CI
+    is fixed first. Supersedes the "owner publishes drafts" part of decision 9.
 
 ## Linked notes and the Network
 
