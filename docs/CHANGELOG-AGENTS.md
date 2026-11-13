@@ -530,3 +530,10 @@ Completed the editor suggestion strip and the Network destination, including gra
 - Appearance: `FontChoice` replaces the font chips with cards, three per row, each drawing "Aa", its name and
   "Nota 123" in that font (`NoteFont.family()` maps to Compose fonts).
 - Tests: none for this Compose screen; CI build + UI preview screenshot of Appearance.
+
+## 2026-11-13 — Tables look like a spreadsheet
+- Owner request: Markdown tables should look like an Excel sheet. `MarkwonModule`: `TablePlugin` theme with a visible
+  1 dp grid, shaded header row, striped even rows, 8 dp cell padding; translucent neutral colours (Markwon's table
+  colours come from the application context, not the Activity palette). Text unchanged.
+- `scripts/capture-ui.sh` writes a "Tabella" note and captures `table-note.png` in preview mode.
+- Formulas inside tables: proposed to the owner, not implemented (needs a syntax decision, see chat).
