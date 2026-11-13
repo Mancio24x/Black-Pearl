@@ -14,6 +14,9 @@ import org.commonmark.node.Node
 class MarkdownOptions {
     var maximumTableColumns: Int = 100
     var tableReplacement: () -> Node = { Code("...") }
+
+    /** Black Pearl: thin column letters and row numbers in tables, like a spreadsheet (note preview only). */
+    var tableLabels: Boolean = false
 }
 
 inline fun Markwon.applyTo(textView: TextView, content: String, withOptions: MarkdownOptions.() -> Unit = {}) {
@@ -37,6 +40,9 @@ class OptionsVisitor(private val options: MarkdownOptions) : AbstractVisitor() {
                 val replacement = options.tableReplacement()
                 customBlock.insertAfter(replacement)
                 customBlock.unlink()
+            } else {
+                // formulas show their result; the note text keeps them
+                TableSheet.apply(customBlock, options.tableLabels)
             }
         } else {
             visitChildren(customBlock)

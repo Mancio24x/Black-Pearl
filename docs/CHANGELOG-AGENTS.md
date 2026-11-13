@@ -537,3 +537,15 @@ Completed the editor suggestion strip and the Network destination, including gra
   colours come from the application context, not the Activity palette). Text unchanged.
 - `scripts/capture-ui.sh` writes a "Tabella" note and captures `table-note.png` in preview mode.
 - Formulas inside tables: proposed to the owner, not implemented (needs a syntax decision, see chat).
+
+## 2026-11-13 — Table formulas, thin row/column labels, "Insert table" in the "+" sheet
+- Owner request (Obsidian compatibility not required): a cell starting with `=` shows its result in the preview:
+  numbers, cell refs (A1 style, header row = 1), `+ - * /` (also × ÷ x :), parentheses, unary minus; comma or point
+  decimals, result keeps the table's separator; `#ERRORE` / `#DIV/0`. The note text keeps the formula.
+  `TableFormulas` (pure), `TableSheet.apply` rebuilds `*` written in formulas that commonmark parsed as emphasis.
+- Editor preview (`tableLabels`): thin grey column letters above the titles and row numbers in the first cells
+  (`GridLabel` node + `GridLabelSpan`: 68 % size, not bold, grey). Note cards show results without labels.
+- "+" sheet: "Insert table" row (text notes) switches to writing and opens the existing dialog; inserted Markdown
+  goes at the end when there is no cursor and a table starts on its own line.
+- Tests: `TableFormulasTest` (8), `TableSheetTest` (2) — pass on a JVM prototype with commonmark 0.13. Android build,
+  rendering (spans inside Markwon table cells) and screenshots on CI.

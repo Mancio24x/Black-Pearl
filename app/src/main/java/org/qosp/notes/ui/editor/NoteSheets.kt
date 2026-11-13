@@ -67,6 +67,8 @@ fun NoteOptionsSheet(note: Note, onAction: (Int) -> Unit, onSwitch: (id: Int, on
     )
 
     SheetGroup {
+        // Black Pearl: a spreadsheet-like table (formulas such as =B2+B3 show their result)
+        if (!note.isList) SheetRow(R.drawable.ic_table, stringResource(R.string.action_insert_table)) { onAction(R.id.action_insert_table) }
         SheetRow(
             if (note.isList) R.drawable.ic_notes else R.drawable.ic_box_checked_outline,
             stringResource(if (note.isList) R.string.action_convert_to_note else R.string.action_convert_to_list),

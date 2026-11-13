@@ -16,6 +16,7 @@ import io.noties.markwon.editor.handler.EmphasisEditHandler
 import io.noties.markwon.editor.handler.StrongEmphasisEditHandler
 import io.noties.markwon.ext.strikethrough.StrikethroughPlugin
 import io.noties.markwon.ext.tables.TablePlugin
+import org.qosp.notes.ui.editor.markdown.TableSheetPlugin
 import io.noties.markwon.ext.tasklist.TaskListPlugin
 import io.noties.markwon.linkify.LinkifyPlugin
 import io.noties.markwon.movement.MovementMethodPlugin
@@ -65,6 +66,7 @@ object MarkwonModule {
                 .tableEvenRowBackgroundColor(0x14888888)
                 .tableOddRowBackgroundColor(0x00000000)
         })
+        .usePlugin(TableSheetPlugin)
         .usePlugin(object : AbstractMarkwonPlugin() {
             override fun configureConfiguration(builder: MarkwonConfiguration.Builder) {
                 // Black Pearl: [[link]] taps go to WikiLinkPlugin, web links open as before
