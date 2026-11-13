@@ -16,6 +16,7 @@ import io.noties.markwon.editor.handler.EmphasisEditHandler
 import io.noties.markwon.editor.handler.StrongEmphasisEditHandler
 import io.noties.markwon.ext.strikethrough.StrikethroughPlugin
 import io.noties.markwon.ext.tables.TablePlugin
+import org.qosp.notes.ui.editor.markdown.TableSheetPlugin
 import io.noties.markwon.ext.tasklist.TaskListPlugin
 import io.noties.markwon.linkify.LinkifyPlugin
 import io.noties.markwon.movement.MovementMethodPlugin
@@ -54,7 +55,18 @@ object MarkwonModule {
         .usePlugin(SoftBreakAddsNewLinePlugin.create())
         .usePlugin(MovementMethodPlugin.create(getInstance()))
         .usePlugin(StrikethroughPlugin.create())
-        .usePlugin(TablePlugin.create(context))
+        // Black Pearl: tables look like a spreadsheet — a visible grid, shaded header row, striped rows, roomy
+        // cells. Neutral translucent colours so they read on every theme, light or dark.
+        .usePlugin(TablePlugin.create { theme ->
+            val dp = context.resources.displayMetrics.density
+            theme.tableBorderWidth((1 * dp).toInt().coerceAtLeast(1))
+                .tableBorderColor(0x66888888)
+                .tableCellPadding((8 * dp).toInt())
+                .tableHeaderRowBackgroundColor(0x33888888)
+                .tableEvenRowBackgroundColor(0x14888888)
+                .tableOddRowBackgroundColor(0x00000000)
+        })
+        .usePlugin(TableSheetPlugin)
         .usePlugin(object : AbstractMarkwonPlugin() {
             override fun configureConfiguration(builder: MarkwonConfiguration.Builder) {
                 // Black Pearl: [[link]] taps go to WikiLinkPlugin, web links open as before

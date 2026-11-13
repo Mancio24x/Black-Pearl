@@ -409,7 +409,10 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                 if (selectedText?.isNotEmpty() == true) {
                     text?.replace(selectionStart, selectionEnd, "")
                 }
-                text?.insert(selectionStart, markdown)
+                // no cursor yet (opened from the "+" sheet): add at the end; a table starts on its own line
+                val at = selectionStart.takeIf { it >= 0 } ?: length()
+                val needsBreak = markdown.startsWith("|") && at > 0 && text?.getOrNull(at - 1) != '\n'
+                text?.insert(at, if (needsBreak) "\n$markdown" else markdown)
             }
         }
 
@@ -471,6 +474,11 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         data.note?.let { note ->
             when (id) {
                 R.id.action_outline -> showOutline()
+                R.id.action_insert_table -> {
+                    // from the "+" sheet: the table is typed into the text, so switch to writing first
+                    if (!model.inEditMode) updateEditMode(true)
+                    onFormatAction(R.id.action_insert_table)
+                }
                 R.id.action_convert_note -> {
                     if (note.isList) model.toTextNote() else model.toList()
                 }
@@ -824,6 +832,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                 markwon.applyTo(preview, note.content) {
                     tableReplacement = { Code(getString(R.string.message_cannot_preview_table)) }
                     maximumTableColumns = 15
+                    tableLabels = true
                 }
                 scrollToHeadingOnce()
             }

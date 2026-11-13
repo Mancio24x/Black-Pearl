@@ -530,3 +530,22 @@ Completed the editor suggestion strip and the Network destination, including gra
 - Appearance: `FontChoice` replaces the font chips with cards, three per row, each drawing "Aa", its name and
   "Nota 123" in that font (`NoteFont.family()` maps to Compose fonts).
 - Tests: none for this Compose screen; CI build + UI preview screenshot of Appearance.
+
+## 2026-11-13 — Tables look like a spreadsheet
+- Owner request: Markdown tables should look like an Excel sheet. `MarkwonModule`: `TablePlugin` theme with a visible
+  1 dp grid, shaded header row, striped even rows, 8 dp cell padding; translucent neutral colours (Markwon's table
+  colours come from the application context, not the Activity palette). Text unchanged.
+- `scripts/capture-ui.sh` writes a "Tabella" note and captures `table-note.png` in preview mode.
+- Formulas inside tables: proposed to the owner, not implemented (needs a syntax decision, see chat).
+
+## 2026-11-13 — Table formulas, thin row/column labels, "Insert table" in the "+" sheet
+- Owner request (Obsidian compatibility not required): a cell starting with `=` shows its result in the preview:
+  numbers, cell refs (A1 style, header row = 1), `+ - * /` (also × ÷ x :), parentheses, unary minus; comma or point
+  decimals, result keeps the table's separator; `#ERRORE` / `#DIV/0`. The note text keeps the formula.
+  `TableFormulas` (pure), `TableSheet.apply` rebuilds `*` written in formulas that commonmark parsed as emphasis.
+- Editor preview (`tableLabels`): thin grey column letters above the titles and row numbers in the first cells
+  (`GridLabel` node + `GridLabelSpan`: 68 % size, not bold, grey). Note cards show results without labels.
+- "+" sheet: "Insert table" row (text notes) switches to writing and opens the existing dialog; inserted Markdown
+  goes at the end when there is no cursor and a table starts on its own line.
+- Tests: `TableFormulasTest` (8), `TableSheetTest` (2) — pass on a JVM prototype with commonmark 0.13. Android build,
+  rendering (spans inside Markwon table cells) and screenshots on CI.

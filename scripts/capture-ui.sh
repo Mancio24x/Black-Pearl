@@ -40,6 +40,17 @@ tap_text "Take a note!"; adb shell input text "Prima%sriga"; adb shell input key
 adb shell "input text '![mare](https://picsum.photos/id/1015/600/400)'"; adb shell input keyevent KEYCODE_ENTER
 adb shell input text "Ultima%sriga"
 adb shell input keyevent KEYCODE_BACK; sleep 1; adb shell input keyevent KEYCODE_BACK; sleep 2
+# A note with a Markdown table, shown as a spreadsheet-like grid in its card and preview
+adb shell am start -W -n $MAIN -a android.intent.action.VIEW -d "blackpearl://notes/editor_create?newNoteIsList=false" >/dev/null
+sleep 3
+tap_text "Title"; adb shell input text "Tabella"
+tap_text "Take a note!"
+for row in "|%sSpesa%s|%sEuro%s|" "|---|---|" "|%sPane%s|%s2%s|" "|%sLatte%s|%s1,50%s|"; do
+  adb shell "input text '$row'"; adb shell input keyevent KEYCODE_ENTER
+done
+adb shell input keyevent KEYCODE_BACK; sleep 1
+tap_text "Edit/View mode" && sleep 2 && shot "table-note"
+adb shell input keyevent KEYCODE_BACK; sleep 2
 adb shell am force-stop $PKG
 adb shell am start -W -n $MAIN >/dev/null; sleep 3
 tap_text "Open navigation drawer" && tap_text "Your Notebooks" && sleep 2 && tap_text "Create a notebook" \
