@@ -510,3 +510,13 @@ Completed the editor suggestion strip and the Network destination, including gra
   (preview 100 → 68 dp, one-line description). Enum constants are untouched (stored by name): a hidden theme still in
   use keeps working and is listed under "More themes", which then starts open. "My theme" card unchanged.
 - Tests: none for this Compose screen; CI build and the UI preview screenshots (Appearance) show it.
+
+## 2026-11-13 — Recipe notebook out of "All notes"
+- Owner request: the sample "Quaderno delle Ricette Sburrate" becomes a notebook like the Bible Study Kit and leaves
+  "All notes". `SampleNote.addOnce` now puts the note in a "Quaderno delle Ricette" notebook (id saved,
+  `sample_notebook_id`); `SampleNote.moveIntoNotebook` (once, `sample_note_moved`) moves an older install's note with
+  the sample's title that is in no notebook (text untouched; a copy the user filed elsewhere stays).
+- "All notes" leaves out every sample notebook: `PreferenceRepository.getSampleNotebookIds()` (kit + recipes) and
+  `NoteDao.getNonDeletedOrArchivedExcept(notebookIds: List<Long>)` (`NOT IN`).
+- Tests: `SampleNoteTest` +3 (added in its notebook; older install moved, filed copy kept; moved once),
+  `MainViewModelTest` updated to the id list. Android build on CI.

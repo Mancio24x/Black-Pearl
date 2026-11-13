@@ -37,17 +37,17 @@ class MainViewModelTest {
     private fun viewModel() = MainViewModel(notes, mockk(), prefs, mockk())
 
     @Test
-    fun allNotesExcludesTheKitNotebookInTheQuery() = runTest(UnconfinedTestDispatcher()) {
+    fun allNotesExcludesTheSampleNotebooksInTheQuery() = runTest(UnconfinedTestDispatcher()) {
         val mine = listOf(Note(id = 1, title = "mine"))
-        every { prefs.getBibleKitNotebookId() } returns flowOf(7L)
-        every { notes.getNonDeletedOrArchivedExcept(7L, any()) } returns flowOf(mine)
+        every { prefs.getSampleNotebookIds() } returns flowOf(listOf(7L, 8L))
+        every { notes.getNonDeletedOrArchivedExcept(listOf(7L, 8L), any()) } returns flowOf(mine)
 
         val vm = viewModel()
         val job = launch { vm.data.collect {} }
         vm.initialize(null)
 
         assertEquals(mine, vm.data.value.notes)
-        verify { notes.getNonDeletedOrArchivedExcept(7L, any()) }
+        verify { notes.getNonDeletedOrArchivedExcept(listOf(7L, 8L), any()) }
         verify(exactly = 0) { notes.getNonDeletedOrArchived(any()) }
         job.cancel()
     }
@@ -55,7 +55,7 @@ class MainViewModelTest {
     @Test
     fun withoutAKitAllNotesUsesThePlainQuery() = runTest(UnconfinedTestDispatcher()) {
         val all = listOf(Note(id = 1, title = "a"), Note(id = 2, title = "b"))
-        every { prefs.getBibleKitNotebookId() } returns flowOf(null)
+        every { prefs.getSampleNotebookIds() } returns flowOf(emptyList())
         every { notes.getNonDeletedOrArchived(any()) } returns flowOf(all)
 
         val vm = viewModel()
