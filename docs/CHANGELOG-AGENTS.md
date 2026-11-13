@@ -584,3 +584,16 @@ Completed the editor suggestion strip and the Network destination, including gra
 - `scripts/startup-smoke.sh`: `app_pid` waits for the emulator and retries `pidof` (3×). Two push runs had failed with
   "adb: device offline" right after launch (emulator, not the app: same code passed on the PR runs).
 
+## 2026-11-13 — HTML viewer (branch `feature/html-viewer`)
+- New drawer entry "HTML" (next to Network): library (import .html/.htm/.zip via system picker, search, sort by
+  name/import/last opened, rename, reset progress, delete) and a read-only viewer (WebView, JS on, zoom, back/forward/
+  reload/close, Android back follows page history, "Progress saved hh:mm" in the subtitle).
+- Files: `components/html/*`, `ui/html/*`, `assets/html/bp-boot.js`, layouts, `ic_html`, strings (en + it),
+  `nav_graph.xml`, `nav_drawer.xml`, `MainActivity` (destinations; drawer locked in the viewer), `UIModule`.
+- Decisions: see `DECISIONS.md` 23. Limits: `handoff/OPEN_ISSUES.md` ("HTML viewer").
+- Tests written: `HtmlRulesTest`, `HtmlLibraryStoreTest` (progress per document and across restart, reset, rename,
+  delete, zip-slip, resolve limits). **Not run locally** (no JDK/Android SDK on this machine): they run in CI.
+- **Not tested at all (needs emulator/device):** real quiz page restore, app kill + phone reboot, WebView
+  isolation between documents, regressions of Markdown editor / notebooks / Network. Do this on the CI "UI preview"
+  or by hand from the APK before merging.
+

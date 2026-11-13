@@ -33,3 +33,16 @@
 ## Linked notes
 
 Renaming a note leaves its existing references untouched. Duplicate titles resolve to the most recently modified matching note. Embeds, block links and front-matter aliases are outside this release.
+
+## HTML viewer
+
+- Restored: localStorage (also if WebView lost it), form fields (not password/file/hidden), scroll position, and
+  attribute changes made by scripts (class, style, disabled, hidden, open, aria-*) on elements that still sit at the
+  same place in the page. IndexedDB is kept by WebView itself, not mirrored.
+- **Not restored:** text or elements created by scripts after load, JavaScript variables (scores, timers), canvas
+  drawings, `sessionStorage`, custom widgets that keep state only in memory. A page that does this keeps its own
+  look only if it also saves to localStorage / IndexedDB.
+- Restore does not fire events, so a page's own counters may not match restored fields until the user interacts.
+- Single `.html` has no access to sibling files; use a `.zip` for pages with local images/scripts. External
+  (https) libraries load only if the page asks and the phone is online.
+- Progress is not included in Black Pearl backups. Not run yet on a device: see CHANGELOG-AGENTS.

@@ -21,6 +21,14 @@
     <fragment android:id="@+id/fragment_network" android:name="org.qosp.notes.ui.links.NetworkFragment"
             android:label="@string/nav_network" android:layout="@layout/fragment_network"/>
 
+    <fragment android:id="@+id/fragment_html" android:name="org.qosp.notes.ui.html.HtmlLibraryFragment"
+            android:label="@string/nav_html" android:layout="@layout/fragment_html_library"/>
+
+    <fragment android:id="@+id/fragment_html_viewer" android:name="org.qosp.notes.ui.html.HtmlViewerFragment"
+            android:layout="@layout/fragment_html_viewer">
+        <argument android:name="docId" app:argType="string"/>
+    </fragment>
+
     <fragment
             android:id="@+id/fragment_archive"
             android:name="org.qosp.notes.ui.archive.ArchiveFragment"

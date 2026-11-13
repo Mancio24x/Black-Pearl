@@ -19,6 +19,7 @@
                 android:title="@string/nav_deleted"
                 android:orderInCategory="0"/>
         <item android:id="@+id/fragment_network" android:icon="@drawable/ic_network" android:title="@string/nav_network"/>
+        <item android:id="@+id/fragment_html" android:icon="@drawable/ic_html" android:title="@string/nav_html"/>
     </group>
 
     <item

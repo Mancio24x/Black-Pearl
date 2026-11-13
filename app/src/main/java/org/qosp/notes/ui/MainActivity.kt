@@ -79,9 +79,11 @@ class MainActivity : BaseActivity() {
         R.id.fragment_archive,
         R.id.fragment_deleted,
         R.id.fragment_network,
+        R.id.fragment_html,
         R.id.fragment_notebook
     )
     private val secondaryDestinations = setOf(
+        R.id.fragment_html_viewer,
         R.id.fragment_about,
         R.id.fragment_editor,
         R.id.fragment_manage_notebooks,
@@ -451,7 +453,7 @@ class MainActivity : BaseActivity() {
             currentFocus?.hideKeyboard()
             selectCurrentDestinationMenuItem(destination.id, arguments)
 
-            setDrawerEnabled(destination.id != R.id.fragment_editor)
+            setDrawerEnabled(destination.id != R.id.fragment_editor && destination.id != R.id.fragment_html_viewer)
         }
 
         activityModel.notebooks.collect(this) { (showDefaultNotebook, notebooks) ->
