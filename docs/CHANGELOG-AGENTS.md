@@ -597,3 +597,22 @@ Completed the editor suggestion strip and the Network destination, including gra
   isolation between documents, regressions of Markdown editor / notebooks / Network. Do this on the CI "UI preview"
   or by hand from the APK before merging.
 
+
+## 2026-11-13 — fix: no "missing file" message for favicon.ico in the HTML viewer
+
+- Cause: WebView asks every origin for `/favicon.ico` by itself; documents without one showed "A file of this
+  document is missing: favicon.ico". Fix: `HtmlRules.warnsWhenMissing` (still a 404, no message), used in
+  `HtmlDocServer.serveOwn`.
+- Tests: `HtmlRulesTest.browserFaviconRequestIsNotAMissingFile` (failed before, passes); `*Html*` unit tests run
+  locally: 22 passed. Not checked on a device.
+
+## 2026-11-13 — fix: task squares can be ticked again in the editor
+
+- Owner's report: a list written inside a note cannot be changed when the note is reopened. Cause found by reading:
+  #61 (`setupTableEditor`) called `editTextContent.setOnTouchListener`, replacing the listener of
+  `enableTaskBoxTaps` (#40), so "- [ ]" squares no longer reacted to taps (the preview never did).
+- Fix: one listener. `enableTaskBoxTaps(isEnabled, otherwise)` passes touches it does not handle to the table tap
+  detector (`EditorFragment.tableTaps`).
+- Tests: new `TaskBoxTapsTest` (Robolectric, 2), with `TaskBoxesTest`, `MarkdownTablesTest`, `*Html*`: all passed
+  locally. **Not checked on a device**: ticking a square and tapping a table in the editor need the CI UI preview
+  or the owner's phone. Not confirmed yet that this is all the owner meant.

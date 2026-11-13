@@ -46,7 +46,7 @@ class HtmlDocServer(
         val rel = path.trimStart('/').ifEmpty { doc.entry }
         val file = store.resolve(doc.id, rel)
         if (file == null) {
-            onMissing(rel)
+            if (HtmlRules.warnsWhenMissing(rel)) onMissing(rel)
             return WebResourceResponse("text/plain", "UTF-8", 404, "Not Found", emptyMap(), ByteArrayInputStream(ByteArray(0)))
         }
         val mime = HtmlRules.mimeFor(file.name)

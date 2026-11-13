@@ -8,6 +8,13 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class HtmlRulesTest {
+    @Test fun browserFaviconRequestIsNotAMissingFile() {
+        // WebView asks for /favicon.ico on its own; a document without one is complete
+        assertFalse(HtmlRules.warnsWhenMissing("favicon.ico"))
+        assertTrue(HtmlRules.warnsWhenMissing("img/photo.png"))
+        assertTrue(HtmlRules.warnsWhenMissing("img/favicon.ico"))
+    }
+
     @Test fun zipSlipPathsAreRejected() {
         assertNull(HtmlRules.safeEntryPath("../evil.html"))
         assertNull(HtmlRules.safeEntryPath("a/../../evil.html"))
