@@ -25,6 +25,16 @@ start_app() { # $1 = label; cold start of the launcher, records TotalTime
     | grep -o 'TotalTime: [0-9]*' | grep -o '[0-9]*')
   note "$1: launch TotalTime ${t:-?} ms"
 }
+app_pid() { # pid of the app, or empty; the emulator can drop offline for a moment ("adb: device offline"): wait, retry
+  local pid="" i
+  for i in 1 2 3; do
+    adb wait-for-device
+    pid=$(adb shell pidof $PKG 2>/dev/null | tr -d '\r')
+    [ -n "$pid" ] && break
+    sleep 5
+  done
+  echo "$pid"
+}
 crashed() { # $1 = logcat file; true if it shows a crash or ANR of the app
   grep -q -E "FATAL EXCEPTION|ANR in $PKG" "$1"
 }
@@ -38,7 +48,7 @@ launch() { # $1 = case name; starts the launcher (no welcome screen since 0.8.16
     echo "::error::$1: the app crashed"
     grep -A40 -E "FATAL EXCEPTION|ANR in $PKG" "$OUT/$1-logcat.txt" | head -80
     FAILED=1
-  elif [ -z "$(adb shell pidof $PKG)" ]; then
+  elif [ -z "$(app_pid)" ]; then
     echo "::error::$1: the app is not running"; tail -60 "$OUT/$1-logcat.txt"; FAILED=1
   else
     echo "$1: started fine"
@@ -140,7 +150,7 @@ memory_watch() { # watches the updated app for 90 s while the kit is added; reco
   local peak_pss=0 peak_java=0 pss java i m
   for i in $(seq 9); do
     sleep 10
-    if [ -z "$(adb shell pidof $PKG)" ]; then
+    if [ -z "$(app_pid)" ]; then
       echo "::error::update-with-notes: the app process is gone after $((i * 10)) s"; FAILED=1; return; fi
     m=$(adb shell dumpsys meminfo $PKG); echo "$m" > "$OUT/update-with-notes-meminfo.txt"
     pss=$(echo "$m" | grep -o 'TOTAL PSS: *[0-9]*' | grep -o '[0-9]*$'); pss=${pss:-0}
@@ -171,7 +181,7 @@ update_with_notes() {
   if crashed "$OUT/$c-logcat.txt"; then
     echo "::error::$c: the app crashed"; grep -A40 -E "FATAL EXCEPTION|ANR in $PKG" "$OUT/$c-logcat.txt" | head -80
     FAILED=1
-  elif [ -z "$(adb shell pidof $PKG)" ]; then
+  elif [ -z "$(app_pid)" ]; then
     echo "::error::$c: the app is not running"; tail -60 "$OUT/$c-logcat.txt"; FAILED=1
   else
     echo "$c: started fine"
@@ -182,7 +192,7 @@ update_with_notes() {
   adb shell am force-stop $PKG; adb logcat -c
   start_app "$c-restart"; sleep 10
   adb logcat -d > "$OUT/$c-restart-logcat.txt"
-  if crashed "$OUT/$c-restart-logcat.txt" || [ -z "$(adb shell pidof $PKG)" ]; then
+  if crashed "$OUT/$c-restart-logcat.txt" || [ -z "$(app_pid)" ]; then
     echo "::error::$c: the app crashed or stopped on the second start"
     grep -A40 -E "FATAL EXCEPTION|ANR in $PKG" "$OUT/$c-restart-logcat.txt" | head -80
     FAILED=1
