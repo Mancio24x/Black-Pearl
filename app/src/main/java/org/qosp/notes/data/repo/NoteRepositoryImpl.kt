@@ -296,8 +296,8 @@ class NoteRepositoryImpl(
         return noteDao.getNonDeletedOrArchived(sortMethod)
     }
 
-    override fun getNonDeletedOrArchivedExcept(notebookId: Long, sortMethod: SortMethod): Flow<List<Note>> {
-        return noteDao.getNonDeletedOrArchivedExcept(notebookId, sortMethod)
+    override fun getNonDeletedOrArchivedExcept(notebookIds: List<Long>, sortMethod: SortMethod): Flow<List<Note>> {
+        return noteDao.getNonDeletedOrArchivedExcept(notebookIds, sortMethod)
     }
 
     override fun getAll(sortMethod: SortMethod): Flow<List<Note>> {

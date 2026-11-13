@@ -26,13 +26,13 @@ class MainViewModel(
     override val provideNotes = { sortMethod: SortMethod ->
         notebookIdFlow.flatMapLatest { id ->
             when (id) {
-                // the Bible Study Kit has its own notebook and stays out of "All notes"
-                // (filtered in SQL, so its ~5 MB of notes are never read here)
-                null -> preferenceRepository.getBibleKitNotebookId().distinctUntilChanged().flatMapLatest { kitId ->
-                    if (kitId == null) {
+                // the shipped samples (Bible Study Kit, recipes) have their own notebooks and stay out of "All notes"
+                // (filtered in SQL, so the kit's ~5 MB of notes are never read here)
+                null -> preferenceRepository.getSampleNotebookIds().distinctUntilChanged().flatMapLatest { hidden ->
+                    if (hidden.isEmpty()) {
                         noteRepository.getNonDeletedOrArchived(sortMethod)
                     } else {
-                        noteRepository.getNonDeletedOrArchivedExcept(kitId, sortMethod)
+                        noteRepository.getNonDeletedOrArchivedExcept(hidden, sortMethod)
                     }
                 }
                 R.id.nav_default_notebook.toLong() -> noteRepository.getNotesWithoutNotebook(sortMethod)

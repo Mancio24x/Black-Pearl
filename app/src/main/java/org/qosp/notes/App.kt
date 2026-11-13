@@ -116,8 +116,10 @@ class App : Application(), ImageLoaderFactory {
     private fun addSampleNote() {
         // a failure here must never stop the app from starting: the samples are only a bonus, tried again next start
         CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
-            runCatching { SampleNote.addOnce(this@App, get(), get()) }
-                .onFailure { Log.w("App", "Could not add the sample note", it) }
+            runCatching {
+                SampleNote.addOnce(this@App, get(), get(), get())
+                SampleNote.moveIntoNotebook(this@App, get(), get(), get())
+            }.onFailure { Log.w("App", "Could not add the sample note", it) }
             runCatching { BibleStudyKit.addOnce(this@App, get(), get(), get()) }
                 .onFailure { Log.w("App", "Could not add the Bible Study Kit", it) }
             // a second copy of the kit (e.g. from a restored backup) must not fill "All notes"

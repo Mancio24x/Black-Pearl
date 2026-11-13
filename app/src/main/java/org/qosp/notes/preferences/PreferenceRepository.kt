@@ -187,6 +187,24 @@ class PreferenceRepository(
         dataStore.edit { it[SAMPLE_NOTE_ADDED] = true }
     }
 
+    /** The recipe notebook's id, left out of "All notes" like the kit; null before it exists. */
+    suspend fun getSampleNotebookId(): Long? = dataStore.data.first()[SAMPLE_NOTEBOOK_ID]
+
+    suspend fun setSampleNotebookId(id: Long) {
+        dataStore.edit { it[SAMPLE_NOTEBOOK_ID] = id }
+    }
+
+    /** True once a note added by an older version was looked for (and moved) into the recipe notebook. */
+    suspend fun isSampleNoteMoved(): Boolean = dataStore.data.first()[SAMPLE_NOTE_MOVED] ?: false
+
+    suspend fun setSampleNoteMoved() {
+        dataStore.edit { it[SAMPLE_NOTE_MOVED] = true }
+    }
+
+    /** Notebooks of the shipped samples (Bible Study Kit, recipes) that "All notes" leaves out. */
+    fun getSampleNotebookIds(): Flow<List<Long>> = dataStore.data.catch { emit(emptyPreferences()) }
+        .map { listOfNotNull(it[BIBLE_KIT_NOTEBOOK_ID], it[SAMPLE_NOTEBOOK_ID]) }
+
     /** Black Pearl: the Bible Study Kit is added only once (see components/BibleStudyKit). */
     suspend fun isBibleKitAdded(): Boolean = dataStore.data.first()[BIBLE_KIT_ADDED] ?: false
 
@@ -205,6 +223,8 @@ class PreferenceRepository(
         val BIBLE_KIT_ADDED = booleanPreferencesKey("bible_study_kit_added")
         val BIBLE_KIT_NOTEBOOK_ID = longPreferencesKey("bible_study_kit_notebook_id")
         val SAMPLE_NOTE_ADDED = booleanPreferencesKey("sample_note_added")
+        val SAMPLE_NOTEBOOK_ID = longPreferencesKey("sample_notebook_id")
+        val SAMPLE_NOTE_MOVED = booleanPreferencesKey("sample_note_moved")
         val APP_LOCK_PIN = stringPreferencesKey("app_lock_pin")
         val APP_LOCK_PIN_LENGTH = intPreferencesKey("app_lock_pin_length")
         val APP_LOCK_BIOMETRIC = booleanPreferencesKey("app_lock_biometric")
