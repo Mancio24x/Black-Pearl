@@ -8,7 +8,7 @@ Tests: `app/src/test/java/org/qosp/notes/` (unit, JVM/Robolectric) and `app/src/
 | App start, Koin setup, media folder const | `J/App.kt`, `J/Config.kt` |
 | Sample note shipped in the APK (added once at start, local only) | `J/components/SampleNote.kt`, asset `app/src/main/assets/sample/*.md`, flag `PreferenceRepository.SAMPLE_NOTE_ADDED`; test `components/SampleNoteTest` |
 | Bible Study Kit shipped in the APK (~1300 linked notes, own notebook kept out of "All notes", added once, local only) | `J/components/BibleStudyKit.kt`, assets `app/src/main/assets/sample/bible-study-kit/**`, prefs `BIBLE_KIT_ADDED` / `BIBLE_KIT_NOTEBOOK_ID`, filter in `J/ui/main/MainViewModel.kt`; link parse cache `J/components/links/LinkParseCache.kt`; tests `components/BibleStudyKitTest`, `links/LinkParseCacheTest` |
-| Launcher / welcome screen (Compose) | `J/ui/launcher/LauncherActivity.kt`, `WelcomeScreen.kt` |
+| Launcher (opens MainActivity, no welcome screen) | `J/ui/launcher/LauncherActivity.kt` |
 | Main activity, nav drawer | `J/ui/MainActivity.kt`, `J/ui/ActivityViewModel.kt`, `R/navigation/nav_graph.xml`, `R/menu/nav_drawer.xml` |
 | Note list (home, design 1A "Soft") | `J/ui/main/MainFragment.kt` (search bar, notebook chips, quick-action pill), `MainViewModel.kt`, `J/ui/common/AbstractNotesFragment.kt`, `R/layout/fragment_main.xml`, `layout_appbar_main.xml`, `chip_notebook_filter.xml`, styles `Widget.BlackPearl.*` in `R/values*/styles_blackpearl.xml` |
 | Note card in lists (color, preview) | `J/ui/common/recycler/NoteViewHolder.kt`, `NoteRecyclerAdapter.kt`, `J/ui/utils/views/NoteCardView.kt`, `R/layout/layout_note.xml` |
@@ -51,6 +51,6 @@ Tests: `app/src/test/java/org/qosp/notes/` (unit, JVM/Robolectric) and `app/src/
 | DI modules (Koin) | `J/di/*` |
 | About screen, links | `J/ui/about/AboutFragment.kt`, `R/values/no_translate_strings.xml` |
 | App name, app id, version | `R/values/no_translate_strings.xml` (`app_name`), `app/build.gradle.kts` |
-| Launcher icon | `R/drawable-v24/ic_launcher_*.xml`, `R/mipmap-*/`, source `graphics/black-pearl/icon-source.png` |
+| Launcher icon | `R/drawable-v24/ic_launcher_*.xml`, `R/mipmap-*/` — all built by `graphics/black-pearl/make_icons.py` from `graphics/black-pearl/icon-source.png` |
 | Static shortcuts / deep link | `R/xml-v25/shortcuts.xml`, `nav_graph.xml` (`blackpearl://notes/...`) |
 | CI | `.github/workflows/build.yml`, `release.yml`, `ui-preview.yml` (+ `scripts/capture-ui.sh`), `.github/dependabot.yml` |

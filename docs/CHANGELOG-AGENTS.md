@@ -567,3 +567,15 @@ Completed the editor suggestion strip and the Network destination, including gra
   commonmark 0.13 on 9 cases — pass on the JVM prototype (local Gradle can't fetch the JDK 21 toolchain). Android
   build and screenshots on CI.
 
+## 2026-11-13 — New app icon; no welcome screen
+- Owner request: new icon (ship silhouette in a pearl, waves, notebook and quill) and no "what's new" screen
+  (it still showed "0.3 — your themes") when the app is installed.
+- `graphics/black-pearl/icon-source.png` replaced; new `make_icons.py` builds `mipmap-*/ic_launcher_art.png`
+  (square edge faded, inset 22dp), `ic_launcher_mono.png` (pearl disc with the ship cut out, for themed icons),
+  legacy `ic_launcher.png` / `ic_launcher_round.png`, `icon-512.png`, fastlane `icon.png`. Background gradient
+  night blue (#101929 → #050912). `monochrome.svg` removed. Previews checked (circle, squircle, themed).
+- `LauncherActivity` just opens `MainActivity`. Removed `WelcomeScreen`, `LauncherViewModel`, `WhatsNew`,
+  `assets/whatsnew.yaml`, the yamlkt dependency, the Koin definition and its `KoinModulesTest` entry. Scripts: the
+  smoke test still taps "Continue" for old builds (no-op on new ones); `capture-ui.sh` no longer shoots the welcome.
+- Tests: Android build + Koin test + startup smoke on CI.
+

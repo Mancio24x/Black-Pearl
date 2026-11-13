@@ -28,7 +28,7 @@ start_app() { # $1 = label; cold start of the launcher, records TotalTime
 crashed() { # $1 = logcat file; true if it shows a crash or ANR of the app
   grep -q -E "FATAL EXCEPTION|ANR in $PKG" "$1"
 }
-launch() { # $1 = case name; starts the launcher, passes the welcome screen, waits, checks for a crash
+launch() { # $1 = case name; starts the launcher (no welcome screen since 0.8.16; old builds show one), waits, checks for a crash
   adb logcat -c
   start_app "$1"
   sleep 6; tap_text "Continue" || tap_text "Continua"; sleep 20
