@@ -243,4 +243,11 @@
     <string name="preferences_note_font_terminal">Terminale</string>
     <string name="preferences_note_font_poster">Manifesto</string>
     <string name="appearance_font_sample">Nota 123</string>
+    <string name="table_editor_title">Tabella</string>
+    <string name="table_editor_done">Fatto</string>
+    <string name="action_close_table">Chiudi</string>
+    <string name="table_add_row">Riga</string>
+    <string name="table_add_column">Colonna</string>
+    <string name="table_delete_row">Elimina riga</string>
+    <string name="table_delete_column">Elimina colonna</string>
 </resources>

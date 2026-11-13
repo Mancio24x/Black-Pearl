@@ -549,3 +549,21 @@ Completed the editor suggestion strip and the Network destination, including gra
   goes at the end when there is no cursor and a table starts on its own line.
 - Tests: `TableFormulasTest` (8), `TableSheetTest` (2) — pass on a JVM prototype with commonmark 0.13. Android build,
   rendering (spans inside Markwon table cells) and screenshots on CI.
+
+## 2026-11-13 — Table grid editor (edit tables like a spreadsheet, + row / + column)
+- Owner request: tables should look as good while writing as in reading, with add-row / add-column buttons.
+  Owner picked a full-screen grid editor (spec `docs/superpowers/specs/2026-11-13-table-grid-editor-design.md`,
+  plan `docs/superpowers/plans/2026-11-13-table-grid-editor.md`).
+- `TableGrid` (pure): GFM table ⇄ cells (alignment kept, `\|` escaped, ragged rows padded), add/delete row/column,
+  serialized with padded columns. `MarkdownTables` (pure): find tables like commonmark 0.13 does (not glued under a
+  paragraph, not in fenced/indented code, quoted ones counted but not edited), `at`, `replace` (only if the text is
+  unchanged), `insert` (blank line before/after).
+- `TableEditorDialog`: full-screen Compose grid, thin letters/numbers, formula results under unfocused cells, long press
+  a label to delete, "+ Riga" / "+ Colonna"; closing in any way saves (new tables only if something was typed).
+- `EditorFragment.setupTableEditor`: preview tap (`TableSheetPlugin.TableClickSpan`, only on TextViews with the
+  `tag_table_click_listener` tag), tap inside a table while writing, insert action (no longer switches to writing).
+  `InsertTableDialog`, its layout and `tableMarkdown` removed. `capture-ui.sh` adds a `table-grid` shot.
+- Tests: `TableGridTest` (10), `MarkdownTablesTest` (8), plus a throwaway check that the finder counts tables like
+  commonmark 0.13 on 9 cases — pass on the JVM prototype (local Gradle can't fetch the JDK 21 toolchain). Android
+  build and screenshots on CI.
+

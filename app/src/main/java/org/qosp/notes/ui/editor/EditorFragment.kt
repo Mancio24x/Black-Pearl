@@ -1,5 +1,6 @@
 package org.qosp.notes.ui.editor
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.content.Intent
 import android.graphics.Canvas
@@ -21,6 +22,8 @@ import org.qosp.notes.ui.ocr.OcrText
 import java.io.File
 import android.os.Build
 import android.os.Bundle
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.provider.Settings
 import android.text.Editable
 import android.text.InputType
@@ -113,7 +116,7 @@ import org.qosp.notes.ui.common.showNoteColorDialog
 import org.qosp.notes.ui.common.showMoveToNotebookDialog
 import org.qosp.notes.ui.editor.dialog.InsertHyperlinkDialog
 import org.qosp.notes.ui.editor.dialog.InsertImageDialog
-import org.qosp.notes.ui.editor.dialog.InsertTableDialog
+import org.qosp.notes.ui.editor.dialog.TableEditorDialog
 import org.qosp.notes.ui.editor.markdown.MarkdownSpan
 import org.qosp.notes.ui.editor.markdown.TaskBoxColors
 import org.qosp.notes.ui.editor.markdown.TaskBoxTextWatcher
@@ -121,6 +124,9 @@ import org.qosp.notes.ui.editor.markdown.enableTaskBoxTaps
 import org.qosp.notes.ui.editor.markdown.applyTo
 import org.qosp.notes.ui.editor.markdown.ImageBlocks
 import org.qosp.notes.ui.editor.markdown.ImageGestures
+import org.qosp.notes.ui.editor.markdown.MarkdownTables
+import org.qosp.notes.ui.editor.markdown.TableGrid
+import org.qosp.notes.ui.editor.markdown.TableSheetPlugin
 import org.qosp.notes.ui.editor.markdown.ImageLayoutPlugin
 import org.qosp.notes.ui.editor.markdown.insertMarkdown
 import org.qosp.notes.ui.editor.markdown.toggleBulletCurrentLine
@@ -388,6 +394,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         setupEditTexts()
         setupMarkdown()
         setupImageLayout()
+        setupTableEditor()
         setupWikiLinks()
         setupListeners()
 
@@ -474,11 +481,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         data.note?.let { note ->
             when (id) {
                 R.id.action_outline -> showOutline()
-                R.id.action_insert_table -> {
-                    // from the "+" sheet: the table is typed into the text, so switch to writing first
-                    if (!model.inEditMode) updateEditMode(true)
-                    onFormatAction(R.id.action_insert_table)
-                }
+                R.id.action_insert_table -> onFormatAction(R.id.action_insert_table) // the grid editor works in both modes
                 R.id.action_convert_note -> {
                     if (note.isList) model.toTextNote() else model.toList()
                 }
@@ -793,6 +796,73 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
         )
     }
 
+    // --- Black Pearl: tables edited in a spreadsheet grid (see TableEditorDialog) ---
+
+    /** Tap a table in the preview, or tap inside a table's text while writing, to edit it in the grid. */
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setupTableEditor() {
+        binding.textViewContentPreview.setTag(
+            R.id.tag_table_click_listener,
+            TableSheetPlugin.TableClickListener { index ->
+                if (data.note?.isDeleted != false) return@TableClickListener
+                val content = currentContent() ?: return@TableClickListener
+                MarkdownTables.find(content, PREVIEW_MAX_TABLE_COLUMNS).getOrNull(index)?.let { openTableEditor(content, it) }
+            }
+        )
+        val taps = GestureDetector(requireContext(), object : GestureDetector.SimpleOnGestureListener() {
+            override fun onSingleTapUp(e: MotionEvent): Boolean {
+                // after the tap the cursor has moved: look where it landed
+                binding.editTextContent.post {
+                    val edit = binding.editTextContent
+                    if (!model.inEditMode || edit.selectionStart != edit.selectionEnd || data.note?.isDeleted != false) return@post
+                    val content = edit.text?.toString() ?: return@post
+                    MarkdownTables.at(content, edit.selectionStart)?.let { openTableEditor(content, it) }
+                }
+                return false
+            }
+        })
+        binding.editTextContent.setOnTouchListener { _, event -> taps.onTouchEvent(event); false }
+        setFragmentResultListener(TableEditorDialog.RESULT) { _, bundle -> applyTableResult(bundle) }
+    }
+
+    /** Edits the table at [range] of [content]. */
+    private fun openTableEditor(content: String, range: IntRange) {
+        val table = content.substring(range)
+        if (TableGrid.parse(table) != null) showTableEditor(table, range.first) // e.g. a table inside a quote is left as text
+    }
+
+    /** A new table, inserted at [at] (-1 = the end) when the grid closes with something typed. */
+    private fun openNewTable(at: Int) = showTableEditor(null, at)
+
+    private fun showTableEditor(markdown: String?, start: Int) {
+        if (parentFragmentManager.isStateSaved || parentFragmentManager.findFragmentByTag(TABLE_EDITOR_TAG) != null) return
+        TableEditorDialog.newInstance(markdown, start).show(parentFragmentManager, TABLE_EDITOR_TAG)
+    }
+
+    private fun applyTableResult(bundle: Bundle) {
+        val markdown = bundle.getString(TableEditorDialog.ARG_MARKDOWN) ?: return
+        val original = bundle.getString(TableEditorDialog.ARG_ORIGINAL)
+        val start = bundle.getInt(TableEditorDialog.ARG_START, -1)
+        val cursor = binding.editTextContent.selectionStart
+        var newCursor = -1
+        editContent { content ->
+            if (original != null) {
+                // only if the note still holds the table that was opened: never overwrite other text
+                val updated = MarkdownTables.replace(content, start until start + original.length, original, markdown)
+                if (updated != null) newCursor = start + markdown.length - 1
+                updated ?: content
+            } else {
+                val (updated, end) = MarkdownTables.insert(content, start, markdown)
+                newCursor = end
+                updated
+            }
+        }
+        val length = binding.editTextContent.length()
+        val target = (if (newCursor >= 0) newCursor else cursor).coerceIn(0, length)
+        model.selectedRange = target to target
+        if (model.inEditMode) binding.editTextContent.setSelection(target)
+    }
+
     // --- Black Pearl: linked notes, tap a [[link]] pill in the preview ---
 
     private fun setupWikiLinks() {
@@ -831,7 +901,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
             preview.post {
                 markwon.applyTo(preview, note.content) {
                     tableReplacement = { Code(getString(R.string.message_cannot_preview_table)) }
-                    maximumTableColumns = 15
+                    maximumTableColumns = PREVIEW_MAX_TABLE_COLUMNS
                     tableLabels = true
                 }
                 scrollToHeadingOnce()
@@ -1511,8 +1581,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
                 }
 
                 R.id.action_insert_table -> {
-                    clearFragmentResult(MARKDOWN_DIALOG_RESULT)
-                    InsertTableDialog().show(parentFragmentManager, null)
+                    openNewTable(if (model.inEditMode) editTextContent.selectionStart else -1)
                     null
                 }
 
@@ -1871,5 +1940,8 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
     companion object {
         private const val TITLE_SCALE = 30f / 16f
         const val MARKDOWN_DIALOG_RESULT = "MARKDOWN_DIALOG_RESULT"
+        private const val TABLE_EDITOR_TAG = "table_editor"
+        /** Wider tables are not drawn as tables in the preview (and are skipped when counting them). */
+        private const val PREVIEW_MAX_TABLE_COLUMNS = 15
     }
 }

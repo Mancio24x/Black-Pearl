@@ -242,4 +242,11 @@
     <string name="preferences_note_font_terminal">Terminal</string>
     <string name="preferences_note_font_poster">Poster</string>
     <string name="appearance_font_sample">Note 123</string>
+    <string name="table_editor_title">Table</string>
+    <string name="table_editor_done">Done</string>
+    <string name="action_close_table">Close</string>
+    <string name="table_add_row">Row</string>
+    <string name="table_add_column">Column</string>
+    <string name="table_delete_row">Delete row</string>
+    <string name="table_delete_column">Delete column</string>
 </resources>
