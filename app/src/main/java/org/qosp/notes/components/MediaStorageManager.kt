@@ -30,7 +30,14 @@ class MediaStorageManager(
         directory.deleteRecursively()
     }
 
-    suspend fun cleanUpStorage() = runCatching {
+    /**
+     * Deletes the media files no note uses. Files changed less than [minAgeMillis] ago are kept: a file just written
+     * may not be in a note yet (photo being taken, recording in progress, backup being restored).
+     */
+    suspend fun cleanUpStorage(
+        minAgeMillis: Long = RECENT_FILE_MILLIS,
+        now: Long = System.currentTimeMillis(),
+    ) = runCatching {
         val filesUsed = noteRepository
             .getAll()
             .first()
@@ -42,6 +49,7 @@ class MediaStorageManager(
             .orEmpty()
 
         for (file in files) {
+            if (now - File(directory, file).lastModified() < minAgeMillis) continue
             if (getAttachmentUri(context, file, mediaFolder).toString() !in filesUsed) {
                 File(directory, file).delete()
             }
@@ -66,6 +74,10 @@ class MediaStorageManager(
                 FileProvider.getUriForFile(context, "${BuildConfig.APPLICATION_ID}.provider", file) to file
             }.getOrNull()
         }
+    }
+
+    companion object {
+        const val RECENT_FILE_MILLIS = 24L * 60 * 60 * 1000
     }
 
     enum class MediaType(val defaultExtension: String) {

@@ -616,3 +616,24 @@ Completed the editor suggestion strip and the Network destination, including gra
 - Tests: new `TaskBoxTapsTest` (Robolectric, 2), with `TaskBoxesTest`, `MarkdownTablesTest`, `*Html*`: all passed
   locally. **Not checked on a device**: ticking a square and tapping a table in the editor need the CI UI preview
   or the owner's phone. Not confirmed yet that this is all the owner meant.
+
+## 2026-11-13 — code review (owner: "review the app's code and improve it"); fixes in two PRs
+
+- Read: `EditorFragment`, `EditorViewModel`, `TaskBoxes`, `ExtendedEditText`, `ui/tasks/*`, `ui/html/*`,
+  `components/html/*`, `BackupManager`/`BackupRules`/`Handlers`, `AppDatabase`, `NoteRepositoryImpl`,
+  `MediaStorageManager`, `BinCleaningWorker`. Not read: sync backends, links/graph, importer formats, settings, widget.
+- PR `fix/html-viewer-close-crash`: `HtmlViewerFragment.onDestroyView` detaches the WebView clients. The WebView
+  lives up to 2 s after the screen (last save) and its callbacks (`onPageFinished`, alerts...) used the destroyed
+  view (`requireView()` → crash). No automated test (needs a real WebView); `*Html*` unit tests pass.
+- PR `fix/editor-data-safety`:
+  - `MediaStorageManager.cleanUpStorage` keeps files changed in the last 24 h (`RECENT_FILE_MILLIS`): a photo being
+    taken, a recording or a restore in progress is not yet in a note and was deleted if the 5-hourly worker ran then.
+    Device test `MediaStorageManagerTest` now passes `minAgeMillis = 0`.
+  - `EditorViewModel.update` is `NonCancellable`: a write asked for just before the editor closes is finished.
+  - `EditorFragment`: `nextTaskId` is recomputed after "Convert to list" (new items reused ids 0, 1, …), and
+    `contentLoadedInEditor` is set after a list → text conversion (table / picture / OCR insert built on saved text).
+  - Tests: new `MediaStorageCleanupTest` (Robolectric) and `EditorViewModelTest`; both failed with the fix lines
+    disabled, pass with them. The two `EditorFragment` lines have no automated test.
+- **Not checked on a device**: all of the above. Checked and not bugs: no other single-slot listener is overwritten;
+  focus request on list notes; `updateEditMode` row enabling. Open: task squares are not tappable in reading mode
+  (by design; the owner's report may have meant this), `HtmlRules.bootScript` does not check that progress is JSON.
