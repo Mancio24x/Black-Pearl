@@ -7,6 +7,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,7 +32,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,7 +62,6 @@ import org.qosp.notes.preferences.CustomThemeColors
 import org.qosp.notes.preferences.DarkThemeMode
 import org.qosp.notes.preferences.FabSize
 import org.qosp.notes.preferences.NoteFont
-import org.qosp.notes.preferences.ThemeGroup
 import org.qosp.notes.preferences.ThemeMode
 import org.qosp.notes.ui.theme.CustomTheme
 
@@ -95,7 +99,6 @@ fun AppearanceScreen(
     onFont: (NoteFont) -> Unit,
     onFab: (FabSize) -> Unit,
 ) {
-    val context = LocalContext.current
     val uiMode = LocalConfiguration.current.uiMode // previews follow light/dark changes
     val scheme = MaterialTheme.colorScheme
     val forcedMode = prefs.colorScheme.alwaysDark || (prefs.colorScheme == ColorScheme.CUSTOM && CustomTheme.isSupported)
@@ -131,27 +134,57 @@ fun AppearanceScreen(
             CustomThemeCard(custom, prefs.colorScheme == ColorScheme.CUSTOM, onOpenCustom)
         }
 
-        val groups = listOf(ThemeGroup.DESIGNED, ThemeGroup.DARK, ThemeGroup.SPECIAL, ThemeGroup.VIVID)
-        groups.forEach { group ->
-            val items = ColorScheme.entries.filter { it.group == group && it.isSupported() && it != ColorScheme.CUSTOM }
-            if (items.isEmpty()) return@forEach
-            SectionTitle(stringResource(group.nameResource))
-            items.chunked(2).forEach { row ->
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    row.forEach { item ->
-                        val swatch = remember(item, uiMode) { swatchOf(context, item, custom) }
-                        ThemeCard(item, swatch, prefs.colorScheme == item, Modifier.weight(1f)) { onScheme(item) }
-                    }
-                    if (row.size == 1) Spacer(Modifier.weight(1f))
-                }
-            }
+        // Black Pearl: 8 themes in view and 6 more behind "More themes", so Shape and font stays close by.
+        // A hidden theme still in use keeps working and shows under "More themes" until it is changed.
+        val main = MAIN_THEMES.filter { it.isSupported() }
+        val more = (MORE_THEMES + listOfNotNull(prefs.colorScheme.takeIf { it !in MAIN_THEMES && it !in MORE_THEMES && it != ColorScheme.CUSTOM }))
+            .filter { it.isSupported() }
+        var showMore by rememberSaveable { mutableStateOf(prefs.colorScheme in more) }
+        SectionTitle(stringResource(R.string.appearance_themes))
+        ThemeGrid(main, prefs.colorScheme, custom, uiMode, onScheme)
+        Row(
+            Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).clickable { showMore = !showMore }
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                stringResource(if (showMore) R.string.appearance_fewer_themes else R.string.appearance_more_themes),
+                Modifier.weight(1f), style = MaterialTheme.typography.titleSmall, color = scheme.primary,
+            )
+            Text(if (showMore) "▲" else "▼", color = scheme.primary, style = MaterialTheme.typography.labelLarge)
         }
+        if (showMore) ThemeGrid(more, prefs.colorScheme, custom, uiMode, onScheme)
 
         SectionTitle(stringResource(R.string.appearance_shape_font))
         ChoiceRow(stringResource(R.string.preferences_card_shape), CardShape.entries, prefs.cardShape, onShape)
         ChoiceRow(stringResource(R.string.preferences_note_font), NoteFont.entries, prefs.noteFont, onFont)
         ChoiceRow(stringResource(R.string.preferences_fab_size), FabSize.entries, prefs.fabSize, onFab)
         Spacer(Modifier.height(24.dp))
+    }
+}
+
+private val MAIN_THEMES = listOf(
+    ColorScheme.BLACK_PEARL, ColorScheme.SAGE, ColorScheme.OPEN_SEA, ColorScheme.LAVENDER,
+    ColorScheme.ROSE, ColorScheme.TRUE_YELLOW, ColorScheme.TRUE_RED, ColorScheme.SAND,
+)
+private val MORE_THEMES = listOf(
+    ColorScheme.PARCHMENT, ColorScheme.CORAL, ColorScheme.ABYSS,
+    ColorScheme.GRAPHITE, ColorScheme.NIGHT_VIOLET, ColorScheme.SYSTEM,
+)
+
+@Composable
+private fun ThemeGrid(items: List<ColorScheme>, selected: ColorScheme, custom: CustomThemeColors, uiMode: Int, onScheme: (ColorScheme) -> Unit) {
+    val context = LocalContext.current
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        items.chunked(2).forEach { row ->
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                row.forEach { item ->
+                    val swatch = remember(item, uiMode) { swatchOf(context, item, custom) }
+                    ThemeCard(item, swatch, selected == item, Modifier.weight(1f)) { onScheme(item) }
+                }
+                if (row.size == 1) Spacer(Modifier.weight(1f))
+            }
+        }
     }
 }
 
@@ -192,12 +225,12 @@ private fun ThemeCard(item: ColorScheme, s: ThemeSwatch, selected: Boolean, modi
         color = if (selected) scheme.secondaryContainer else scheme.surfaceContainerLow,
         border = BorderStroke(if (selected) 2.dp else 1.dp, if (selected) scheme.primary else scheme.outlineVariant),
     ) {
-        Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Column(Modifier.padding(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             ThemePreview(s, selected)
-            Text(name, Modifier.padding(start = 4.dp), style = MaterialTheme.typography.titleSmall, maxLines = 1)
+            Text(name, Modifier.padding(start = 4.dp, bottom = 2.dp), style = MaterialTheme.typography.titleSmall, maxLines = 1)
             Text(
-                stringResource(item.descriptionResource), Modifier.padding(start = 4.dp, bottom = 4.dp),
-                style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant, maxLines = 2,
+                stringResource(item.descriptionResource), Modifier.padding(start = 4.dp, bottom = 2.dp),
+                style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant, maxLines = 1,
             )
         }
     }
@@ -206,7 +239,7 @@ private fun ThemeCard(item: ColorScheme, s: ThemeSwatch, selected: Boolean, modi
 @Composable
 private fun ThemePreview(s: ThemeSwatch, selected: Boolean) {
     val line = s.muted.copy(alpha = 0.55f)
-    Box(Modifier.fillMaxWidth().height(100.dp).clip(RoundedCornerShape(18.dp)).background(s.paper)) {
+    Box(Modifier.fillMaxWidth().height(68.dp).clip(RoundedCornerShape(16.dp)).background(s.paper)) {
         Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             // search bar
             Row(
@@ -221,25 +254,24 @@ private fun ThemePreview(s: ThemeSwatch, selected: Boolean) {
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 listOf(true, false).forEach { first ->
                     Column(
-                        Modifier.weight(1f).height(56.dp).clip(RoundedCornerShape(10.dp)).background(s.surface).padding(6.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        Modifier.weight(1f).height(32.dp).clip(RoundedCornerShape(8.dp)).background(s.surface).padding(5.dp),
+                        verticalArrangement = Arrangement.spacedBy(3.dp),
                     ) {
                         Box(Modifier.fillMaxWidth(if (first) 0.8f else 0.6f).height(5.dp).clip(RoundedCornerShape(3.dp)).background(s.ink))
                         Box(Modifier.fillMaxWidth().height(3.dp).clip(RoundedCornerShape(2.dp)).background(line))
-                        Box(Modifier.fillMaxWidth(0.7f).height(3.dp).clip(RoundedCornerShape(2.dp)).background(line))
-                        if (first) Box(Modifier.width(22.dp).height(7.dp).clip(RoundedCornerShape(4.dp)).background(s.accent.copy(alpha = 0.22f)))
+                        if (first) Box(Modifier.width(18.dp).height(5.dp).clip(RoundedCornerShape(3.dp)).background(s.accent.copy(alpha = 0.22f)))
                     }
                 }
             }
         }
         // the "+" button in the accent color
         Box(
-            Modifier.align(Alignment.BottomEnd).padding(6.dp).size(24.dp).clip(RoundedCornerShape(8.dp)).background(s.accent),
+            Modifier.align(Alignment.BottomEnd).padding(5.dp).size(18.dp).clip(RoundedCornerShape(6.dp)).background(s.accent),
             contentAlignment = Alignment.Center,
         ) {
             val plus = if (s.accent.luminance() < 0.45f) Color.White else s.ink
-            Box(Modifier.width(10.dp).height(2.dp).background(plus))
-            Box(Modifier.width(2.dp).height(10.dp).background(plus))
+            Box(Modifier.width(8.dp).height(2.dp).background(plus))
+            Box(Modifier.width(2.dp).height(8.dp).background(plus))
         }
         if (selected) {
             Box(
