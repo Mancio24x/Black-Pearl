@@ -50,6 +50,10 @@ for row in "|%sSpesa%s|%sEuro%s|" "|---|---|" "|%sPane%s|%s2%s|" "|%sLatte%s|%s1
 done
 adb shell input keyevent KEYCODE_BACK; sleep 1
 tap_text "Edit/View mode" && sleep 2 && shot "table-note"
+# tap the table in the preview: the grid editor opens full screen
+adb shell uiautomator dump /sdcard/ui.xml >/dev/null 2>&1; adb pull /sdcard/ui.xml "$OUT/ui.xml" >/dev/null 2>&1
+tb=$(grep -o '<node[^>]*resource-id="[^"]*text_view_content_preview"[^>]*>' "$OUT/ui.xml" | head -1 | grep -o 'bounds="[^"]*"' | grep -o '[0-9]\+' | tr '\n' ' ')
+if [ -n "$tb" ]; then set -- $tb; adb shell input tap $(( ($1+$3)/2 )) $(( $2 + 60 )); sleep 2; shot "table-grid"; adb shell input keyevent KEYCODE_BACK; sleep 1; fi
 adb shell input keyevent KEYCODE_BACK; sleep 2
 adb shell am force-stop $PKG
 adb shell am start -W -n $MAIN >/dev/null; sleep 3

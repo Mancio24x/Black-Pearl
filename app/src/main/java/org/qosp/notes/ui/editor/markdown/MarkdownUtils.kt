@@ -98,15 +98,3 @@ fun imageMarkdown(url: String, description: String): String {
     return "![alt text]($url \"$description\")"
 }
 
-fun tableMarkdown(rows: Int, columns: Int): String {
-    var markdown = ""
-
-    for (r in 0..rows) {
-        val space = if (r != 1) "    " else "----"
-        for (c in 0 until columns) {
-            markdown += "|$space"
-        }
-        markdown += "|\n"
-    }
-    return markdown
-}

@@ -2,6 +2,7 @@
 <resources>
     <!-- ImageLayoutPlugin.ImageClickListener set on a TextView that handles image clicks -->
     <item name="tag_image_click_listener" type="id"/>
+    <item name="tag_table_click_listener" type="id"/>
     <!-- Editor actions shown in NoteOptionsSheet (they were "⋮" menu items) -->
     <item name="action_delete_permanently_note" type="id"/>
     <item name="action_convert_note" type="id"/>
