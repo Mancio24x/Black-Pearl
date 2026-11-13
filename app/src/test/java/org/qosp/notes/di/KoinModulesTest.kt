@@ -38,6 +38,7 @@ class KoinModulesTest : KoinTest {
                 CoroutineScope::class,
                 kotlin.coroutines.CoroutineContext::class,
                 SyncScope::class,
+                java.io.File::class,
             ),
             injections = injectedParameters(
                 definition<org.qosp.notes.components.workers.BinCleaningWorker>(
