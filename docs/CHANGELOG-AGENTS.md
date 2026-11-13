@@ -489,3 +489,16 @@ Completed the editor suggestion strip and the Network destination, including gra
   300 → 4000, so the whole kit moves with a dragged note.
 - Tests: `GraphLayoutTest.aKitSizedGraphIsOneCompactRoundGroupAndFast`, `GraphPhysicsTest.draggingAHubPullsAllItsLinksEvenInALargeGraph`;
   all GraphLayout/GraphPhysics tests (15) pass on the JVM prototype. Android build, device tests and frame time on CI/device.
+
+## 2026-11-12 — Network: calmer dragging, opens zoomed on the middle
+- Owner feedback on 0.8.11: all notes visible and fine, but the graph "goes crazy" on touch and should open more
+  zoomed. Measured on the kit (JVM prototype, 300 × 120 units drag): notes ≥ 3 links away moved p95 23 / max 62
+  and stayed displaced.
+- `GraphPhysics`: repulsion softened near contact (`SOFT` 20), light pull back to each note's resting place
+  (`ANCHOR`, only while a note is held: on release the current positions become the resting places, so a dragged note stays where it is left), `MAX_STEP` 12 → 8, `FRICTION` 0.6 → 0.55. Far notes now p95 15 / max 32; dragged note's links still
+  follow (median 164). `forEachClosePair` uses a sorted grid (`CloseGrid`, binary search) instead of per-frame hash
+  maps: ~4.6 → ~2.9 ms per step for the kit on the laptop JVM.
+- `GraphView.entryCamera`: networks of 60+ notes open fitted to the 60 % of notes nearest the centre; "Recenter"
+  and pinch still show everything.
+- Tests: GraphLayout/GraphPhysics tests (15) pass on the JVM prototype; Android on CI. Smoothness on a real phone
+  still to be confirmed by the owner.

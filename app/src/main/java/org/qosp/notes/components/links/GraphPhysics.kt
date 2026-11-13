@@ -20,6 +20,9 @@ class GraphPhysics(start: Map<String, PointF2>, edges: List<GraphEdge>) {
     private val vy = DoubleArray(n)
     private val fx = DoubleArray(n)
     private val fy = DoubleArray(n)
+    // where each note rests while one is held: a light pull back keeps notes far from the dragged one from wandering
+    private val homeX = x.copyOf()
+    private val homeY = y.copyOf()
     private val restX = DoubleArray(n)
     private val restY = DoubleArray(n)
     private val springs: List<Pair<Int, Int>> = edges.mapNotNull { e ->
@@ -63,6 +66,9 @@ class GraphPhysics(start: Map<String, PointF2>, edges: List<GraphEdge>) {
     /** Lets go of the held node; the graph keeps moving a little and then stops. */
     fun release() {
         pinned = -1
+        // where things are now is the new resting place: a released note stays where it was left
+        x.copyInto(homeX)
+        y.copyInto(homeY)
     }
 
     fun stop() {
@@ -80,8 +86,8 @@ class GraphPhysics(start: Map<String, PointF2>, edges: List<GraphEdge>) {
         var fastest = 0.0
         for (i in 0 until n) {
             if (i == pinned) continue
-            var ux = (vx[i] + (fx[i] - restX[i]) * gain) * FRICTION
-            var uy = (vy[i] + (fy[i] - restY[i]) * gain) * FRICTION
+            var ux = (vx[i] + (fx[i] - restX[i] - (x[i] - homeX[i]) * ANCHOR) * gain) * FRICTION
+            var uy = (vy[i] + (fy[i] - restY[i] - (y[i] - homeY[i]) * ANCHOR) * gain) * FRICTION
             val speed = sqrt(ux * ux + uy * uy)
             if (speed > MAX_STEP) {
                 ux *= MAX_STEP / speed
@@ -113,7 +119,8 @@ class GraphPhysics(start: Map<String, PointF2>, edges: List<GraphEdge>) {
             val d = max(sqrt(ux * ux + uy * uy), MIN_DIST)
             val strength = if (component[i] == component[j]) 1 - d / CUTOFF else max(0.0, 1 - d / K)
             if (strength > 0) {
-                val f = K * K / (d * d) * strength
+                // softened when very close, so a note dragged through a crowd nudges it instead of scattering it
+                val f = K * K / (d * d + SOFT * SOFT) * strength
                 outX[i] += ux * f
                 outY[i] += uy * f
                 outX[j] -= ux * f
@@ -146,8 +153,10 @@ class GraphPhysics(start: Map<String, PointF2>, edges: List<GraphEdge>) {
         private const val PULL = GraphLayout.PULL
         private const val MIN_DIST = 1.0
         private const val GAIN = 0.04
-        private const val FRICTION = 0.6
-        private const val MAX_STEP = 12.0
+        private const val FRICTION = 0.55
+        private const val MAX_STEP = 8.0
+        private const val SOFT = 20.0
+        private const val ANCHOR = 1.0
         private const val DRAG_HEAT = 0.3
         private const val COOLING = 0.96
         private const val MIN_HEAT = 0.005
