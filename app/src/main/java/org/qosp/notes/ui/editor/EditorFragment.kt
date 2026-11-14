@@ -128,6 +128,7 @@ import org.qosp.notes.ui.editor.markdown.TableGrid
 import org.qosp.notes.ui.editor.markdown.TableSheetPlugin
 import org.qosp.notes.ui.editor.markdown.ImageLayoutPlugin
 import org.qosp.notes.ui.editor.markdown.insertMarkdown
+import org.qosp.notes.ui.editor.markdown.newPreRenderExecutor
 import org.qosp.notes.ui.editor.markdown.toggleBulletCurrentLine
 import org.qosp.notes.ui.editor.markdown.toggleCheckmarkCurrentLine
 import org.qosp.notes.ui.editor.markdown.WikiLinkPlugin
@@ -161,7 +162,6 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.concurrent.Executors
 
 private typealias Data = EditorViewModel.Data
 
@@ -1652,7 +1652,7 @@ class EditorFragment : BaseFragment(R.layout.fragment_editor) {
             )
         }
         markwonTextWatcher = TaskBoxTextWatcher(
-            MarkwonEditorTextWatcher.withPreRender(markwonEditor, Executors.newCachedThreadPool(), content)
+            MarkwonEditorTextWatcher.withPreRender(markwonEditor, newPreRenderExecutor(), content)
         ) { boxColors }
         content.enableTaskBoxTaps({ content.isMarkdownEnabled }) { tableTaps?.onTouchEvent(it) }
     }
