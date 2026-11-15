@@ -238,6 +238,8 @@ dependencies {
     implementation(libs.bundles.markwon)
     // Offline OCR (Black Pearl feature 3): Tesseract engine, models bundled in assets/tessdata
     implementation(libs.tesseract4android)
+    // Loyalty cards: offline barcode reader/writer (ZXing) with its camera scan screen
+    implementation(libs.zxing.android.embedded)
 
     // Work Manager
     implementation(libs.workRuntimeKtx)

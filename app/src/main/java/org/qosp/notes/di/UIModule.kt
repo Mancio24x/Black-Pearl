@@ -3,12 +3,14 @@ package org.qosp.notes.di
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
+import org.qosp.notes.components.cards.CardStore
 import org.qosp.notes.components.html.HtmlLibraryStore
 import org.qosp.notes.ui.ActivityViewModel
 import org.qosp.notes.ui.archive.ArchiveViewModel
 import org.qosp.notes.ui.attachments.dialog.AttachmentDialogViewModel
 import org.qosp.notes.ui.deleted.DeletedViewModel
 import org.qosp.notes.ui.editor.EditorViewModel
+import org.qosp.notes.ui.cards.CardsViewModel
 import org.qosp.notes.ui.html.HtmlLibraryViewModel
 import org.qosp.notes.ui.html.HtmlViewerViewModel
 import org.qosp.notes.ui.links.NetworkViewModel
@@ -29,6 +31,8 @@ object UIModule {
         single { AppLock(wallClock = { System.currentTimeMillis() }) }
         single { HtmlLibraryStore(File(androidContext().filesDir, "html")) }
         viewModelOf(::HtmlLibraryViewModel)
+        single { CardStore(File(androidContext().filesDir, "cards/cards.json")) }
+        viewModelOf(::CardsViewModel)
         viewModelOf(::HtmlViewerViewModel)
         viewModelOf(::EditorViewModel)
         viewModelOf(::NetworkViewModel)

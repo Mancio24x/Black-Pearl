@@ -20,6 +20,7 @@
                 android:orderInCategory="0"/>
         <item android:id="@+id/fragment_network" android:icon="@drawable/ic_network" android:title="@string/nav_network"/>
         <item android:id="@+id/fragment_html" android:icon="@drawable/ic_html" android:title="@string/nav_html"/>
+        <item android:id="@+id/fragment_cards" android:icon="@drawable/ic_cards" android:title="@string/nav_cards"/>
     </group>
 
     <item

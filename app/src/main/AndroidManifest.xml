@@ -75,6 +75,12 @@
 
         <activity android:name="org.qosp.notes.ui.media.MediaActivity" />
 
+        <!-- Loyalty cards: the library's camera scan screen, usable with the phone held upright -->
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="fullSensor"
+            tools:replace="android:screenOrientation" />
+
         <!-- Widget Receiver -->
         <receiver
             android:name=".ui.widget.NotesWidgetProvider"
