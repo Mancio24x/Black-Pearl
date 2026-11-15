@@ -280,4 +280,19 @@
     <string name="html_missing_resource">A file of this document is missing: %1$s</string>
     <string name="html_reset_done">Progress reset</string>
     <string name="html_doc_missing">Document not found</string>
+    <string name="nav_cards">Cards</string>
+    <string name="cards_add">Add</string>
+    <string name="cards_empty">No cards yet. Add a loyalty card by scanning its barcode.</string>
+    <string name="cards_add_camera">Scan with the camera</string>
+    <string name="cards_add_picture">Read from a picture</string>
+    <string name="cards_add_typed">Type the number</string>
+    <string name="cards_scan_prompt">Point at the barcode of the card</string>
+    <string name="cards_not_found">No barcode found in this picture</string>
+    <string name="cards_name">Card name</string>
+    <string name="cards_number">Card number</string>
+    <string name="cards_rename">Rename</string>
+    <string name="cards_delete">Delete</string>
+    <string name="cards_delete_confirm">Delete the card “%1$s”?</string>
+    <string name="cards_more">More</string>
+    <string name="cards_cannot_show">This code cannot be drawn</string>
 </resources>

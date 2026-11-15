@@ -649,3 +649,23 @@ Completed the editor suggestion strip and the Network destination, including gra
   `EditorFragment.setupMarkdown`.
 - Tests: new `PreRenderExecutorTest` (renders never overlap), `*TaskBox*`; passed locally. The crash itself is a
   race and was not reproduced locally; **not checked on a device**.
+
+## 2026-11-15 — feat: loyalty cards ("Tessere")
+
+- Branch `feature/tessere`. New drawer entry under "HTML": list of loyalty cards; add by camera scan, from a
+  picture (gallery / screenshot) or by typing the number; tap a card to show its barcode black on white with the
+  screen at full brightness; rename / delete. Independent from notes and from the HTML library.
+- Files: `components/cards/CardCodes.kt` (ZXing read / draw, pure JVM), `CardStore.kt` (JSON file
+  `files/cards/cards.json`), `ui/cards/CardsFragment.kt`, `CardsViewModel.kt`, layouts `fragment_cards`,
+  `layout_card_item`, `ic_cards`, strings (en + it), `nav_drawer.xml`, `nav_graph.xml`, `MainActivity`
+  (primary destination), `UIModule`, `AndroidManifest.xml`, `libs.versions.toml`, `app/build.gradle.kts`.
+- Decisions: ZXing (`com.journeyapps:zxing-android-embedded` 4.3.0, Apache 2.0, offline, no Google services) for
+  the camera screen and the codes; it adds the **CAMERA permission** (asked only when scanning). Its
+  `CaptureActivity` is overridden to `fullSensor` so it works upright. Cards are stored in a file, not in Room
+  (no migration), so they are **not in backups or sync**. A code that cannot be redrawn in its own format
+  (wrong check digit, formats ZXing cannot write such as RSS) is shown as Code 128, then QR.
+- Tests: new `CardCodesTest` (8), `CardStoreTest` (3); full `testDebugUnitTest` 374 passed, `assembleDebug` ok.
+  In the first full run `BacklinksViewTest.sameListKeepsTheCards` failed once and passed on the rerun: old test,
+  two `Note()` built across a clock second differ (`creationDate`); not touched.
+- **Not checked on a device**: the whole screen, the camera scan, picking a picture, the brightness, R8 release
+  build. No colour or note per card yet.

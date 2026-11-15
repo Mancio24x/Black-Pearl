@@ -24,6 +24,9 @@
     <fragment android:id="@+id/fragment_html" android:name="org.qosp.notes.ui.html.HtmlLibraryFragment"
             android:label="@string/nav_html" android:layout="@layout/fragment_html_library"/>
 
+    <fragment android:id="@+id/fragment_cards" android:name="org.qosp.notes.ui.cards.CardsFragment"
+            android:label="@string/nav_cards" android:layout="@layout/fragment_cards"/>
+
     <fragment android:id="@+id/fragment_html_viewer" android:name="org.qosp.notes.ui.html.HtmlViewerFragment"
             android:layout="@layout/fragment_html_viewer">
         <argument android:name="docId" app:argType="string"/>

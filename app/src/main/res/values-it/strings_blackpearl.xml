@@ -281,4 +281,19 @@
     <string name="html_missing_resource">Manca un file del documento: %1$s</string>
     <string name="html_reset_done">Progressi azzerati</string>
     <string name="html_doc_missing">Documento non trovato</string>
+    <string name="nav_cards">Tessere</string>
+    <string name="cards_add">Aggiungi</string>
+    <string name="cards_empty">Ancora nessuna tessera. Aggiungi una tessera fedeltà scansionando il suo codice a barre.</string>
+    <string name="cards_add_camera">Scansiona con la fotocamera</string>
+    <string name="cards_add_picture">Leggi da un\'immagine</string>
+    <string name="cards_add_typed">Scrivi il numero</string>
+    <string name="cards_scan_prompt">Inquadra il codice a barre della tessera</string>
+    <string name="cards_not_found">Nessun codice a barre trovato in questa immagine</string>
+    <string name="cards_name">Nome della tessera</string>
+    <string name="cards_number">Numero della tessera</string>
+    <string name="cards_rename">Rinomina</string>
+    <string name="cards_delete">Elimina</string>
+    <string name="cards_delete_confirm">Eliminare la tessera “%1$s”?</string>
+    <string name="cards_more">Altro</string>
+    <string name="cards_cannot_show">Questo codice non si può disegnare</string>
 </resources>
