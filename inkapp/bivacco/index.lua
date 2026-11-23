@@ -306,54 +306,54 @@ return {
 end
 
 __mods['immagini'] = function()
--- GENERATO da tools/make_art.py: dove sta ogni immagine ("|nome=numero del file,riga|")
-return { file = { 'img1.txt', 'img2.txt', 'img3.txt', 'img4.txt', 'img5.txt', 'img6.txt', 'img7.txt', 'ui1.txt' },
-  s = "|zaino=1,1|stop_1=1,2|stop_2=1,3|stop_3=1,4|stop_4=1,5|stop_5=1,6|stop_6=1,7|fuoco1=1,8|fuoco2=1,9|fuoco3=1,10|fuoco4=1,11|fuoco5=1,12|fuoco6=1,13|piuma1=1,14|piuma2=1,15|piuma3=1,16|piuma4=1,17|coltello_1=1,18|coltello_2=1,19|coltello_3=1,20|coltello_4=1,21|coltello_5=1,22|coltello_6=1,23|tarp1=1,24|tarp2=1,25|tarp3=1,26|tarp4=1,27|tarp5=1,28|capanna_1=1,29|capanna_2=1,30|capanna_3=1,31|capanna_4=1,32|capanna_5=1,33|capanna_6=1,34|acqua_1=2,1|acqua_2=2,2|acqua_3=2,3|acqua_4=2,4|acqua_5=2,5|acqua_6=2,6|nord1=2,7|nord2=2,8|nord3=2,9|nord4=2,10|nord_5=2,11|nord_6=2,12|otto1=2,13|otto2=2,14|otto3=2,15|otto4=2,16|gassa1=2,17|gassa2=2,18|gassa3=2,19|gassa4=2,20|gassa5=2,21|piano_1=2,22|piano_2=2,23|piano_3=3,1|piano_4=3,2|parlato_1=3,3|parlato_2=3,4|parlato_3=3,5|parlato_4=3,6|parlato_5=3,7|tendicavo_1=3,8|tendicavo_2=3,9|tendicavo_3=3,10|tendicavo_4=3,11|prusik_1=3,12|prusik_2=3,13|prusik_3=3,14|prusik_4=3,15|regole_1=3,16|regole_2=3,17|regole_3=3,18|regole_4=3,19|quattro1=3,20|quattro2=3,21|quattro3=3,22|quattro4=3,23|quattro5=3,24|laccio_1=3,25|laccio_2=3,26|laccio_3=4,1|laccio_4=4,2|laccio_5=4,3|pesca_1=4,4|pesca_2=4,5|pesca_3=4,6|pesca_4=4,7|pesca_5=4,8|tipi1=4,9|tipi2=4,10|tipi3=4,11|tipifuoco_4=4,12|tipifuoco_5=4,13|dakota1=4,14|dakota2=4,15|dakota3=4,16|dakota_4=4,17|dakota_5=4,18|archetto1=4,19|archetto_2=4,20|archetto2=4,21|archetto_4=4,22|archetto_5=4,23|archetto_6=5,1|archetto_7=5,2|batoning_1=5,3|baton1=5,4|baton2=5,5|batoning_4=5,6|batoning_5=5,7|cordame_1=5,8|cordame_2=5,9|cordame_3=5,10|cordame_4=5,11|cordame_5=5,12|cordame_6=5,13|gancio1=5,14|gancio_2=5,15|gancio_3=5,16|gancio_4=5,17|gancio_5=5,18|mezzicolli_1=5,19|mezzicolli_2=5,20|mezzicolli_3=5,21|mezzicolli_4=5,22|camionista_1=5,23|camionista_2=5,24|camionista_3=5,25|camionista_4=5,26|camionista_5=5,27|bandiera_1=5,28|bandiera_2=5,29|bandiera_3=5,30|bandiera_4=5,31|bandiera_5=5,32|quadra1=5,33|quadra2=5,34|quadra3=5,35|quadra_4=6,1|diagonale_1=6,2|diagonale_2=6,3|diagonale_3=6,4|diagonale_4=6,5|treppiede_1=6,6|treppiede_2=6,7|treppiede_3=6,8|treppiede_4=6,9|treppiede1=6,10|cesoia_1=6,11|cesoia_2=6,12|cesoia_3=6,13|cesoia_4=6,14|cesoia_5=6,15|tarp_corde_1=6,16|tarp_corde_2=6,17|tarp_corde_3=6,18|tarp_corde_4=6,19|tarp_corde_5=6,20|tarp_a_1=6,21|tarpa1=6,22|tarp_a_3=6,23|tarpa2=6,24|diam1=6,25|tarp_diamante_2=6,26|diam2=6,27|tarp_diamante_4=6,28|vomere1=6,29|tarp_vomere_2=6,30|vomere2=6,31|tarp_vomere_4=6,32|tarp_cucina_1=6,33|tarp_cucina_2=7,1|cucina1=7,2|tarp_cucina_4=7,3|tarp_pioggia_1=7,4|tarp_pioggia_2=7,5|tarp_pioggia_3=7,6|tarp_pioggia_4=7,7|tarp_pioggia_5=7,8|paiute_1=7,9|paiute_2=7,10|paiute_3=7,11|paiute_4=7,12|paiute_5=7,13|molla_1=7,14|molla_2=7,15|molla_3=7,16|molla_4=7,17|molla_5=7,18|nassa1=7,19|nassa_2=7,20|nassa_3=7,21|nassa_4=7,22|nassa_5=7,23|banner_attrezzatura=7,24|banner_tecniche=7,25|banner_percorso=7,26|tab_attrezzatura=8,1|tab_tecniche=8,2|tab_percorso=8,3|sez_sopravvivenza=8,4|sez_nodi=8,5|sez_trappole=8,6|sez_tarp=8,7|btn_avanti=8,8|btn_fine=8,9|btn_inizia=8,10|btn_zaino=8,11|ico_zaino60=8,12|ico_zaino20=8,13|ico_scarpe=8,14|ico_sacco=8,15|ico_tuta=8,16|ico_calze=8,17|ico_maglietta=8,18|ico_cibo=8,19|ico_fornello=8,20|ico_acqua=8,21|ico_tenda=8,22|ico_materassino=8,23|ico_antipioggia=8,24|ico_pile=8,25|ico_piumino=8,26|ico_tarp=8,27|ico_filtro=8,28|ico_frontale=8,29|ico_coltello=8,30|ico_corda=8,31|ico_kit=8,32|ico_telo=8,33|ico_fuoco=8,34|ico_mappa=8,35|ico_fischietto=8,36|num_1=8,37|num_2=8,38|num_3=8,39|num_4=8,40|num_5=8,41|num_6=8,42|num_7=8,43|num_8=8,44|num_9=8,45|num_10=8,46|num_11=8,47|num_12=8,48|num_13=8,49|num_14=8,50|num_15=8,51|th_stop=8,52|th_fuoco=8,53|th_piuma=8,54|th_coltello=8,55|th_tarp=8,56|th_capanna=8,57|th_acqua=8,58|th_nord=8,59|th_otto=8,60|th_gassa=8,61|th_piano=8,62|th_parlato=8,63|th_tendicavo=8,64|th_prusik=8,65|th_regole=8,66|th_quattro=8,67|th_laccio=8,68|th_pesca=8,69|th_tipifuoco=8,70|th_dakota=8,71|th_archetto=8,72|th_batoning=8,73|th_cordame=8,74|th_gancio=8,75|th_mezzicolli=8,76|th_camionista=8,77|th_bandiera=8,78|th_quadra=8,79|th_diagonale=8,80|th_treppiede=8,81|th_cesoia=8,82|th_tarp_corde=8,83|th_tarp_a=8,84|th_tarp_diamante=8,85|th_tarp_vomere=8,86|th_tarp_cucina=8,87|th_tarp_pioggia=8,88|th_paiute=8,89|th_molla=8,90|th_nassa=8,91|" }
+-- GENERATO da tools/make_art.py: dove sta ogni immagine ("|nome=numero del file,posizione in byte|")
+return { file = { 'img1.txt', 'img2.txt', 'img3.txt', 'ui1.txt' },
+  s = "|zaino=1,0|stop_1=1,4105|stop_2=1,8010|stop_3=1,12763|stop_4=1,16488|stop_5=1,19025|stop_6=1,21938|fuoco1=1,25679|fuoco2=1,29868|fuoco3=1,31449|fuoco4=1,34266|fuoco5=1,38339|fuoco6=1,42048|piuma1=1,45729|piuma2=1,47718|piuma3=1,50739|piuma4=1,53816|coltello_1=1,56397|coltello_2=1,62890|coltello_3=1,66879|coltello_4=1,69064|coltello_5=1,73877|coltello_6=1,75534|tarp1=1,79703|tarp2=1,84252|tarp3=1,88673|tarp4=1,94206|tarp5=1,100839|capanna_1=1,107512|capanna_2=1,111413|capanna_3=1,115754|capanna_4=1,120547|capanna_5=1,127436|capanna_6=1,134537|acqua_1=1,141598|acqua_2=1,149799|acqua_3=1,152740|acqua_4=1,154557|acqua_5=1,157718|acqua_6=1,162803|nord1=1,165224|nord2=1,166501|nord3=1,167790|nord4=1,169259|nord_5=1,170264|nord_6=1,172645|otto1=1,183374|otto2=1,184843|otto3=1,186936|otto4=1,189609|gassa1=1,190910|gassa2=1,193475|gassa3=1,196740|gassa4=1,200357|gassa5=1,204226|piano_1=1,208183|piano_2=1,210440|piano_3=1,214021|piano_4=1,217754|parlato_1=1,221479|parlato_2=1,224060|parlato_3=1,226781|parlato_4=1,229546|parlato_5=1,232419|tendicavo_1=1,235416|tendicavo_2=1,237009|tendicavo_3=1,239210|tendicavo_4=1,242047|prusik_1=1,244980|prusik_2=1,247609|prusik_3=2,0|prusik_4=2,1241|regole_1=2,2834|regole_2=2,5091|regole_3=2,7712|regole_4=2,13061|quattro1=2,16846|quattro2=2,18023|quattro3=2,19888|quattro4=2,21869|quattro5=2,25174|laccio_1=2,27307|laccio_2=2,36748|laccio_3=2,38113|laccio_4=2,41010|laccio_5=2,44175|pesca_1=2,46356|pesca_2=2,47697|pesca_3=2,48866|pesca_4=2,52887|pesca_5=2,57612|tipi1=2,60377|tipi2=2,64210|tipi3=2,66635|tipifuoco_4=2,69524|tipifuoco_5=2,73913|dakota1=2,78994|dakota2=2,89119|dakota3=2,98480|dakota_4=2,109041|dakota_5=2,115518|archetto1=2,120823|archetto_2=2,123600|archetto2=2,126157|archetto_4=2,129226|archetto_5=2,131807|archetto_6=2,136484|archetto_7=2,138393|batoning_1=2,141834|baton1=2,146371|baton2=2,149876|batoning_4=2,153977|batoning_5=2,160150|cordame_1=2,164059|cordame_2=2,164844|cordame_3=2,165733|cordame_4=2,167090|cordame_5=2,168355|cordame_6=2,169620|gancio1=2,170729|gancio_2=2,174322|gancio_3=2,177655|gancio_4=2,179560|gancio_5=2,181069|mezzicolli_1=2,185418|mezzicolli_2=2,188403|mezzicolli_3=2,191956|mezzicolli_4=2,195773|camionista_1=2,199642|camionista_2=2,205615|camionista_3=2,211924|camionista_4=2,218537|camionista_5=2,225406|bandiera_1=2,232387|bandiera_2=2,233112|bandiera_3=2,234469|bandiera_4=2,236306|bandiera_5=2,238147|quadra1=2,240080|quadra2=2,243353|quadra3=2,245830|quadra_4=3,0|diagonale_1=3,2653|diagonale_2=3,6914|diagonale_3=3,10983|diagonale_4=3,14852|treppiede_1=3,18865|treppiede_2=3,20194|treppiede_3=3,21943|treppiede_4=3,23992|treppiede1=3,25857|cesoia_1=3,29958|cesoia_2=3,30791|cesoia_3=3,32280|cesoia_4=3,33853|cesoia_5=3,35742|tarp_corde_1=3,40867|tarp_corde_2=3,45340|tarp_corde_3=3,50633|tarp_corde_4=3,52402|tarp_corde_5=3,56107|tarp_a_1=3,59192|tarpa1=3,65541|tarp_a_3=3,67866|tarpa2=3,73395|diam1=3,76960|tarp_diamante_2=3,80425|diam2=3,86330|tarp_diamante_4=3,90891|vomere1=3,96648|tarp_vomere_2=3,100105|vomere2=3,107078|tarp_vomere_4=3,112059|tarp_cucina_1=3,118816|tarp_cucina_2=3,125213|cucina1=3,133922|tarp_cucina_4=3,139771|tarp_pioggia_1=3,147724|tarp_pioggia_2=3,152625|tarp_pioggia_3=3,155374|tarp_pioggia_4=3,157455|tarp_pioggia_5=3,161876|paiute_1=3,166833|paiute_2=3,168394|paiute_3=3,172107|paiute_4=3,176064|paiute_5=3,179973|molla_1=3,183046|molla_2=3,186255|molla_3=3,189388|molla_4=3,192253|molla_5=3,195606|nassa1=3,198671|nassa_2=3,203796|nassa_3=3,205209|nassa_4=3,206862|nassa_5=3,210067|banner_attrezzatura=3,212552|banner_tecniche=3,216309|banner_percorso=3,219790|tab_attrezzatura=4,0|tab_tecniche=4,1045|tab_percorso=4,2094|sez_sopravvivenza=4,3147|sez_nodi=4,4232|sez_trappole=4,5389|sez_tarp=4,6502|btn_avanti=4,7603|btn_fine=4,8168|btn_inizia=4,8697|btn_zaino=4,9226|ico_zaino60=4,9907|ico_zaino20=4,10120|ico_scarpe=4,10321|ico_sacco=4,10546|ico_tuta=4,10783|ico_calze=4,11020|ico_maglietta=4,11241|ico_cibo=4,11486|ico_fornello=4,11679|ico_acqua=4,11876|ico_tenda=4,12049|ico_materassino=4,12298|ico_antipioggia=4,12523|ico_pile=4,12760|ico_piumino=4,13021|ico_tarp=4,13294|ico_filtro=4,13535|ico_frontale=4,13720|ico_coltello=4,13961|ico_corda=4,14210|ico_kit=4,14475|ico_telo=4,14680|ico_fuoco=4,14917|ico_mappa=4,15118|ico_fischietto=4,15343|num_1=4,15568|num_2=4,15957|num_3=4,16418|num_4=4,16883|num_5=4,17316|num_6=4,17769|num_7=4,18242|num_8=4,18667|num_9=4,19144|num_10=4,19617|num_11=4,20018|num_12=4,20307|num_13=4,20696|num_14=4,21113|num_15=4,21458|th_stop=4,21839|th_fuoco=4,22304|th_piuma=4,22761|th_coltello=4,23106|th_tarp=4,23827|th_capanna=4,24300|th_acqua=4,24741|th_nord=4,25538|th_otto=4,25771|th_gassa=4,26096|th_piano=4,26553|th_parlato=4,26970|th_tendicavo=4,27419|th_prusik=4,27736|th_regole=4,28197|th_quattro=4,28742|th_laccio=4,28959|th_pesca=4,29700|th_tipifuoco=4,30021|th_dakota=4,30574|th_archetto=4,31343|th_batoning=4,31728|th_cordame=4,32277|th_gancio=4,32470|th_mezzicolli=4,32947|th_camionista=4,33336|th_bandiera=4,33677|th_quadra=4,33914|th_diagonale=4,34363|th_treppiede=4,35012|th_cesoia=4,35425|th_tarp_corde=4,35738|th_tarp_a=4,36467|th_tarp_diamante=4,37064|th_tarp_vomere=4,37521|th_tarp_cucina=4,37998|th_tarp_pioggia=4,38627|th_paiute=4,39224|th_molla=4,39605|th_nassa=4,40022|" }
 end
 
 __mods['indice_tecniche'] = function()
 -- GENERATO da tools/build.py da src/tecniche.lua: i testi sono in data/tutorial.txt
 return {
-  { id = 'stop', titolo = "Ti sei perso: S.T.O.P.", sez = 'sopravvivenza', livello = 1, tempo = "5 min", n = 6 },
-  { id = 'fuoco', titolo = "Accendere il fuoco", sez = 'sopravvivenza', livello = 2, tempo = "30 min", n = 6 },
-  { id = 'piuma', titolo = "Il bastoncino piumato", sez = 'sopravvivenza', livello = 2, tempo = "15 min", n = 4 },
-  { id = 'coltello', titolo = "Coltello e intaglio: il picchetto", sez = 'sopravvivenza', livello = 2, tempo = "20 min", n = 6 },
-  { id = 'tarp', titolo = "Tarp a tettoia", sez = 'tarp', livello = 1, tempo = "20 min", n = 5 },
-  { id = 'capanna', titolo = "Capanna di frasche", sez = 'sopravvivenza', livello = 3, tempo = "2-3 ore", n = 6 },
-  { id = 'acqua', titolo = "Trovare e rendere sicura l'acqua", sez = 'sopravvivenza', livello = 1, tempo = "", n = 6 },
-  { id = 'nord', titolo = "Trovare il nord", sez = 'sopravvivenza', livello = 1, tempo = "20 min", n = 6 },
-  { id = 'otto', titolo = "Nodo a otto", sez = 'nodi', livello = 1, tempo = "2 min", n = 4 },
-  { id = 'gassa', titolo = "Gassa d'amante", sez = 'nodi', livello = 2, tempo = "3 min", n = 5 },
-  { id = 'piano', titolo = "Nodo piano", sez = 'nodi', livello = 1, tempo = "1 min", n = 4 },
-  { id = 'parlato', titolo = "Nodo parlato", sez = 'nodi', livello = 1, tempo = "2 min", n = 5 },
-  { id = 'tendicavo', titolo = "Tendicavo", sez = 'nodi', livello = 2, tempo = "3 min", n = 4 },
-  { id = 'prusik', titolo = "Prusik", sez = 'nodi', livello = 3, tempo = "3 min", n = 4 },
-  { id = 'regole', titolo = "Prima di tutto: la legge", sez = 'trappole', livello = 1, tempo = "3 min", n = 4 },
-  { id = 'quattro', titolo = "Trappola a quattro", sez = 'trappole', livello = 3, tempo = "1 ora", n = 5 },
-  { id = 'laccio', titolo = "Il laccio", sez = 'trappole', livello = 2, tempo = "20 min", n = 5 },
-  { id = 'pesca', titolo = "Pesca di sopravvivenza", sez = 'trappole', livello = 2, tempo = "", n = 5 },
-  { id = 'tipifuoco', titolo = "Tipi di fuoco", sez = 'sopravvivenza', livello = 1, tempo = "", n = 5 },
-  { id = 'dakota', titolo = "Il fuoco Dakota", sez = 'sopravvivenza', livello = 2, tempo = "30 min", n = 5 },
-  { id = 'archetto', titolo = "Fuoco ad archetto", sez = 'sopravvivenza', livello = 3, tempo = "1-2 ore", n = 7 },
-  { id = 'batoning', titolo = "Spaccare la legna col coltello", sez = 'sopravvivenza', livello = 2, tempo = "10 min", n = 5 },
-  { id = 'cordame', titolo = "Cordino di fibre naturali", sez = 'sopravvivenza', livello = 3, tempo = "1 ora", n = 6 },
-  { id = 'gancio', titolo = "Il gancio per il pentolino", sez = 'sopravvivenza', livello = 2, tempo = "30 min", n = 5 },
-  { id = 'mezzicolli', titolo = "Due mezzi colli", sez = 'nodi', livello = 1, tempo = "1 min", n = 4 },
-  { id = 'camionista', titolo = "Nodo del camionista", sez = 'nodi', livello = 2, tempo = "3 min", n = 5 },
-  { id = 'bandiera', titolo = "Nodo di bandiera", sez = 'nodi', livello = 1, tempo = "2 min", n = 5 },
-  { id = 'quadra', titolo = "Legatura quadra", sez = 'nodi', livello = 2, tempo = "5 min", n = 4 },
-  { id = 'diagonale', titolo = "Legatura diagonale", sez = 'nodi', livello = 2, tempo = "5 min", n = 4 },
-  { id = 'treppiede', titolo = "Legatura a treppiede", sez = 'nodi', livello = 2, tempo = "10 min", n = 5 },
-  { id = 'cesoia', titolo = "Legatura a cesoia", sez = 'nodi', livello = 2, tempo = "5 min", n = 5 },
-  { id = 'tarp_corde', titolo = "Preparare il tarp", sez = 'tarp', livello = 1, tempo = "30 min", n = 5 },
-  { id = 'tarp_a', titolo = "Tarp a capanna (A)", sez = 'tarp', livello = 1, tempo = "15 min", n = 4 },
-  { id = 'tarp_diamante', titolo = "Tarp a diamante", sez = 'tarp', livello = 2, tempo = "10 min", n = 4 },
-  { id = 'tarp_vomere', titolo = "Tarp a punta (piramide)", sez = 'tarp', livello = 2, tempo = "15 min", n = 4 },
-  { id = 'tarp_cucina', titolo = "Tettoia per stare in piedi", sez = 'tarp', livello = 1, tempo = "15 min", n = 4 },
-  { id = 'tarp_pioggia', titolo = "Tarp col brutto tempo", sez = 'tarp', livello = 2, tempo = "", n = 5 },
-  { id = 'paiute', titolo = "Trappola Paiute", sez = 'trappole', livello = 3, tempo = "1 ora", n = 5 },
-  { id = 'molla', titolo = "Laccio a molla", sez = 'trappole', livello = 3, tempo = "40 min", n = 5 },
-  { id = 'nassa', titolo = "Nassa per pesci", sez = 'trappole', livello = 2, tempo = "30 min", n = 5 },
+  { id = 'stop', titolo = "Ti sei perso: S.T.O.P.", sez = 'sopravvivenza', livello = 1, tempo = "5 min", n = 6, o = 0 },
+  { id = 'fuoco', titolo = "Accendere il fuoco", sez = 'sopravvivenza', livello = 2, tempo = "30 min", n = 6, o = 1370 },
+  { id = 'piuma', titolo = "Il bastoncino piumato", sez = 'sopravvivenza', livello = 2, tempo = "15 min", n = 4, o = 3367 },
+  { id = 'coltello', titolo = "Coltello e intaglio: il picchetto", sez = 'sopravvivenza', livello = 2, tempo = "20 min", n = 6, o = 4571 },
+  { id = 'tarp', titolo = "Tarp a tettoia", sez = 'tarp', livello = 1, tempo = "20 min", n = 5, o = 5981 },
+  { id = 'capanna', titolo = "Capanna di frasche", sez = 'sopravvivenza', livello = 3, tempo = "2-3 ore", n = 6, o = 7176 },
+  { id = 'acqua', titolo = "Trovare e rendere sicura l'acqua", sez = 'sopravvivenza', livello = 1, tempo = "", n = 6, o = 8349 },
+  { id = 'nord', titolo = "Trovare il nord", sez = 'sopravvivenza', livello = 1, tempo = "20 min", n = 6, o = 9675 },
+  { id = 'otto', titolo = "Nodo a otto", sez = 'nodi', livello = 1, tempo = "2 min", n = 4, o = 10769 },
+  { id = 'gassa', titolo = "Gassa d'amante", sez = 'nodi', livello = 2, tempo = "3 min", n = 5, o = 11305 },
+  { id = 'piano', titolo = "Nodo piano", sez = 'nodi', livello = 1, tempo = "1 min", n = 4, o = 12125 },
+  { id = 'parlato', titolo = "Nodo parlato", sez = 'nodi', livello = 1, tempo = "2 min", n = 5, o = 12830 },
+  { id = 'tendicavo', titolo = "Tendicavo", sez = 'nodi', livello = 2, tempo = "3 min", n = 4, o = 13548 },
+  { id = 'prusik', titolo = "Prusik", sez = 'nodi', livello = 3, tempo = "3 min", n = 4, o = 14267 },
+  { id = 'regole', titolo = "Prima di tutto: la legge", sez = 'trappole', livello = 1, tempo = "3 min", n = 4, o = 15191 },
+  { id = 'quattro', titolo = "Trappola a quattro", sez = 'trappole', livello = 3, tempo = "1 ora", n = 5, o = 16120 },
+  { id = 'laccio', titolo = "Il laccio", sez = 'trappole', livello = 2, tempo = "20 min", n = 5, o = 17530 },
+  { id = 'pesca', titolo = "Pesca di sopravvivenza", sez = 'trappole', livello = 2, tempo = "", n = 5, o = 18544 },
+  { id = 'tipifuoco', titolo = "Tipi di fuoco", sez = 'sopravvivenza', livello = 1, tempo = "", n = 5, o = 19609 },
+  { id = 'dakota', titolo = "Il fuoco Dakota", sez = 'sopravvivenza', livello = 2, tempo = "30 min", n = 5, o = 20951 },
+  { id = 'archetto', titolo = "Fuoco ad archetto", sez = 'sopravvivenza', livello = 3, tempo = "1-2 ore", n = 7, o = 22117 },
+  { id = 'batoning', titolo = "Spaccare la legna col coltello", sez = 'sopravvivenza', livello = 2, tempo = "10 min", n = 5, o = 23929 },
+  { id = 'cordame', titolo = "Cordino di fibre naturali", sez = 'sopravvivenza', livello = 3, tempo = "1 ora", n = 6, o = 25103 },
+  { id = 'gancio', titolo = "Il gancio per il pentolino", sez = 'sopravvivenza', livello = 2, tempo = "30 min", n = 5, o = 26431 },
+  { id = 'mezzicolli', titolo = "Due mezzi colli", sez = 'nodi', livello = 1, tempo = "1 min", n = 4, o = 27430 },
+  { id = 'camionista', titolo = "Nodo del camionista", sez = 'nodi', livello = 2, tempo = "3 min", n = 5, o = 28039 },
+  { id = 'bandiera', titolo = "Nodo di bandiera", sez = 'nodi', livello = 1, tempo = "2 min", n = 5, o = 28954 },
+  { id = 'quadra', titolo = "Legatura quadra", sez = 'nodi', livello = 2, tempo = "5 min", n = 4, o = 29606 },
+  { id = 'diagonale', titolo = "Legatura diagonale", sez = 'nodi', livello = 2, tempo = "5 min", n = 4, o = 30478 },
+  { id = 'treppiede', titolo = "Legatura a treppiede", sez = 'nodi', livello = 2, tempo = "10 min", n = 5, o = 31222 },
+  { id = 'cesoia', titolo = "Legatura a cesoia", sez = 'nodi', livello = 2, tempo = "5 min", n = 5, o = 32141 },
+  { id = 'tarp_corde', titolo = "Preparare il tarp", sez = 'tarp', livello = 1, tempo = "30 min", n = 5, o = 32783 },
+  { id = 'tarp_a', titolo = "Tarp a capanna (A)", sez = 'tarp', livello = 1, tempo = "15 min", n = 4, o = 33759 },
+  { id = 'tarp_diamante', titolo = "Tarp a diamante", sez = 'tarp', livello = 2, tempo = "10 min", n = 4, o = 34496 },
+  { id = 'tarp_vomere', titolo = "Tarp a punta (piramide)", sez = 'tarp', livello = 2, tempo = "15 min", n = 4, o = 35263 },
+  { id = 'tarp_cucina', titolo = "Tettoia per stare in piedi", sez = 'tarp', livello = 1, tempo = "15 min", n = 4, o = 36037 },
+  { id = 'tarp_pioggia', titolo = "Tarp col brutto tempo", sez = 'tarp', livello = 2, tempo = "", n = 5, o = 36889 },
+  { id = 'paiute', titolo = "Trappola Paiute", sez = 'trappole', livello = 3, tempo = "1 ora", n = 5, o = 37791 },
+  { id = 'molla', titolo = "Laccio a molla", sez = 'trappole', livello = 3, tempo = "40 min", n = 5, o = 38921 },
+  { id = 'nassa', titolo = "Nassa per pesci", sez = 'trappole', livello = 2, tempo = "30 min", n = 5, o = 40008 },
 }
 end
 
@@ -426,23 +426,17 @@ end
 
 ------------------------------------------------------------------ immagini
 
-local larghezze = {}          -- file -> lunghezza di una riga + 1 (tutte le righe sono lunghe uguali)
-local function riga_img(file, n)
+-- una riga di un file di dati, dalla sua posizione in byte (le righe non hanno spazi di riempimento)
+local function riga_img(file, pos)
   local ok, r = pcall(function() return ctx.package:open_text(file, { max_line_bytes = 65536 }) end)
   if not ok or r == nil or type(r) == 'string' then return nil end
   local riga
   pcall(function()
-    if not larghezze[file] then
-      local prima_riga = r:read_line()
-      if not prima_riga then return end
-      larghezze[file] = #prima_riga + 1
-      if n == 1 then riga = prima_riga; return end
-    end
-    r:seek((n - 1) * larghezze[file])
+    if pos > 0 then r:seek(pos) end
     riga = r:read_line()
   end)
   pcall(function() r:close() end)
-  return riga and (riga:gsub(' +$', ''))
+  return riga
 end
 
 -- le immagini decodificate, la più usata di recente in fondo; il lettore ne tiene al massimo 8.
@@ -491,7 +485,7 @@ end
 local tut_k, tut_dati = nil, nil
 local function TUT(k)
   if tut_k == k then return tut_dati end
-  local riga = riga_img('tutorial.txt', k)
+  local riga = riga_img('tutorial.txt', TEC[k].o)
   local t = { id = TEC[k].id, titolo = TEC[k].titolo, sez = TEC[k].sez, livello = TEC[k].livello, tempo = TEC[k].tempo,
               n = TEC[k].n, passi = {} }
   if riga then
@@ -558,7 +552,30 @@ end
 
 local function vai(s)
   da[#da + 1] = scr
+  if #da > 20 then table.remove(da, 1) end
   scr = s
+end
+
+-- il tasto indietro di ogni schermata: torna alla schermata di prima; se non ce n'è, chiede se uscire
+local function indietro_o_esci()
+  if #da > 0 then indietro(); return end
+  kit.show({ title = 'Uscire da Bivacco?', lines = { 'Le spunte e i tutorial fatti restano salvati.' },
+             rows = { { { 'Esci', function() kit.close(); pcall(salva); pcall(function() ctx:quit() end) end },
+                        { 'Resta', function() kit.close() end } } },
+             cancel = function() kit.close() end })
+end
+
+-- il tasto: un tondo di 44 pixel con la freccia spessa, in alto a sinistra; si tocca anche un po' fuori
+local TASTO = 44
+local function tasto_indietro(gg, x, y)
+  gg:rect(x, y, TASTO, TASTO, { radius = TASTO // 2, fill = true, color = 0 })
+  gg:rect(x, y, TASTO, TASTO, { radius = TASTO // 2, line_width = 3 })
+  local cx, cy = x + TASTO // 2 - 2, y + TASTO // 2
+  for k = -1, 1 do
+    gg:line(cx + 6 + k, cy - 10, cx - 4 + k, cy)
+    gg:line(cx - 4 + k, cy, cx + 6 + k, cy + 10)
+  end
+  zona(0, 0, x + TASTO + 22, y + TASTO + 12, indietro_o_esci)
 end
 
 local function intestazione(gg, titolo, destra, con_indietro)
@@ -593,7 +610,7 @@ local function barra(gg)
     testo_c(gg, 80, TAB_Y + 18, 'Attrezzatura', 'medium'); testo_c(gg, 240, TAB_Y + 18, 'Tecniche', 'medium'); testo_c(gg, 400, TAB_Y + 18, 'Percorso', 'medium')
   end
   local voci = { 'attrezzatura', 'tecniche', 'percorso' }
-  for k, v in ipairs(voci) do zona((k - 1) * 160, TAB_Y, 160, H - TAB_Y, function() scr, da = v, {} end) end
+  for k, v in ipairs(voci) do zona((k - 1) * 160, TAB_Y, 160, H - TAB_Y, function() if scr ~= v then vai(v) end end) end
 end
 
 local function paginatore(gg, y, pag, pagine, cambia)
@@ -722,11 +739,12 @@ local function disegna_attrezzatura(gg)
   if pag_attr == 1 and disegno(gg, 'banner_attrezzatura', 0, 0) then
     y = BANNER_H + 8
   else
-    testo(gg, M, 16, 'Attrezzatura', 'large')
-    y = 60
+    testo(gg, M + TASTO + 14, 22, 'Attrezzatura', 'large')
+    y = 64
     gg:rect(M, y, W - 2 * M, 3, { fill = true })
     y = y + 10
   end
+  tasto_indietro(gg, M, 10)
   avanzamento(gg, y, ok, tot)
   y = y + 36
   local fine = (pagine[pag_attr + 1] or (#righe + 1)) - 1
@@ -769,10 +787,9 @@ local function disegna_attrezzatura(gg)
 end
 
 local function testata_dettaglio(gg, sopra, titolo, icona)
-  freccia(gg, M + 6, 26, 'sx', 9)
-  testo(gg, M + 24, 16, sopra, 'small')
-  zona(0, 0, W, 50, indietro)
-  local y = 52
+  tasto_indietro(gg, M, 10)
+  testo(gg, M + TASTO + 14, 22, sopra, 'small')
+  local y = 66
   local x = M
   if icona then
     gg:rect(M, y, 64, 64, { radius = 12, line_width = 2 })
@@ -870,7 +887,8 @@ local function disegna_tecniche(gg)
   local lista = di_sezione()
   local y = 0
   if disegno(gg, 'banner_tecniche', 0, 0) then y = BANNER_H + 6
-  else testo(gg, M, 16, 'Tecniche', 'large'); y = 64 end
+  else testo(gg, M + TASTO + 14, 22, 'Tecniche', 'large'); y = 64 end
+  tasto_indietro(gg, M, 10)
   if not disegno(gg, 'sez_' .. sez, M, y) then
     for k, x in ipairs(SEZIONI) do testo(gg, M + (k - 1) * 110, y + 12, (sez == x[1] and '> ' or '') .. x[2], 'small') end
   end
@@ -951,13 +969,12 @@ local function disegna_passo(gg)
   local t = TUT(tut)
   local n = #t.passi
   local p = t.passi[passo]
-  freccia(gg, M + 6, 26, 'sx', 9)
-  testo(gg, M + 24, 16, kit.short(t.titolo:upper(), 34), 'small')
-  testo_dx(gg, W - M, 16, passo .. ' / ' .. n, 'small')
-  zona(0, 0, W - 80, 50, indietro)
+  tasto_indietro(gg, M, 8)
+  testo(gg, M + TASTO + 14, 20, kit.short(t.titolo:upper(), 28), 'small')
+  testo_dx(gg, W - M, 20, passo .. ' / ' .. n, 'small')
   local gap = n > 12 and 3 or 5
   local sw = (W - 2 * M - (n - 1) * gap) / n
-  local y = 50
+  local y = 62
   for k = 1, n do
     local x = math.floor(M + (k - 1) * (sw + gap))
     if k <= passo then gg:rect(x, y, math.floor(sw), 8, { fill = true }) else gg:rect(x, y + 2, math.floor(sw), 6, { line_width = 2 }) end
@@ -1003,7 +1020,8 @@ end
 local function disegna_percorso(gg)
   local y
   if disegno(gg, 'banner_percorso', 0, 0) then y = BANNER_H + 8
-  else testo(gg, M, 16, 'Percorso', 'large'); y = 64 end
+  else testo(gg, M + TASTO + 14, 22, 'Percorso', 'large'); y = 64 end
+  tasto_indietro(gg, M, 10)
   local fatte = 0
   for _k, v in ipairs(PRIMA) do if prima[v[1]] then fatte = fatte + 1 end end
   y = etichetta(gg, y, 'PRIMA DI PARTIRE', fatte .. ' / ' .. #PRIMA) + 4

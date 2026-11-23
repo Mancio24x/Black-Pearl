@@ -23,7 +23,7 @@ NON_NEL_CODICE = {'tecniche'}        # diventa data/tutorial.txt + src/indice_te
 def tutorial_in_dati():
     """I testi dei tutorial non stanno nel codice (resterebbero sempre in memoria): una riga per tutorial in
     data/tutorial.txt, campi separati da TAB: id, intro, serve, attenzione, poi per ogni passo titolo, testo,
-    disegno. Le righe sono lunghe uguali (spazi in fondo): l'app salta alla riga k con un seek.
+    disegno. L'indice dà la posizione in byte di ogni riga (o): l'app ci salta con un seek.
     Nel codice resta src/indice_tecniche.lua: id, titolo, sezione, livello, tempo, numero di passi."""
     from lupa import lua54
     L = lua54.LuaRuntime(unpack_returned_tuples=True)
@@ -43,10 +43,14 @@ def tutorial_in_dati():
         righe.append('\t'.join(pulito(c) for c in campi))
         indice.append(f"  {{ id = '{t.id}', titolo = {lua_str(t.titolo)}, sez = '{t.sez}', livello = {t.livello}, "
                       f"tempo = {lua_str(t.tempo)}, n = {n} }},")
-    lung = max(len(r.encode('utf-8')) for r in righe)
+    pos = []
     with open(os.path.join(APP, 'data', 'tutorial.txt'), 'w', encoding='utf-8', newline='\n') as f:
+        p = 0
         for r in righe:
-            f.write(r + ' ' * (lung - len(r.encode('utf-8'))) + '\n')
+            pos.append(p)
+            f.write(r + '\n')
+            p += len(r.encode('utf-8')) + 1
+    indice = [x[:-3] + f', o = {o} }},' for x, o in zip(indice, pos)]
     with open(os.path.join(APP, 'src', 'indice_tecniche.lua'), 'w', encoding='utf-8', newline='\n') as f:
         f.write('-- GENERATO da tools/build.py da src/tecniche.lua: i testi sono in data/tutorial.txt\nreturn {\n')
         f.write('\n'.join(indice) + '\n}\n')

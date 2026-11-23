@@ -151,6 +151,24 @@ def test_memoria_viva_bassa():
     assert kb < 190, f'memoria viva in un tutorial {kb:.0f} KB'
 
 
+def test_tasto_indietro_ovunque():
+    """ogni schermata ha il tasto indietro in alto a sinistra; dalle schede torna alla scheda di prima;
+    senza niente prima chiede se uscire"""
+    l = Lettore()
+    l.tocca(42, 32)
+    assert 'Uscire da Bivacco?' in l.testi()
+    l.tocca_testo('Resta')
+    l.scheda('Tecniche')
+    l.tocca_testo('Accendere il fuoco')
+    l.tocca(240, 748)                         # Inizia
+    for atteso in ('tutorial', 'tecniche', 'attrezzatura'):
+        l.tocca(42, 32)
+        assert l.api.scr() == atteso, (l.api.scr(), atteso)
+    l.tocca(42, 32)
+    l.tocca_testo('Esci')
+    assert getattr(l, 'uscito', False)
+
+
 def test_ogni_voce_si_apre():
     l = Lettore()
     for _ in range(6):

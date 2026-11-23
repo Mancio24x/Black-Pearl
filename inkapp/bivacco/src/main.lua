@@ -67,23 +67,17 @@ end
 
 ------------------------------------------------------------------ immagini
 
-local larghezze = {}          -- file -> lunghezza di una riga + 1 (tutte le righe sono lunghe uguali)
-local function riga_img(file, n)
+-- una riga di un file di dati, dalla sua posizione in byte (le righe non hanno spazi di riempimento)
+local function riga_img(file, pos)
   local ok, r = pcall(function() return ctx.package:open_text(file, { max_line_bytes = 65536 }) end)
   if not ok or r == nil or type(r) == 'string' then return nil end
   local riga
   pcall(function()
-    if not larghezze[file] then
-      local prima_riga = r:read_line()
-      if not prima_riga then return end
-      larghezze[file] = #prima_riga + 1
-      if n == 1 then riga = prima_riga; return end
-    end
-    r:seek((n - 1) * larghezze[file])
+    if pos > 0 then r:seek(pos) end
     riga = r:read_line()
   end)
   pcall(function() r:close() end)
-  return riga and (riga:gsub(' +$', ''))
+  return riga
 end
 
 -- le immagini decodificate, la più usata di recente in fondo; il lettore ne tiene al massimo 8.
@@ -132,7 +126,7 @@ end
 local tut_k, tut_dati = nil, nil
 local function TUT(k)
   if tut_k == k then return tut_dati end
-  local riga = riga_img('tutorial.txt', k)
+  local riga = riga_img('tutorial.txt', TEC[k].o)
   local t = { id = TEC[k].id, titolo = TEC[k].titolo, sez = TEC[k].sez, livello = TEC[k].livello, tempo = TEC[k].tempo,
               n = TEC[k].n, passi = {} }
   if riga then
@@ -199,7 +193,30 @@ end
 
 local function vai(s)
   da[#da + 1] = scr
+  if #da > 20 then table.remove(da, 1) end
   scr = s
+end
+
+-- il tasto indietro di ogni schermata: torna alla schermata di prima; se non ce n'è, chiede se uscire
+local function indietro_o_esci()
+  if #da > 0 then indietro(); return end
+  kit.show({ title = 'Uscire da Bivacco?', lines = { 'Le spunte e i tutorial fatti restano salvati.' },
+             rows = { { { 'Esci', function() kit.close(); pcall(salva); pcall(function() ctx:quit() end) end },
+                        { 'Resta', function() kit.close() end } } },
+             cancel = function() kit.close() end })
+end
+
+-- il tasto: un tondo di 44 pixel con la freccia spessa, in alto a sinistra; si tocca anche un po' fuori
+local TASTO = 44
+local function tasto_indietro(gg, x, y)
+  gg:rect(x, y, TASTO, TASTO, { radius = TASTO // 2, fill = true, color = 0 })
+  gg:rect(x, y, TASTO, TASTO, { radius = TASTO // 2, line_width = 3 })
+  local cx, cy = x + TASTO // 2 - 2, y + TASTO // 2
+  for k = -1, 1 do
+    gg:line(cx + 6 + k, cy - 10, cx - 4 + k, cy)
+    gg:line(cx - 4 + k, cy, cx + 6 + k, cy + 10)
+  end
+  zona(0, 0, x + TASTO + 22, y + TASTO + 12, indietro_o_esci)
 end
 
 local function intestazione(gg, titolo, destra, con_indietro)
@@ -234,7 +251,7 @@ local function barra(gg)
     testo_c(gg, 80, TAB_Y + 18, 'Attrezzatura', 'medium'); testo_c(gg, 240, TAB_Y + 18, 'Tecniche', 'medium'); testo_c(gg, 400, TAB_Y + 18, 'Percorso', 'medium')
   end
   local voci = { 'attrezzatura', 'tecniche', 'percorso' }
-  for k, v in ipairs(voci) do zona((k - 1) * 160, TAB_Y, 160, H - TAB_Y, function() scr, da = v, {} end) end
+  for k, v in ipairs(voci) do zona((k - 1) * 160, TAB_Y, 160, H - TAB_Y, function() if scr ~= v then vai(v) end end) end
 end
 
 local function paginatore(gg, y, pag, pagine, cambia)
@@ -363,11 +380,12 @@ local function disegna_attrezzatura(gg)
   if pag_attr == 1 and disegno(gg, 'banner_attrezzatura', 0, 0) then
     y = BANNER_H + 8
   else
-    testo(gg, M, 16, 'Attrezzatura', 'large')
-    y = 60
+    testo(gg, M + TASTO + 14, 22, 'Attrezzatura', 'large')
+    y = 64
     gg:rect(M, y, W - 2 * M, 3, { fill = true })
     y = y + 10
   end
+  tasto_indietro(gg, M, 10)
   avanzamento(gg, y, ok, tot)
   y = y + 36
   local fine = (pagine[pag_attr + 1] or (#righe + 1)) - 1
@@ -410,10 +428,9 @@ local function disegna_attrezzatura(gg)
 end
 
 local function testata_dettaglio(gg, sopra, titolo, icona)
-  freccia(gg, M + 6, 26, 'sx', 9)
-  testo(gg, M + 24, 16, sopra, 'small')
-  zona(0, 0, W, 50, indietro)
-  local y = 52
+  tasto_indietro(gg, M, 10)
+  testo(gg, M + TASTO + 14, 22, sopra, 'small')
+  local y = 66
   local x = M
   if icona then
     gg:rect(M, y, 64, 64, { radius = 12, line_width = 2 })
@@ -511,7 +528,8 @@ local function disegna_tecniche(gg)
   local lista = di_sezione()
   local y = 0
   if disegno(gg, 'banner_tecniche', 0, 0) then y = BANNER_H + 6
-  else testo(gg, M, 16, 'Tecniche', 'large'); y = 64 end
+  else testo(gg, M + TASTO + 14, 22, 'Tecniche', 'large'); y = 64 end
+  tasto_indietro(gg, M, 10)
   if not disegno(gg, 'sez_' .. sez, M, y) then
     for k, x in ipairs(SEZIONI) do testo(gg, M + (k - 1) * 110, y + 12, (sez == x[1] and '> ' or '') .. x[2], 'small') end
   end
@@ -592,13 +610,12 @@ local function disegna_passo(gg)
   local t = TUT(tut)
   local n = #t.passi
   local p = t.passi[passo]
-  freccia(gg, M + 6, 26, 'sx', 9)
-  testo(gg, M + 24, 16, kit.short(t.titolo:upper(), 34), 'small')
-  testo_dx(gg, W - M, 16, passo .. ' / ' .. n, 'small')
-  zona(0, 0, W - 80, 50, indietro)
+  tasto_indietro(gg, M, 8)
+  testo(gg, M + TASTO + 14, 20, kit.short(t.titolo:upper(), 28), 'small')
+  testo_dx(gg, W - M, 20, passo .. ' / ' .. n, 'small')
   local gap = n > 12 and 3 or 5
   local sw = (W - 2 * M - (n - 1) * gap) / n
-  local y = 50
+  local y = 62
   for k = 1, n do
     local x = math.floor(M + (k - 1) * (sw + gap))
     if k <= passo then gg:rect(x, y, math.floor(sw), 8, { fill = true }) else gg:rect(x, y + 2, math.floor(sw), 6, { line_width = 2 }) end
@@ -644,7 +661,8 @@ end
 local function disegna_percorso(gg)
   local y
   if disegno(gg, 'banner_percorso', 0, 0) then y = BANNER_H + 8
-  else testo(gg, M, 16, 'Percorso', 'large'); y = 64 end
+  else testo(gg, M + TASTO + 14, 22, 'Percorso', 'large'); y = 64 end
+  tasto_indietro(gg, M, 10)
   local fatte = 0
   for _k, v in ipairs(PRIMA) do if prima[v[1]] then fatte = fatte + 1 end end
   y = etichetta(gg, y, 'PRIMA DI PARTIRE', fatte .. ' / ' .. #PRIMA) + 4

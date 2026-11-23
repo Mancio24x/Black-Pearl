@@ -52,6 +52,7 @@ ctx = {
   package = M({ open_text = function(name, opts) return P.apri(name) end }),
   device = M({ keep_awake = function(ms) P.sveglio(ms) end }),
   budget = M({ extend = function() P.tempo() end }),
+  quit = function(self) P.esci() end,
   gc = M({ collect = function() collectgarbage('collect') end, count = function() return collectgarbage('count') * 1024 end }),
 }
 __TEST = {}
@@ -84,7 +85,7 @@ class Lettore:
             'disegna': self._disegna, 'ridisegna': self._ridisegna, 'dopo': self._dopo,
             'store': self.store, 'adesso': self._adesso, 'millis': lambda: self.ms,
             'b64': self._b64, 'immagine': self._immagine, 'apri': self._apri,
-            'sveglio': self._sveglio, 'tempo': self._tempo,
+            'sveglio': self._sveglio, 'tempo': self._tempo, 'esci': lambda: setattr(self, 'uscito', True),
         })
         self.L.execute(LUA, P)
         self.L.execute(open(os.path.join(APP, 'index.lua'), encoding='utf-8').read())
@@ -276,6 +277,7 @@ class Lettore:
         self.disegna()
 
     def foto(self, path, scala=1):
+        self.avanti(1)                  # le immagini rimandate arrivano nei fotogrammi successivi
         im = self.disegna()
         if scala != 1:
             im = im.resize((480 * scala, 800 * scala), Image.NEAREST)

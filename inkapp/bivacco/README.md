@@ -55,7 +55,11 @@ Il lettore chiude l'app se un passo dura più di circa un secondo, e le dà circ
   nel codice resta solo `src/indice_tecniche.lua`. Memoria sempre occupata: da circa 300 a circa 175 KB;
 - l'elenco delle immagini è una stringa compatta, non una tabella;
 - a ogni cambio di schermata la memoria si libera subito (`ctx.gc:collect()`);
-- le immagini sono in file da circa 250 KB invece che da 900 KB.
+- le immagini sono in file da circa 250 KB, una riga per immagine **senza spazi di riempimento**: l'app salta alla
+  riga con la sua posizione in byte (prima più di metà dei dati erano spazi). Pacchetto: da 1,9 MB a circa 860 KB.
+
+Ogni schermata ha il **tasto indietro** in alto a sinistra (un tondo da 44 pixel): torna alla schermata di prima,
+anche fra le schede; se non c'è niente prima chiede se uscire.
 
 I test (`tools/test_app.py`) controllano questi limiti: decodifiche per fotogramma, richiesta di tempo,
 memoria occupata.

@@ -751,3 +751,13 @@ Completed the editor suggestion strip and the Network destination, including gra
 - Tests: new test_poco_lavoro_per_fotogramma, test_le_immagini_arrivano_tutte, test_memoria_viva_bassa (failed before
   the fixes, pass after); full suite 12 passed. Not verified on a device: the 1 s limit and heap size come from the
   community's notes.
+
+## 2026-11-23 — inkapp/bivacco 0.4.2: back button everywhere, smaller package
+
+- Owner request: a slightly bigger back button on every screen; make the app lighter still.
+- Back button: 44 px circle top-left on all screens (`tasto_indietro`, tap area ~66x66); tabs now push history, so
+  back returns to the previous tab; with no history it asks to exit (`ctx:quit()`). Banner titles moved right.
+- Size: more than half of the data was line padding (fixed-stride rows). Data rows are now unpadded and read by byte
+  offset (immagini.lua `|name=file,offset|`, indice_tecniche `o = offset`); make_art asserts rows are not
+  "record-like" so vendor/xtpack.py keeps files byte for byte. Data 1.8 MB -> 0.8 MB, package 1.9 MB -> ~0.86 MB.
+- Tests: 14 passed on the simulator (new test_tasto_indietro_ovunque). Not checked on a device.

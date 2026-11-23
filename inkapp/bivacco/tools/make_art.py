@@ -7,7 +7,7 @@ lunghezza), src/immagini.lua (nome -> numero di riga), icon.png e art/ (i PNG e 
 Le immagini usate dall'app sono quelle nominate con img = '...' in src/*.lua; un nome senza disegno
 in tools/disegni.py ferma la costruzione.
 """
-import base64, io, math, os, re, sys
+import base64, collections, io, math, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 APP = os.path.dirname(HERE)
@@ -79,24 +79,31 @@ MAX_FILE = 250000          # pezzi piccoli (il lettore apre file fino a 1 MB; il
 
 
 def scrivi_a_pezzi(base, righe):
-    """righe (nome, b64) in base1.txt, base2.txt... ognuno sotto MAX_FILE; restituisce {nome: (file, riga)}"""
+    """righe (nome, b64) in base1.txt, base2.txt... ognuno sotto MAX_FILE, una riga per immagine, SENZA spazi
+    di riempimento: l'app salta alla riga con la sua posizione in byte. Restituisce {nome: (file, byte)}."""
     for f in os.listdir(os.path.join(APP, 'data')):
         if re.match(base + r'\d*\.txt$', f):
             os.remove(os.path.join(APP, 'data', f))
-    dove, gruppo, n_file = {}, [], 1
+    dove, gruppo, n_file, dim = {}, [], 1, 0
     def chiudi():
-        nonlocal gruppo, n_file
+        nonlocal gruppo, n_file, dim
         if gruppo:
             nome_file = f'{base}{n_file}.txt'
-            scrivi(nome_file, [r for _n, r in gruppo])
-            for k, (n, _r) in enumerate(gruppo, 1):
-                dove[n] = (nome_file, k)
-            gruppo, n_file = [], n_file + 1
+            pos = 0
+            with open(os.path.join(APP, 'data', nome_file), 'w', encoding='ascii', newline='\n') as f:
+                for n, r in gruppo:
+                    dove[n] = (nome_file, pos)
+                    f.write(r + '\n')
+                    pos += len(r) + 1
+            # vendor/xtpack.py tiene il file byte per byte solo se le righe NON sono quasi tutte lunghe uguali
+            lunghezze = collections.Counter(len(r) for _n, r in gruppo)
+            assert len(gruppo) < 3 or lunghezze.most_common(1)[0][1] < 0.9 * len(gruppo), nome_file
+            gruppo, n_file, dim = [], n_file + 1, 0
     for n, r in righe:
-        L = max([len(x) for _y, x in gruppo] + [len(r)]) + 1
-        if gruppo and L * (len(gruppo) + 1) > MAX_FILE:
+        if gruppo and dim + len(r) + 1 > MAX_FILE:
             chiudi()
         gruppo.append((n, r))
+        dim += len(r) + 1
     chiudi()
     return dove
 
@@ -162,7 +169,7 @@ def main():
     files = sorted({dove[n][0] for n, _r in grandi + piccole})
     voci = ''.join(f"|{n}={files.index(dove[n][0]) + 1},{dove[n][1]}" for n, _r in grandi + piccole) + '|'
     with open(os.path.join(APP, 'src', 'immagini.lua'), 'w', encoding='utf-8', newline='\n') as f:
-        f.write('-- GENERATO da tools/make_art.py: dove sta ogni immagine ("|nome=numero del file,riga|")\n')
+        f.write('-- GENERATO da tools/make_art.py: dove sta ogni immagine ("|nome=numero del file,posizione in byte|")\n')
         f.write('return { file = { ' + ', '.join(f"'{x}'" for x in files) + ' },\n  s = "' + voci + '" }\n')
     icona().save(os.path.join(APP, 'icon.png'))
     col = 3

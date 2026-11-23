@@ -68,14 +68,14 @@ def banner(titolo, sotto, seme):
     # curve di livello nel cielo, leggere
     for k in range(4):
         y0 = 18 + k * 14
-        pts = [(x, y0 + 5 * math.sin(x / 37 + k)) for x in np.linspace(392, 480, 24)]
+        pts = [(x, y0 + 5 * math.sin(x / 37 + k)) for x in np.linspace(430, 480, 14)]
         c.tratto(pts, 0.8, 150)
     g = c.finale(basso=30, alto=230)
     # il titolo e la riga sotto, netti sopra il cielo
     im = g.convert('L').resize((W * SS, H * SS), Image.NEAREST)
     d = ImageDraw.Draw(im)
-    d.text(_P(20, 14), titolo, font=_font(TITOLO, 46), fill=0)
-    d.text(_P(22, 70), sotto, font=_font(MONO, 13), fill=0)
+    d.text(_P(84, 16), titolo, font=_font(TITOLO, 42), fill=0)
+    d.text(_P(86, 66), sotto, font=_font(MONO, 12), fill=0)
     return _netto(im, W, H, 100)
 
 
