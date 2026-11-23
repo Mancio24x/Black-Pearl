@@ -43,7 +43,22 @@ Tutti i 196 passi dei 40 tutorial hanno un disegno.
 I vettoriali si vedono come storyboard (una tavola per tutorial, una pagina per sezione) sul canvas Claude
 Design "Bivacco e-ink redesign" (`tools/design_canvas.py`). Per il lettore Chromium li fotografa
 (`tools/rendi_svg.js`) e `tools/svg_esporta.py` li riduce a 1 bit.
-Le immagini stanno in `data/img1.txt`, `img2.txt`… e `ui1.txt`, ognuno sotto 1 MB (il limite del lettore).
+Le immagini stanno in `data/img1.txt`, `img2.txt`… e `ui1.txt`, ognuno da circa 250 KB.
+
+## Leggera e stabile (0.4.1)
+
+Il lettore chiude l'app se un passo dura più di circa un secondo, e le dà circa 1 MB di memoria. Per questo:
+
+- ogni fotogramma decodifica al massimo 2 immagini, dopo aver chiesto più tempo (`ctx.budget:extend()`);
+  le altre arrivano nei fotogrammi successivi;
+- i testi dei tutorial stanno in `data/tutorial.txt` (una riga per tutorial) e se ne carica uno alla volta;
+  nel codice resta solo `src/indice_tecniche.lua`. Memoria sempre occupata: da circa 300 a circa 175 KB;
+- l'elenco delle immagini è una stringa compatta, non una tabella;
+- a ogni cambio di schermata la memoria si libera subito (`ctx.gc:collect()`);
+- le immagini sono in file da circa 250 KB invece che da 900 KB.
+
+I test (`tools/test_app.py`) controllano questi limiti: decodifiche per fotogramma, richiesta di tempo,
+memoria occupata.
 
 ## Installarla
 
@@ -58,7 +73,7 @@ Il menu Ink App va sbloccato una volta, come per Ai Fornelli. L'app è stata pro
 | Cosa | Dove |
 |---|---|
 | la lista e l'ordine dell'attrezzatura | `src/attrezzatura.lua` |
-| i tutorial: testi, passi, a quale disegno puntano | `src/tecniche.lua` |
+| i tutorial: testi, passi, a quale disegno puntano | `src/tecniche.lua` (la costruzione lo trasforma in `data/tutorial.txt`) |
 | le schermate | `src/main.lua` |
 | i disegni dei passi | `tools/disegni.py` (gli strumenti di disegno sono in `tools/arte.py`) |
 | intestazioni, icone, barra, bottoni | `tools/grafica.py` |

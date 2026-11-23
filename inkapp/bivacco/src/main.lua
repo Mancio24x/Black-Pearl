@@ -8,8 +8,13 @@
 -- immagini.lua dice in che riga è ciascuno.
 
 local ATTR = require('attrezzatura')
-local TEC = require('tecniche')
-local IMG = require('immagini')
+local TEC = require('indice_tecniche')   -- solo titoli e numeri: i testi sono in data/tutorial.txt
+local IMG_T = require('immagini')
+local function IMG(nome)
+  local f, r = IMG_T.s:match('|' .. nome .. '=(%d+),(%d+)|')
+  if not f then return nil end
+  return { IMG_T.file[tonumber(f)], tonumber(r) }
+end
 
 local W, H = kit.W, kit.H
 local M = 20
@@ -81,17 +86,26 @@ local function riga_img(file, n)
   return riga and (riga:gsub(' +$', ''))
 end
 
--- le immagini decodificate, la più usata di recente in fondo; il lettore ne tiene al massimo 8
+-- le immagini decodificate, la più usata di recente in fondo; il lettore ne tiene al massimo 8.
+-- Il lettore chiude l'app se un fotogramma dura più di circa un secondo: ogni fotogramma decodifica al
+-- massimo DEC_PER_FOTOGRAMMA immagini (chiedendo prima più tempo); le altre arrivano nei fotogrammi dopo.
 local cache, ordine = {}, {}
 local MAX_IMG = 7
+local DEC_PER_FOTOGRAMMA = 2
+local decodificate = 0       -- in questo fotogramma
+local rimandate = false      -- qualche immagine aspetta il prossimo fotogramma
 local function immagine(nome)
-  local dove = nome and IMG[nome]
-  if not dove then return nil end
+  if not nome then return nil end
   if cache[nome] ~= nil then
     for k, v in ipairs(ordine) do if v == nome then table.remove(ordine, k); break end end
     ordine[#ordine + 1] = nome
     return cache[nome] or nil
   end
+  local dove = IMG(nome)
+  if not dove then return nil end
+  if decodificate >= DEC_PER_FOTOGRAMMA then rimandate = true; return nil end
+  if decodificate == 0 then pcall(function() ctx.budget:extend() end) end
+  decodificate = decodificate + 1
   while #ordine >= MAX_IMG do
     local v = table.remove(ordine, 1)
     if cache[v] then pcall(function() cache[v]:release() end) end
@@ -102,6 +116,7 @@ local function immagine(nome)
     local b64 = riga_img(dove[1], dove[2])
     if b64 then
       local ok, bytes = pcall(function() return ctx.base64:decode(b64) end)
+      b64 = nil
       if ok and bytes then
         local oki, im = pcall(function() return ctx.image:decode(bytes) end)
         if oki and im then img = im end
@@ -111,6 +126,27 @@ local function immagine(nome)
   cache[nome] = img
   ordine[#ordine + 1] = nome
   return img or nil
+end
+
+-- il tutorial k per intero (intro, serve, attenzione, passi), da data/tutorial.txt; ne tiene uno solo
+local tut_k, tut_dati = nil, nil
+local function TUT(k)
+  if tut_k == k then return tut_dati end
+  local riga = riga_img('tutorial.txt', k)
+  local t = { id = TEC[k].id, titolo = TEC[k].titolo, sez = TEC[k].sez, livello = TEC[k].livello, tempo = TEC[k].tempo,
+              n = TEC[k].n, passi = {} }
+  if riga then
+    local campi = {}
+    for c in (riga .. '\t'):gmatch('([^\t]*)\t') do campi[#campi + 1] = c end
+    local function v(i) local x = campi[i]; return (x and x ~= '') and x or nil end
+    t.intro, t.serve, t.attenzione = v(2) or '', v(3), v(4)
+    for j = 1, t.n do
+      local b = 4 + (j - 1) * 3
+      t.passi[j] = { campi[b + 1] or '', campi[b + 2] or '', img = v(b + 3) }
+    end
+  end
+  tut_k, tut_dati = k, t
+  return t
 end
 
 ------------------------------------------------------------------ disegno: pezzi
@@ -468,7 +504,7 @@ local TEC_RIGA = 88
 local SEZ_W = { 124, 94, 118, 104 } -- le larghezze delle sezioni nell'immagine sez_* (tools/grafica.py)
 
 local function meta_tut(t)
-  return #t.passi .. ' passi · ' .. LIVELLI[t.livello] .. (t.tempo ~= '' and (' · ' .. t.tempo) or '')
+  return t.n .. ' passi · ' .. LIVELLI[t.livello] .. (t.tempo ~= '' and (' · ' .. t.tempo) or '')
 end
 
 local function disegna_tecniche(gg)
@@ -519,7 +555,7 @@ local function inizia()
 end
 
 local function disegna_tutorial(gg)
-  local t = TEC[tut]
+  local t = TUT(tut)
   local nome_sez = ''
   for _k, x in ipairs(SEZIONI) do if x[1] == t.sez then nome_sez = x[2]:upper() end end
   local y = testata_dettaglio(gg, nome_sez, t.titolo)
@@ -553,7 +589,7 @@ local function disegna_tutorial(gg)
 end
 
 local function disegna_passo(gg)
-  local t = TEC[tut]
+  local t = TUT(tut)
   local n = #t.passi
   local p = t.passi[passo]
   freccia(gg, M + 6, 26, 'sx', 9)
@@ -639,8 +675,10 @@ local DISEGNA = { attrezzatura = disegna_attrezzatura, voce = disegna_voce, zain
                   tecniche = disegna_tecniche, tutorial = disegna_tutorial, passo = disegna_passo,
                   percorso = disegna_percorso }
 
+local seguito = nil
 function on_draw(c, gg)
   zone = {}
+  decodificate, rimandate = 0, false
   local ok, e = pcall(function()
     gg:clear(0)
     DISEGNA[scr](gg)
@@ -649,6 +687,10 @@ function on_draw(c, gg)
   if not ok then ERR = tostring(e) end
   if ERR then
     for k, l in ipairs(kit.wrap('ERR ' .. ERR, 'small', W - 2 * M)) do gg:text(M, 600 + (k - 1) * 22, l, { font = kit.font('small') }) end
+  end
+  if rimandate and not seguito then
+    -- le immagini rimandate: un altro fotogramma tra poco
+    pcall(function() seguito = ctx:after(80, function() seguito = nil; kit.refresh() end) end)
   end
 end
 
@@ -662,7 +704,7 @@ end
 
 local function sfoglia(d)
   if scr == 'passo' then
-    local n = #TEC[tut].passi
+    local n = TEC[tut].n
     if d > 0 and passo < n then passo = passo + 1 elseif d < 0 and passo > 1 then passo = passo - 1 end
   elseif scr == 'attrezzatura' then
     pag_attr = math.max(1, math.min(per_pag_attr, pag_attr + d))
@@ -698,7 +740,12 @@ function on_input(c, ev)
     end
   end)
   if not ok then ERR = tostring(e) end
-  if prima_scr ~= scr then pcall(function() ctx:invalidate('full') end) else kit.refresh() end
+  if prima_scr ~= scr then
+    pcall(function() ctx.gc:collect() end)      -- cambio di schermata: libera subito la memoria della precedente
+    pcall(function() ctx:invalidate('full') end)
+  else
+    kit.refresh()
+  end
   return preso
 end
 
@@ -713,7 +760,7 @@ if rawget(_G, '__TEST') then
   __TEST.api = {
     scr = function() return scr end, passo = function() return passo end, tut = function() return tut end,
     spunte = function() return spunte end, fatti = function() return fatti end, prima = function() return prima end,
-    tecniche = TEC, attrezzatura = ATTR, err = function() return ERR end,
+    tecniche = TEC, tutorial = TUT, attrezzatura = ATTR, err = function() return ERR end,
     apri = function(k) tut = k; da = { 'tecniche' }; scr = 'tutorial' end,
     set = function(s) scr = s end, conta = conta,
   }

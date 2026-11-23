@@ -16,7 +16,8 @@ def lista(t):
 
 def test_ogni_tutorial_e_ogni_passo():
     l = Lettore()
-    for k, t in enumerate(lista(l.api.tecniche), 1):
+    for k in range(1, len(l.api.tecniche) + 1):
+        t = l.api.tutorial(k)
         l.api.apri(k)
         l.disegna()
         assert l.comandi < LIMITE, (t.id, l.comandi)
@@ -35,20 +36,17 @@ def test_ogni_tutorial_e_ogni_passo():
 
 
 def test_immagini_dei_passi():
-    l = Lettore()
-    for k, t in enumerate(lista(l.api.tecniche), 1):
-        for p in lista(t.passi):
-            if p.img:
-                l.api.apri(k)
-                break
-    # ogni nome di immagine usato esiste in data/img.txt
+    """ogni passo ha un disegno, e ogni disegno nominato esiste nell'elenco delle immagini"""
     import re
+    l = Lettore()
     app = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    nomi = re.findall(r'(\w+) = \{', open(os.path.join(app, 'src', 'immagini.lua')).read())
-    for t in lista(l.api.tecniche):
+    nomi = set(re.findall(r'\|(\w+)=', open(os.path.join(app, 'src', 'immagini.lua')).read()))
+    for k in range(1, len(l.api.tecniche) + 1):
+        t = l.api.tutorial(k)
+        assert len(t.passi) == t.n
         for p in lista(t.passi):
-            if p.img:
-                assert p.img in nomi, p.img
+            assert p.img, (t.id, p[1])
+            assert p.img in nomi, p.img
 
 
 def test_spunte_e_conteggio():
@@ -98,6 +96,59 @@ def test_massimo_7_immagini_per_schermata():
                 viste += 1
                 l.scorri('swipe_left')
     assert viste > 10
+
+
+def _giro_completo(l, ogni_disegno):
+    for scheda in ('Attrezzatura', 'Tecniche', 'Percorso'):
+        l.scheda(scheda)
+        ogni_disegno(l)
+        sezioni = ('Bushcraft', 'Nodi', 'Trappole', 'Tarp') if scheda == 'Tecniche' else (None,)
+        for sez in sezioni:
+            if sez:
+                l.sezione(sez)
+                ogni_disegno(l)
+            for _ in range(6):
+                l.scorri('swipe_left')
+                ogni_disegno(l)
+    l.scheda('Tecniche')
+    l.sezione('Nodi')
+    l.tocca_testo('Nodo piano')
+    l.tocca(240, 748)
+    for _ in range(4):
+        l.tasto('right')
+        ogni_disegno(l)
+
+
+def test_poco_lavoro_per_fotogramma():
+    """il lettore chiude l'app se un fotogramma dura più di circa un secondo: al massimo 2 immagini
+    decodificate per fotogramma, e prima di decodificare l'app chiede più tempo (ctx.budget:extend)"""
+    l = Lettore()
+    viste = []
+    def controlla(l):
+        viste.append(l.ultime_decodifiche)
+        assert l.ultime_decodifiche <= 2, (l.api.scr(), l.ultime_decodifiche)
+        if l.ultime_decodifiche:
+            assert l.ultime_estensioni >= 1, 'decodifica senza chiedere tempo'
+    _giro_completo(l, controlla)
+    assert max(viste) >= 1
+
+
+def test_le_immagini_arrivano_tutte():
+    """le immagini rimandate arrivano nei fotogrammi dopo: alla fine la schermata le ha tutte"""
+    l = Lettore()
+    l.scheda('Tecniche')
+    l.avanti(2)
+    assert l.n_img >= 6, l.n_img            # intestazione, sezioni, barra e le miniature
+
+
+def test_memoria_viva_bassa():
+    """il lettore ha circa 1 MB per l'app: la parte sempre occupata deve restare piccola"""
+    l = Lettore()
+    kb = l.memoria_viva()
+    assert kb < 180, f'memoria viva {kb:.0f} KB'
+    l.scheda('Tecniche'); l.sezione('Nodi'); l.tocca_testo('Nodo piano'); l.tocca(240, 748)
+    kb = l.memoria_viva()
+    assert kb < 190, f'memoria viva in un tutorial {kb:.0f} KB'
 
 
 def test_ogni_voce_si_apre():

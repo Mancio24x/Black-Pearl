@@ -17,7 +17,48 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 APP = os.path.dirname(HERE)
 
 
+NON_NEL_CODICE = {'tecniche'}        # diventa data/tutorial.txt + src/indice_tecniche.lua (meno memoria)
+
+
+def tutorial_in_dati():
+    """I testi dei tutorial non stanno nel codice (resterebbero sempre in memoria): una riga per tutorial in
+    data/tutorial.txt, campi separati da TAB: id, intro, serve, attenzione, poi per ogni passo titolo, testo,
+    disegno. Le righe sono lunghe uguali (spazi in fondo): l'app salta alla riga k con un seek.
+    Nel codice resta src/indice_tecniche.lua: id, titolo, sezione, livello, tempo, numero di passi."""
+    from lupa import lua54
+    L = lua54.LuaRuntime(unpack_returned_tuples=True)
+    tec = L.eval('function(s) return load(s)() end')(open(os.path.join(APP, 'src', 'tecniche.lua'), encoding='utf-8').read())
+    righe, indice = [], []
+    def pulito(v):
+        v = '' if v is None else str(v)
+        assert '\t' not in v and '\n' not in v, v
+        return v
+    for k in range(1, len(tec) + 1):
+        t = tec[k]
+        campi = [t.id, t.intro, t.serve, t.attenzione]
+        n = len(t.passi)
+        for j in range(1, n + 1):
+            p = t.passi[j]
+            campi += [p[1], p[2], p.img]
+        righe.append('\t'.join(pulito(c) for c in campi))
+        indice.append(f"  {{ id = '{t.id}', titolo = {lua_str(t.titolo)}, sez = '{t.sez}', livello = {t.livello}, "
+                      f"tempo = {lua_str(t.tempo)}, n = {n} }},")
+    lung = max(len(r.encode('utf-8')) for r in righe)
+    with open(os.path.join(APP, 'data', 'tutorial.txt'), 'w', encoding='utf-8', newline='\n') as f:
+        for r in righe:
+            f.write(r + ' ' * (lung - len(r.encode('utf-8'))) + '\n')
+    with open(os.path.join(APP, 'src', 'indice_tecniche.lua'), 'w', encoding='utf-8', newline='\n') as f:
+        f.write('-- GENERATO da tools/build.py da src/tecniche.lua: i testi sono in data/tutorial.txt\nreturn {\n')
+        f.write('\n'.join(indice) + '\n}\n')
+
+
+def lua_str(v):
+    v = '' if v is None else str(v)
+    return '"' + v.replace('\\', '\\\\').replace('"', '\\"') + '"'
+
+
 def bundle():
+    tutorial_in_dati()
     kit = open(os.path.join(APP, 'vendor', 'gamekit.lua.in'), encoding='utf-8').read().rstrip('\n')
     parts = ["-- GENERATO da tools/build.py da vendor/gamekit.lua.in e src/: modifica quelli, non questo file.\n",
              "local kit = (function()\n" + kit + "\nend)()\n",
@@ -36,7 +77,7 @@ end
 """]
     src = os.path.join(APP, 'src')
     for f in sorted(os.listdir(src)):
-        if f.endswith('.lua') and f != 'main.lua':
+        if f.endswith('.lua') and f != 'main.lua' and f[:-4] not in NON_NEL_CODICE:
             body = open(os.path.join(src, f), encoding='utf-8').read().rstrip('\n')
             parts.append(f"\n__mods['{f[:-4]}'] = function()\n{body}\nend\n")
     parts.append('\n' + open(os.path.join(src, 'main.lua'), encoding='utf-8').read())

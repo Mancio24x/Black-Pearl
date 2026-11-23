@@ -51,6 +51,8 @@ ctx = {
   image = M({ decode = function(b) return P.immagine(b) end }),
   package = M({ open_text = function(name, opts) return P.apri(name) end }),
   device = M({ keep_awake = function(ms) P.sveglio(ms) end }),
+  budget = M({ extend = function() P.tempo() end }),
+  gc = M({ collect = function() collectgarbage('collect') end, count = function() return collectgarbage('count') * 1024 end }),
 }
 __TEST = {}
 '''
@@ -72,6 +74,8 @@ class Lettore:
         self.imgs, self.blob = {}, {}
         self.full = 0
         self.awake = 0
+        self.estensioni = 0
+        self.decodifiche = 0
         self.fonts = {n: ImageFont.truetype(FONT, d[0]) for n, d in DIM.items()}
         self.im = None
         self.comandi = 0
@@ -80,7 +84,7 @@ class Lettore:
             'disegna': self._disegna, 'ridisegna': self._ridisegna, 'dopo': self._dopo,
             'store': self.store, 'adesso': self._adesso, 'millis': lambda: self.ms,
             'b64': self._b64, 'immagine': self._immagine, 'apri': self._apri,
-            'sveglio': self._sveglio,
+            'sveglio': self._sveglio, 'tempo': self._tempo,
         })
         self.L.execute(LUA, P)
         self.L.execute(open(os.path.join(APP, 'index.lua'), encoding='utf-8').read())
@@ -95,10 +99,14 @@ class Lettore:
         e = self.epoch + self.ms // 1000
         return self.L.table_from({'epoch_sec': e, 'local_sec': e + self.offset, 'hour': 10, 'minute': 30, 'second': 0})
 
+    def _tempo(self):
+        self.estensioni += 1
+
     def _sveglio(self, ms):
         self.awake = ms
 
     def _ridisegna(self, how=None):
+        self.sporco = True
         if how == 'full':
             self.full += 1
 
@@ -114,23 +122,25 @@ class Lettore:
 
     def _immagine(self, k):
         import io
+        self.decodifiche += 1
         im = Image.open(io.BytesIO(self.blob[k])).convert('1')
         i = 'I%d' % len(self.imgs)
         self.imgs[i] = im
         return self.L.table_from({'id': i, 'width': im.width, 'height': im.height, 'release': lambda *_: None})
 
     def _apri(self, name):
+        """come ctx.package:open_text: righe lette dal file, seek in byte"""
         path = os.path.join(APP, 'data', name)
         if not os.path.exists(path):
             return None
-        f = _Lettore_file(open(path, encoding='ascii').read())
+        f = _Lettore_file(open(path, 'rb').read())
 
         def read_line(_self=None):
             if f.pos >= len(f.data):
                 return None
-            j = f.data.find('\n', f.pos)
+            j = f.data.find(b'\n', f.pos)
             j = len(f.data) if j < 0 else j
-            r = f.data[f.pos:j]
+            r = f.data[f.pos:j].decode('utf-8')
             f.pos = j + 1
             return r
 
@@ -192,11 +202,18 @@ class Lettore:
         self.im = Image.new('1', (480, 800), 1)
         self.draw = ImageDraw.Draw(self.im)
         self.scritti, self.comandi, self.n_img = [], 0, 0
+        self.decodifiche, self.estensioni = 0, 0
         self.g.on_draw(self.g.ctx, self.g.gg)
+        self.ultime_decodifiche, self.ultime_estensioni = self.decodifiche, self.estensioni
         err = self.api.err()
         if err:
             raise RuntimeError('errore Lua: ' + str(err))
         return self.im
+
+    def memoria_viva(self):
+        """KB occupati dopo una pulizia completa (Lua del computer, a 64 bit: sul lettore un po' meno)"""
+        self.L.execute('collectgarbage("collect")')
+        return self.L.eval('collectgarbage("count")')
 
     def testi(self):
         self.disegna()
@@ -251,7 +268,10 @@ class Lettore:
             t = min(vivi, key=lambda t: t['quando'])
             t['vivo'] = False
             self.ms = t['quando']
+            self.sporco = False
             t['fn']()
+            if self.sporco:
+                self.disegna()        # il lettore ridisegna dopo ctx:invalidate()
         self.ms = fine
         self.disegna()
 

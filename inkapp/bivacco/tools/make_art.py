@@ -75,7 +75,7 @@ def tutorial_ids():
     return out
 
 
-MAX_FILE = 900000          # il lettore apre file di dati fino a 1 MB
+MAX_FILE = 250000          # pezzi piccoli (il lettore apre file fino a 1 MB; il dizionario della community usa ~200 KB)
 
 
 def scrivi_a_pezzi(base, righe):
@@ -158,12 +158,12 @@ def main():
         piccole.append(('th_' + tid, b64(img)))
     dove = scrivi_a_pezzi('img', grandi)
     dove.update(scrivi_a_pezzi('ui', piccole))
+    # immagini.lua: una sola stringa "|nome=file,riga|..." (una tabella con 300 voci occupa molta più memoria)
+    files = sorted({dove[n][0] for n, _r in grandi + piccole})
+    voci = ''.join(f"|{n}={files.index(dove[n][0]) + 1},{dove[n][1]}" for n, _r in grandi + piccole) + '|'
     with open(os.path.join(APP, 'src', 'immagini.lua'), 'w', encoding='utf-8', newline='\n') as f:
-        f.write('-- GENERATO da tools/make_art.py: dove sta ogni immagine (file in data/, numero di riga)\nreturn {\n')
-        for n, _r in grandi + piccole:
-            fl, k = dove[n]
-            f.write(f"  {n} = {{ '{fl}', {k} }},\n")
-        f.write('}\n')
+        f.write('-- GENERATO da tools/make_art.py: dove sta ogni immagine ("|nome=numero del file,riga|")\n')
+        f.write('return { file = { ' + ', '.join(f"'{x}'" for x in files) + ' },\n  s = "' + voci + '" }\n')
     icona().save(os.path.join(APP, 'icon.png'))
     col = 3
     rig = math.ceil(len(imgs) / col)
