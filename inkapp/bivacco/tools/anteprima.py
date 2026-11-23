@@ -180,6 +180,7 @@ class Lettore:
             else:
                 d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=0, width=int(self._opt(o, 'line_width', 1)))
         elif k == 'image':
+            self.n_img += 1
             img, x, y = a[0], a[1], a[2]
             self.im.paste(self.imgs[img['id']], (int(x), int(y)))
         else:
@@ -190,7 +191,7 @@ class Lettore:
     def disegna(self):
         self.im = Image.new('1', (480, 800), 1)
         self.draw = ImageDraw.Draw(self.im)
-        self.scritti, self.comandi = [], 0
+        self.scritti, self.comandi, self.n_img = [], 0, 0
         self.g.on_draw(self.g.ctx, self.g.gg)
         err = self.api.err()
         if err:
@@ -223,6 +224,14 @@ class Lettore:
     def tocca_testo(self, testo, gesto='tap'):
         x, y = self.dove(testo)
         self.tocca(x + 4, y + 8, gesto)
+
+    def scheda(self, nome):
+        """tocca una scheda della barra in basso (è un'immagine)"""
+        self.tocca({'Attrezzatura': 80, 'Tecniche': 240, 'Percorso': 400}[nome], 768)
+
+    def sezione(self, nome):
+        """tocca una sezione di Tecniche (è un'immagine, sotto l'intestazione)"""
+        self.tocca({'Sopravvivenza': 108, 'Nodi': 254, 'Trappole': 385}[nome], 187)
 
     def scorri(self, gesto):
         self.tocca(240, 400, gesto)
@@ -270,21 +279,21 @@ def main():
     l.tocca_testo('Sacco a pelo')
     l.foto(os.path.join(out, '3-voce.png'))
     l.tasto('back')
-    l.tocca_testo('Tecniche')
+    l.scheda('Tecniche')
     l.foto(os.path.join(out, '4-tecniche.png'))
     l.tocca_testo('Accendere il fuoco')
     l.foto(os.path.join(out, '5-tutorial.png'))
-    l.tocca_testo('Inizia')
+    l.tocca(240, 748)
     l.tasto('right'); l.tasto('right'); l.tasto('right')
     l.foto(os.path.join(out, '6-passo.png'))
     l.tasto('back'); l.tasto('back')
-    l.tocca_testo('Nodi')
+    l.sezione('Nodi')
     l.tocca_testo("Gassa d'amante")
-    l.tocca_testo('Inizia')
+    l.tocca(240, 748)
     l.tasto('right')
     l.foto(os.path.join(out, '7-nodo.png'))
     l.tasto('back'); l.tasto('back')
-    l.tocca_testo('Percorso')
+    l.scheda('Percorso')
     l.foto(os.path.join(out, '8-percorso.png'))
     print('schermate in', out)
 

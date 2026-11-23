@@ -701,3 +701,14 @@ Completed the editor suggestion strip and the Network destination, including gra
 - Tests: `tools/test_app.py` 8 tests passed on the simulator (every tutorial and step, text fits, under 900
   draw commands, checklist persistence, paging, sections, keys). Not checked on a device.
 - Open: drawings missing for 10 tutorials (listed in the README); the map; device check as for Ai Fornelli.
+
+## 2026-11-23 — inkapp/bivacco 0.2: e-ink redesign ("taccuino da campo")
+
+- Owner request: use Claude Design to exploit the e-ink screen better and make Bivacco prettier.
+- Designed on a Claude Design canvas (design language board + 5 screens 480x800 built from the real 1-bit assets).
+- Finding: the panel is 1-bit (grey draws as white) and system text is always black in 3 sizes, so display type,
+  white-on-black, icons and tones are pre-rendered 1-bit images. New `tools/grafica.py` (banners, tab bar,
+  section selector, 25 gear icons, 18 tutorial thumbnails, step numbers, filled buttons); `make_art.py` writes
+  `data/img.txt` + `data/ui.txt` (each < 1 MB) and `src/immagini.lua` = name -> {file, row}.
+- `src/main.lua`: screens rewritten to the design; image cache LRU of 7 (host keeps 8); gear checkbox moved right.
+- Tests: `tools/test_app.py` 9 passed on the simulator (new: at most 7 images per screen). Not checked on a device.

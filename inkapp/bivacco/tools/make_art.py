@@ -17,6 +17,7 @@ from PIL import Image, ImageDraw  # noqa: E402
 
 import arte  # noqa: E402
 import disegni  # noqa: E402
+import grafica  # noqa: E402
 
 
 def nomi_usati():
@@ -46,33 +47,80 @@ def icona():
     return im.resize((96, 96), Image.LANCZOS).point(lambda v: 255 if v > 140 else 0).convert('1')
 
 
+def scrivi(nome_file, righe):
+    L = max(len(r) for r in righe)
+    with open(os.path.join(APP, 'data', nome_file), 'w', encoding='ascii', newline='\n') as f:
+        for r in righe:
+            f.write(r.ljust(L) + '\n')
+    return (L + 1) * len(righe)
+
+
+def b64(img):
+    b = io.BytesIO()
+    img.save(b, 'PNG', optimize=True)
+    return base64.b64encode(b.getvalue()).decode('ascii')
+
+
+def tutorial_ids():
+    testo = re.sub(r'--[^\n]*', '', open(os.path.join(APP, 'src', 'tecniche.lua'), encoding='utf-8').read())
+    out = []
+    for m in re.finditer(r"\{ id = '(\w+)'", testo):
+        fine = testo.find("\n{ id = '", m.end())
+        blocco = testo[m.end():fine if fine > 0 else len(testo)]
+        imgs = re.findall(r"img = '(\w+)'", blocco)
+        out.append((m.group(1), imgs[0] if imgs else None))
+    return out
+
+
 def main():
     nomi = nomi_usati()
     mancano = [n for n in nomi if n not in disegni.DISEGNI]
     if mancano:
         raise SystemExit(f'manca il disegno di: {mancano}')
     os.makedirs(os.path.join(APP, 'data'), exist_ok=True)
-    os.makedirs(os.path.join(APP, 'art'), exist_ok=True)
-    righe, imgs = [], []
+    os.makedirs(os.path.join(APP, 'art', 'ui'), exist_ok=True)
+    # 1. i disegni dei passi (e le intestazioni, grandi anche loro): img.txt
+    grandi, piccole, imgs = [], [], []
+    tele = {}
     for i, n in enumerate(nomi):
         c = arte.Tela(disegni.W, disegni.H, seme=i + 1)
         disegni.DISEGNI[n](c)
+        tele[n] = c
         z = disegni.ZOOM.get(n)
         img = c.finale(disegni.W, disegni.H, scatola=z) if z else c.finale()
         img.save(os.path.join(APP, 'art', n + '.png'))
-        b = io.BytesIO()
-        img.save(b, 'PNG', optimize=True)
-        righe.append(base64.b64encode(b.getvalue()).decode('ascii'))
+        grandi.append((n, b64(img)))
         imgs.append(img)
-        print(f'{n:10s} {len(righe[-1]):6d} B')
-    L = max(len(r) for r in righe)
-    with open(os.path.join(APP, 'data', 'img.txt'), 'w', encoding='ascii', newline='\n') as f:
-        for r in righe:
-            f.write(r.ljust(L) + '\n')
+    for n in ('banner_attrezzatura', 'banner_tecniche', 'banner_percorso'):
+        img = grafica.GRAFICA[n]()
+        img.save(os.path.join(APP, 'art', 'ui', n + '.png'))
+        grandi.append((n, b64(img)))
+    # 2. la grafica piccola: ui.txt
+    for n, f in grafica.GRAFICA.items():
+        if n.startswith('banner_'):
+            continue
+        img = f()
+        img.save(os.path.join(APP, 'art', 'ui', n + '.png'))
+        piccole.append((n, b64(img)))
+    for tid, prima in tutorial_ids():
+        if prima:
+            c = tele[prima]
+            z = disegni.ZOOM.get(prima) or (0, 0, disegni.W, disegni.H)
+            x, y, w, h = z
+            nw = h * 88 / 64
+            img = c.finale(88, 64, scatola=(x + (w - nw) / 2, y, nw, h))
+        else:
+            img = grafica.miniatura(tid)()
+        img.save(os.path.join(APP, 'art', 'ui', 'th_' + tid + '.png'))
+        piccole.append(('th_' + tid, b64(img)))
+    tg = scrivi('img.txt', [r for _n, r in grandi])
+    tp = scrivi('ui.txt', [r for _n, r in piccole])
     with open(os.path.join(APP, 'src', 'immagini.lua'), 'w', encoding='utf-8', newline='\n') as f:
-        f.write('-- GENERATO da tools/make_art.py: il numero di riga di ogni immagine in data/img.txt\nreturn {\n')
-        for k, n in enumerate(nomi, 1):
-            f.write(f"  {n} = {k},\n")
+        f.write('-- GENERATO da tools/make_art.py: dove sta ogni immagine (file in data/, numero di riga)\nreturn {\n')
+        for k, (n, _r) in enumerate(grandi, 1):
+            f.write(f"  {n} = {{ 'img.txt', {k} }},\n")
+        for k, (n, _r) in enumerate(piccole, 1):
+            f.write(f"  {n} = {{ 'ui.txt', {k} }},\n")
         f.write('}\n')
     icona().save(os.path.join(APP, 'icon.png'))
     col = 3
@@ -81,7 +129,8 @@ def main():
     for k, im in enumerate(imgs):
         foglio.paste(im, ((k % col) * 450, (k // col) * 260))
     foglio.save(os.path.join(APP, 'art', 'tutti.png'))
-    print(len(nomi), 'immagini,', os.path.getsize(os.path.join(APP, 'data', 'img.txt')), 'byte')
+    print(f'img.txt {len(grandi)} immagini, {tg} byte; ui.txt {len(piccole)} immagini, {tp} byte')
+    assert tg < 1000000 and tp < 1000000, 'un file di dati supera 1 MB: il lettore non lo apre'
 
 
 if __name__ == '__main__':

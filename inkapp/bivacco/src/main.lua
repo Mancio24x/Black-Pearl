@@ -62,37 +62,44 @@ end
 
 ------------------------------------------------------------------ immagini
 
-local larghezza_riga = nil
-local function riga_img(n)
-  local ok, r = pcall(function() return ctx.package:open_text('img.txt', { max_line_bytes = 65536 }) end)
+local larghezze = {}          -- file -> lunghezza di una riga + 1 (tutte le righe sono lunghe uguali)
+local function riga_img(file, n)
+  local ok, r = pcall(function() return ctx.package:open_text(file, { max_line_bytes = 65536 }) end)
   if not ok or r == nil or type(r) == 'string' then return nil end
   local riga
   pcall(function()
-    if not larghezza_riga then
+    if not larghezze[file] then
       local prima_riga = r:read_line()
       if not prima_riga then return end
-      larghezza_riga = #prima_riga + 1
+      larghezze[file] = #prima_riga + 1
       if n == 1 then riga = prima_riga; return end
     end
-    r:seek((n - 1) * larghezza_riga)
+    r:seek((n - 1) * larghezze[file])
     riga = r:read_line()
   end)
   pcall(function() r:close() end)
   return riga and (riga:gsub(' +$', ''))
 end
 
+-- le immagini decodificate, la più usata di recente in fondo; il lettore ne tiene al massimo 8
 local cache, ordine = {}, {}
+local MAX_IMG = 7
 local function immagine(nome)
-  if not nome or not IMG[nome] then return nil end
-  if cache[nome] ~= nil then return cache[nome] or nil end
-  while #ordine >= 4 do
+  local dove = nome and IMG[nome]
+  if not dove then return nil end
+  if cache[nome] ~= nil then
+    for k, v in ipairs(ordine) do if v == nome then table.remove(ordine, k); break end end
+    ordine[#ordine + 1] = nome
+    return cache[nome] or nil
+  end
+  while #ordine >= MAX_IMG do
     local v = table.remove(ordine, 1)
     if cache[v] then pcall(function() cache[v]:release() end) end
     cache[v] = nil
   end
   local img = false
   if ctx.capabilities and ctx.capabilities.image_decode and ctx.image and ctx.base64 then
-    local b64 = riga_img(IMG[nome])
+    local b64 = riga_img(dove[1], dove[2])
     if b64 then
       local ok, bytes = pcall(function() return ctx.base64:decode(b64) end)
       if ok and bytes then
@@ -179,22 +186,19 @@ local function intestazione(gg, titolo, destra, con_indietro)
   return fondo + 2
 end
 
+-- la barra delle schede: un'immagine (la scheda attiva è una pillola nera con il testo bianco)
 local function barra(gg)
-  riga_doppia(gg, TAB_Y)
-  local voci = { { 'attrezzatura', 'Attrezzatura' }, { 'tecniche', 'Tecniche' }, { 'percorso', 'Percorso' } }
-  local w = W // 3
   local attivo = scr
   if scr == 'voce' or scr == 'zaino' then attivo = 'attrezzatura' end
   if scr == 'tutorial' or scr == 'passo' then attivo = 'tecniche' end
-  for k, v in ipairs(voci) do
-    local cx = (k - 1) * w + w // 2
-    testo_c(gg, cx, TAB_Y + 18, v[2], 'medium')
-    if attivo == v[1] then
-      local lw = larg('medium', v[2])
-      gg:rect(cx - lw // 2, TAB_Y + 48, lw, 4, { fill = true })
-    end
-    zona((k - 1) * w, TAB_Y, w, H - TAB_Y, function() scr, da = v[1], {} end)
+  local img = immagine('tab_' .. attivo)
+  if img then pcall(function() gg:image(img, 0, TAB_Y) end)
+  else
+    riga_doppia(gg, TAB_Y)
+    testo_c(gg, 80, TAB_Y + 18, 'Attrezzatura', 'medium'); testo_c(gg, 240, TAB_Y + 18, 'Tecniche', 'medium'); testo_c(gg, 400, TAB_Y + 18, 'Percorso', 'medium')
   end
+  local voci = { 'attrezzatura', 'tecniche', 'percorso' }
+  for k, v in ipairs(voci) do zona((k - 1) * 160, TAB_Y, 160, H - TAB_Y, function() scr, da = v, {} end) end
 end
 
 local function paginatore(gg, y, pag, pagine, cambia)
@@ -222,19 +226,55 @@ local function disegno(gg, nome, x, y)
   return false
 end
 
+-- un bottone pieno (immagine nera con il testo bianco), o in mancanza un bottone a bordo spesso
+local function bottone_pieno(gg, nome, x, y, w, testo_alt, fn)
+  if not disegno(gg, nome, x, y) then bottone(gg, x, y, w, BTN_H, testo_alt, true, nil) end
+  zona(x, y, w, BTN_H, fn)
+end
+
+-- l'etichetta di un gruppo: maiuscolo piccolo a sinistra, un conteggio a destra, una riga spessa sotto
+local function etichetta(gg, y, s, destra)
+  testo(gg, M, y + 6, s, 'small')
+  if destra then testo_dx(gg, W - M, y + 6, destra, 'small') end
+  gg:rect(M, y + 30, W - 2 * M, 3, { fill = true })
+  return y + 34
+end
+
+-- un riquadro tratteggiato (i consigli, le cose in arrivo)
+local function tratteggio(gg, x, y, w, h)
+  local passo_t, pieno = 10, 6
+  for xx = x, x + w - pieno, passo_t do
+    gg:line(xx, y, xx + pieno, y); gg:line(xx, y + 1, xx + pieno, y + 1)
+    gg:line(xx, y + h, xx + pieno, y + h); gg:line(xx, y + h - 1, xx + pieno, y + h - 1)
+  end
+  for yy = y, y + h - pieno, passo_t do
+    gg:line(x, yy, x, yy + pieno); gg:line(x + 1, yy, x + 1, yy + pieno)
+    gg:line(x + w, yy, x + w, yy + pieno); gg:line(x + w - 1, yy, x + w - 1, yy + pieno)
+  end
+end
+
+local function maiuscolo(s) return (s:gsub('^(%d+)%. ', '%1 · ')):upper() end
+
+local function peso(g)
+  if not g then return nil end
+  if g >= 1000 then return (string.format('%.1f', g / 1000):gsub('%.', ',')) .. ' kg' end
+  return g .. ' g'
+end
+
 ------------------------------------------------------------------ Attrezzatura
 
-local function conta()
+local function conta(gr)
   local tot, ok = 0, 0
-  for _g, gr in ipairs(ATTR) do
-    if not gr.facoltativo then
-      for _k, v in ipairs(gr.voci) do tot = tot + 1; if spunte[v.id] then ok = ok + 1 end end
+  for _g, g in ipairs(gr and { gr } or ATTR) do
+    if gr or not g.facoltativo then
+      for _k, v in ipairs(g.voci) do tot = tot + 1; if spunte[v.id] then ok = ok + 1 end end
     end
   end
   return ok, tot
 end
 
-local RIGA_TIT, RIGA_VOCE = 46, 58
+local BANNER_H = 156
+local RIGA_TIT, RIGA_VOCE = 40, 64
 
 local function righe_attr()
   local out = { { tipo = 'zaino' } }
@@ -246,56 +286,81 @@ local function righe_attr()
   return out
 end
 
-local function alt_riga(r) return r.tipo == 'voce' and RIGA_VOCE or r.tipo == 'zaino' and 64 or RIGA_TIT end
+local function alt_riga(r) return r.tipo == 'voce' and RIGA_VOCE or r.tipo == 'zaino' and 70 or r.tipo == 'azzera' and 60 or RIGA_TIT end
 
-local function pagine_attr(alto)
+-- la prima pagina ha l'intestazione illustrata; ogni pagina al massimo 5 icone (con la barra: 7 immagini)
+local function pagine_attr()
   local righe = righe_attr()
-  local pagine, h = { 1 }, 0
+  local pagine = { 1 }
+  local function alto(p) return TAB_Y - 46 - (p == 1 and (BANNER_H + 44) or 104) end
+  local h, icone = 0, 0
   for k, r in ipairs(righe) do
     local a = alt_riga(r)
-    -- un titolo di gruppo non resta da solo in fondo alla pagina
-    if r.tipo == 'gruppo' then a = a + RIGA_VOCE end
-    if h + a > alto and k > pagine[#pagine] then pagine[#pagine + 1] = k; h = 0 end
-    h = h + alt_riga(r)
+    local serve = a + (r.tipo == 'gruppo' and RIGA_VOCE or 0)       -- un titolo non resta da solo in fondo
+    if (h + serve > alto(#pagine) or (r.tipo == 'voce' and icone >= 5)) and k > pagine[#pagine] then
+      pagine[#pagine + 1] = k; h, icone = 0, 0
+    end
+    h = h + a
+    if r.tipo == 'voce' then icone = icone + 1 end
   end
   return righe, pagine
 end
 
+local function avanzamento(gg, y, ok, tot)
+  local s = ok .. ' / ' .. tot .. ' nello zaino'
+  testo(gg, M, y, s, 'medium')
+  local x0 = M + larg('medium', s) + 14
+  local w = W - M - x0
+  gg:rect(x0, y + 6, w, 14, { line_width = 2 })
+  local cella = (w - 4) / tot
+  for k = 1, ok do
+    gg:rect(math.floor(x0 + 2 + (k - 1) * cella) + 1, y + 9, math.max(2, math.floor(cella) - 2), 8, { fill = true })
+  end
+end
+
 local function disegna_attrezzatura(gg)
   local ok, tot = conta()
-  local top = intestazione(gg, 'Attrezzatura', ok .. ' / ' .. tot .. ' nello zaino')
-  local y0 = top + 6
-  local alto = TAB_Y - 50 - y0
-  local righe, pagine = pagine_attr(alto)
+  local righe, pagine = pagine_attr()
   if pag_attr > #pagine then pag_attr = #pagine end
   per_pag_attr = #pagine
-  local y = y0
+  local y
+  if pag_attr == 1 and disegno(gg, 'banner_attrezzatura', 0, 0) then
+    y = BANNER_H + 8
+  else
+    testo(gg, M, 16, 'Attrezzatura', 'large')
+    y = 60
+    gg:rect(M, y, W - 2 * M, 3, { fill = true })
+    y = y + 10
+  end
+  avanzamento(gg, y, ok, tot)
+  y = y + 36
   local fine = (pagine[pag_attr + 1] or (#righe + 1)) - 1
   for k = pagine[pag_attr], fine do
     local r = righe[k]
     if r.tipo == 'zaino' then
-      gg:rect(M, y + 6, W - 2 * M, 52, { radius = 12, line_width = 2 })
+      gg:rect(M, y + 4, W - 2 * M, 60, { radius = 12, line_width = 2 })
       testo(gg, M + 16, y + 10, 'Come caricare lo zaino', 'medium')
-      testo(gg, M + 16, y + 34, 'Il fondo, il centro, la cima: perché', 'small')
-      freccia(gg, W - M - 18, y + 32, 'dx', 8)
-      zona(M, y + 6, W - 2 * M, 52, function() vai('zaino') end)
+      testo(gg, M + 16, y + 36, 'Il fondo, il centro, la cima: perché', 'small')
+      freccia(gg, W - M - 20, y + 34, 'dx', 8)
+      zona(M, y + 4, W - 2 * M, 60, function() vai('zaino') end)
     elseif r.tipo == 'gruppo' then
       local gr = ATTR[r.g]
-      testo(gg, M, y + 14, gr.titolo, 'medium')
-      gg:line(M, y + RIGA_TIT - 4, W - M, y + RIGA_TIT - 4)
-      gg:line(M, y + RIGA_TIT - 3, W - M, y + RIGA_TIT - 3)
+      local o, t = conta(gr)
+      etichetta(gg, y, maiuscolo(gr.titolo), o .. ' / ' .. t)
     elseif r.tipo == 'voce' then
       local v = ATTR[r.g].voci[r.v]
       local on = spunte[v.id]
-      casella(gg, M, y + 13, 30, on)
-      testo(gg, M + 46, y + 6, v.nome, 'medium')
-      testo(gg, M + 46, y + 32, kit.short(v.dove, 40), 'small')
-      freccia(gg, W - M - 8, y + RIGA_VOCE // 2, 'dx', 6)
-      gg:line(M + 46, y + RIGA_VOCE - 1, W - M, y + RIGA_VOCE - 1)
-      zona(M + 40, y, W - 2 * M - 40, RIGA_VOCE, function() voce = r; vai("voce") end)
-      zona(0, y, M + 40, RIGA_VOCE, function() spunte[v.id] = not on or nil; salva() end)
+      disegno(gg, 'ico_' .. v.id, M, y + 12)
+      testo(gg, M + 54, y + 8, v.nome, 'medium')
+      local sotto = v.dove .. (v.peso and (' · ' .. peso(v.peso)) or '')
+      while #sotto > 1 and larg('small', sotto) > W - 2 * M - 54 - 44 do sotto = kit.drop_last(sotto) end
+      testo(gg, M + 54, y + 34, sotto, 'small')
+      casella(gg, W - M - 32, y + 16, 32, on)
+      gg:line(M, y + RIGA_VOCE - 1, W - M, y + RIGA_VOCE - 1)
+      zona(0, y, W - M - 56, RIGA_VOCE, function() voce = r; vai('voce') end)
+      zona(W - M - 56, y, 56 + M, RIGA_VOCE, function() spunte[v.id] = not on or nil; salva() end)
     elseif r.tipo == 'azzera' then
-      bottone(gg, M + 80, y + 8, W - 2 * M - 160, 40, 'Togli tutte le spunte', false, function()
+      bottone(gg, M + 70, y + 12, W - 2 * M - 140, 44, 'Togli tutte le spunte', false, function()
         kit.show({ title = 'Togliere tutte le spunte?', lines = { 'Per preparare lo zaino del prossimo giro.' },
                    rows = { { { 'Togli', function() spunte = {}; salva(); kit.close() end },
                               { 'Annulla', function() kit.close() end } } },
@@ -308,33 +373,64 @@ local function disegna_attrezzatura(gg)
   barra(gg)
 end
 
+local function testata_dettaglio(gg, sopra, titolo, icona)
+  freccia(gg, M + 6, 26, 'sx', 9)
+  testo(gg, M + 24, 16, sopra, 'small')
+  zona(0, 0, W, 50, indietro)
+  local y = 52
+  local x = M
+  if icona then
+    gg:rect(M, y, 64, 64, { radius = 12, line_width = 2 })
+    disegno(gg, icona, M + 12, y + 12)
+    x = M + 80
+  end
+  local righe = kit.wrap(titolo, 'large', W - M - x)
+  local ty = icona and (y + (64 - #righe * (lh('large') + 2)) // 2) or y
+  for k = 1, math.min(2, #righe) do testo(gg, x, ty + (k - 1) * (lh('large') + 2), righe[k], 'large') end
+  y = math.max(icona and (y + 64) or 0, ty + math.min(2, #righe) * (lh('large') + 2)) + 12
+  gg:rect(M, y, W - 2 * M, 3, { fill = true })
+  return y + 3
+end
+
 local function disegna_voce(gg)
   local gr = ATTR[voce.g]
   local v = gr.voci[voce.v]
-  local top = intestazione(gg, v.nome, nil, true)
-  local y = top + 14
-  testo(gg, M, y, gr.titolo, 'small')
-  y = y + lh('small') + 10
-  local function blocco(titolo, s)
-    testo(gg, M, y, titolo, 'large')
-    y = y + lh('large') + 4
-    y = paragrafo(gg, M, y, s, 'medium', W - 2 * M, BTN_Y - 20, 6) + 10
+  local y = testata_dettaglio(gg, maiuscolo(gr.titolo), v.nome, 'ico_' .. v.id)
+  local fondo = BTN_Y - 16
+  -- la scheda: dove e peso
+  local function riga_scheda(etich, valore)
+    testo(gg, M, y + 12, etich, 'small')
+    local yy = y + 8
+    for _k, l in ipairs(kit.wrap(valore, 'medium', W - 2 * M - 96)) do testo(gg, M + 96, yy, l, 'medium'); yy = yy + lh('medium') + 2 end
+    y = math.max(y + 44, yy + 8)
+    gg:line(M, y, W - M, y)
   end
-  blocco('Dove va', v.dove)
-  blocco('Perché', v.perche)
-  if v.peso then testo(gg, M, y, 'Peso: circa ' .. (v.peso >= 1000 and (string.format('%.1f', v.peso / 1000):gsub('%.', ',') .. ' kg') or (v.peso .. ' g')), 'small'); y = y + lh('small') + 14 end
-  blocco('Consiglio', v.consiglio)
+  riga_scheda('DOVE', v.dove)
+  if v.peso then riga_scheda('PESO', 'circa ' .. peso(v.peso)) end
+  y = y + 16
+  testo(gg, M, y, 'PERCHÉ', 'small')
+  y = paragrafo(gg, M, y + lh('small') + 4, v.perche, 'medium', W - 2 * M, fondo, 6) + 14
+  -- il consiglio nel riquadro tratteggiato
+  local righe = kit.wrap(v.consiglio, 'medium', W - 2 * M - 30)
+  local alt = lh('medium') + 6
+  local max = (fondo - y - 50) // alt
+  if #righe > max then righe = kit.wrap(v.consiglio, 'small', W - 2 * M - 30); alt = lh('small') + 4; max = (fondo - y - 50) // alt end
+  local n = math.min(#righe, math.max(0, max))
+  local h = 44 + n * alt
+  tratteggio(gg, M, y, W - 2 * M, h)
+  testo(gg, M + 15, y + 12, 'CONSIGLIO', 'small')
+  for k = 1, n do testo(gg, M + 15, y + 38 + (k - 1) * alt, righe[k], alt > lh('small') + 4 and 'medium' or 'small') end
   local on = spunte[v.id]
-  bottone(gg, M, BTN_Y, W - 2 * M, BTN_H, on and 'Nello zaino  (tocca per togliere)' or 'Metti nello zaino', not on, function()
-    spunte[v.id] = not on or nil; salva()
-    if not on then indietro() end
-  end)
-  if on then casella(gg, M + 24, BTN_Y + 18, 28, true) end
+  if on then
+    bottone(gg, M, BTN_Y, W - 2 * M, BTN_H, 'Nello zaino · tocca per togliere', false, function() spunte[v.id] = nil; salva() end)
+  else
+    bottone_pieno(gg, 'btn_zaino', M, BTN_Y, W - 2 * M, 'Metti nello zaino', function() spunte[v.id] = true; salva(); indietro() end)
+  end
 end
 
 local function disegna_zaino(gg)
-  local top = intestazione(gg, 'Come caricare lo zaino', nil, true)
-  local y = top + 8
+  local y = testata_dettaglio(gg, 'ATTREZZATURA', 'Come caricare lo zaino')
+  y = y + 10
   local x0 = (W - IMG_W) // 2
   if disegno(gg, 'zaino', x0, y) then
     testo(gg, x0 + 276, y + 40, 'Cima', 'medium')
@@ -345,16 +441,18 @@ local function disegna_zaino(gg)
     testo(gg, x0 + 276, y + 186, 'Fondo', 'medium')
     testo(gg, x0 + 276, y + 208, 'la notte', 'small')
   end
-  y = y + IMG_H + 10
+  y = y + IMG_H + 14
   local regole = {
-    "In fondo il leggero che serve solo la sera: sacco a pelo e vestiti asciutti.",
-    "Al centro, contro la schiena e all'altezza delle scapole, il pesante: cibo, acqua, fornello, tenda.",
-    "In cima e nelle tasche quello che serve all'improvviso: antipioggia, pile, frontale, coltello.",
-    "Prima la cintura sui fianchi, poi gli spallacci: il peso va sulle gambe, non sulle spalle.",
+    { 'FONDO', "Il leggero che serve solo la sera: sacco a pelo e vestiti asciutti." },
+    { 'CENTRO', "Contro la schiena, all'altezza delle scapole: cibo, acqua, fornello, tenda." },
+    { 'CIMA', "Quello che serve all'improvviso: antipioggia, pile, frontale." },
+    { 'CINTURA', "Prima sui fianchi, poi gli spallacci: il peso va sulle gambe." },
   }
   for _k, r in ipairs(regole) do
-    gg:circle(M + 5, y + 11, 4, { fill = true })
-    y = paragrafo(gg, M + 18, y, r, 'small', W - 2 * M - 18, H - 10, 2) + 8
+    testo(gg, M, y + 2, r[1], 'small')
+    local yy = paragrafo(gg, M + 96, y, r[2], 'small', W - 2 * M - 96, H - 10, 2)
+    y = yy + 8
+    gg:line(M, y - 4, W - M, y - 4)
   end
 end
 
@@ -366,32 +464,33 @@ local function di_sezione()
   return out
 end
 
-local function con_immagini(t)
-  for _k, p in ipairs(t.passi) do if p.img then return true end end
-  return false
-end
+local TEC_RIGA = 88
+local SEZ_W = { 176, 116, 146 }     -- le larghezze delle tre sezioni nell'immagine sez_*
 
-local TEC_RIGA = 74
+local function meta_tut(t)
+  return #t.passi .. ' passi · ' .. LIVELLI[t.livello] .. (t.tempo ~= '' and (' · ' .. t.tempo) or '')
+end
 
 local function disegna_tecniche(gg)
   local lista = di_sezione()
-  local top = intestazione(gg, 'Tecniche', nil)
-  local y = top + 10
-  local cw = (W - 2 * M) // #SEZIONI
-  gg:rect(M, y, W - 2 * M, 44, { radius = 22, line_width = 2 })
-  for k, s in ipairs(SEZIONI) do
-    local x = M + (k - 1) * cw
-    if sez == s[1] then gg:rect(x + 3, y + 4, cw - 6, 36, { radius = 18, line_width = 3 }) end
-    testo_c(gg, x + cw // 2, y + 12, s[2], 'small')
-    zona(x, y, cw, 44, function() sez = s[1]; pag_tec = 1; salva() end)
+  local y = 0
+  if disegno(gg, 'banner_tecniche', 0, 0) then y = BANNER_H + 6
+  else testo(gg, M, 16, 'Tecniche', 'large'); y = 64 end
+  if not disegno(gg, 'sez_' .. sez, M, y) then
+    for k, x in ipairs(SEZIONI) do testo(gg, M + (k - 1) * 150, y + 12, (sez == x[1] and '> ' or '') .. x[2], 'small') end
   end
-  y = y + 56
+  local x = M
+  for k, sx in ipairs(SEZIONI) do
+    zona(x, y, SEZ_W[k], 50, function() sez = sx[1]; pag_tec = 1; salva() end)
+    x = x + SEZ_W[k]
+  end
+  y = y + 58
   if sez == 'trappole' then
-    gg:rect(M, y, W - 2 * M, 54, { line_width = 3 })
-    paragrafo(gg, M + 12, y + 6, "In Italia le trappole sono vietate: solo per una vera emergenza. Leggi prima 'la legge'.", 'small', W - 2 * M - 24, y + 52, 2)
-    y = y + 64
+    tratteggio(gg, M, y, W - 2 * M, 52)
+    paragrafo(gg, M + 14, y + 6, "Vietate in Italia: solo per una vera emergenza. Leggi prima 'la legge'.", 'small', W - 2 * M - 28, y + 50, 2)
+    y = y + 60
   end
-  local per_pag = (TAB_Y - 46 - y) // TEC_RIGA
+  local per_pag = math.min(4, (TAB_Y - 46 - y) // TEC_RIGA)
   local pagine = math.max(1, (#lista + per_pag - 1) // per_pag)
   if pag_tec > pagine then pag_tec = pagine end
   for j = 1, per_pag do
@@ -399,13 +498,14 @@ local function disegna_tecniche(gg)
     if not k then break end
     local t = TEC[k]
     local ry = y + (j - 1) * TEC_RIGA
-    local tit = kit.short(t.titolo, 34)
-    testo(gg, M, ry + 10, tit, 'medium')
-    if fatti[t.id] then avanti_spuntato(gg, M + larg('medium', tit) + 10, ry + 12) end
-    local meta = #t.passi .. ' passi · ' .. LIVELLI[t.livello] .. (t.tempo ~= '' and (' · ' .. t.tempo) or '')
-      .. (con_immagini(t) and ' · con disegni' or '')
-    testo(gg, M, ry + 40, meta, 'small')
-    freccia(gg, W - M - 8, ry + TEC_RIGA // 2, 'dx', 7)
+    gg:rect(M, ry + 10, 92, 68, { line_width = 2 })
+    disegno(gg, 'th_' .. t.id, M + 2, ry + 12)
+    local tx = M + 108
+    local tit = kit.wrap(t.titolo, 'medium', W - M - tx - 30)
+    local ty = ry + (#tit > 1 and 12 or 20)
+    for i = 1, math.min(2, #tit) do testo(gg, tx, ty, tit[i], 'medium'); ty = ty + lh('medium') end
+    testo(gg, tx, ty + 4, meta_tut(t), 'small')
+    if fatti[t.id] then avanti_spuntato(gg, W - M - 16, ry + 36) else freccia(gg, W - M - 8, ry + TEC_RIGA // 2, 'dx', 7) end
     gg:line(M, ry + TEC_RIGA - 1, W - M, ry + TEC_RIGA - 1)
     zona(M, ry, W - 2 * M, TEC_RIGA, function() tut = k; pag_intro = 1; vai('tutorial') end)
   end
@@ -420,63 +520,70 @@ end
 
 local function disegna_tutorial(gg)
   local t = TEC[tut]
-  local top = intestazione(gg, t.titolo, nil, true)
-  local y = top + 12
+  local nome_sez = ''
+  for _k, x in ipairs(SEZIONI) do if x[1] == t.sez then nome_sez = x[2]:upper() end end
+  local y = testata_dettaglio(gg, nome_sez, t.titolo)
   local fondo = BTN_Y - 14
-  testo(gg, M, y, #t.passi .. ' passi · ' .. LIVELLI[t.livello] .. (t.tempo ~= '' and (' · ' .. t.tempo) or ''), 'small')
+  y = y + 10
+  testo(gg, M, y, meta_tut(t), 'small')
   y = y + lh('small') + 10
   y = paragrafo(gg, M, y, t.intro, 'medium', W - 2 * M, fondo, 6) + 8
   if t.serve then
-    testo(gg, M, y, 'Ti serve', 'medium')
-    y = y + lh('medium') + 2
-    y = paragrafo(gg, M, y, t.serve, 'small', W - 2 * M, fondo, 2) + 10
+    testo(gg, M, y, 'TI SERVE', 'small')
+    y = paragrafo(gg, M, y + lh('small') + 2, t.serve, 'small', W - 2 * M, fondo, 2) + 10
   end
   if t.attenzione then
     local righe = kit.wrap(t.attenzione, 'small', W - 2 * M - 28)
     local h = #righe * (lh('small') + 2) + 40
-    gg:rect(M, y, W - 2 * M, h, { line_width = 3 })
-    testo(gg, M + 14, y + 8, 'Attenzione', 'medium')
-    local yy = y + 8 + lh('medium')
+    gg:rect(M, y, W - 2 * M, h, { radius = 10, line_width = 3 })
+    testo(gg, M + 14, y + 8, 'ATTENZIONE', 'small')
+    local yy = y + 10 + lh('small')
     for _k, l in ipairs(righe) do testo(gg, M + 14, yy, l, 'small'); yy = yy + lh('small') + 2 end
     y = y + h + 12
   end
-  testo(gg, M, y, 'I passi', 'medium')
-  y = y + lh('medium') + 4
+  if y + 40 < fondo then y = etichetta(gg, y, 'I PASSI', tostring(#t.passi)) + 6 end
   for k, p in ipairs(t.passi) do
     if y + lh('small') > fondo then break end
-    testo(gg, M, y, k .. '. ' .. kit.short(p[1], 42), 'small')
-    local yy = y
-    zona(M, yy - 2, W - 2 * M, lh('small') + 4, function() passo = k; vai('passo') end)
+    testo(gg, M, y, string.format('%02d', k), 'small')
+    testo(gg, M + 34, y, kit.short(p[1], 40), 'small')
+    zona(M, y - 2, W - 2 * M, lh('small') + 4, function() passo = k; vai('passo') end)
     y = y + lh('small') + 4
   end
-  bottone(gg, M, BTN_Y, W - 2 * M, BTN_H, fatti[t.id] and 'Rivedi i passi' or 'Inizia', true, inizia)
+  bottone_pieno(gg, 'btn_inizia', M, BTN_Y, W - 2 * M, fatti[t.id] and 'Rivedi i passi' or 'Inizia', inizia)
 end
 
 local function disegna_passo(gg)
   local t = TEC[tut]
   local n = #t.passi
   local p = t.passi[passo]
-  local top = intestazione(gg, kit.short(t.titolo, 32), passo .. ' / ' .. n, true)
+  freccia(gg, M + 6, 26, 'sx', 9)
+  testo(gg, M + 24, 16, kit.short(t.titolo:upper(), 34), 'small')
+  testo_dx(gg, W - M, 16, passo .. ' / ' .. n, 'small')
+  zona(0, 0, W - 80, 50, indietro)
   local gap = n > 12 and 3 or 5
   local sw = (W - 2 * M - (n - 1) * gap) / n
-  local y = top + 10
+  local y = 50
   for k = 1, n do
     local x = math.floor(M + (k - 1) * (sw + gap))
-    if k <= passo then gg:rect(x, y, math.floor(sw), 8, { fill = true }) else gg:rect(x, y, math.floor(sw), 8) end
+    if k <= passo then gg:rect(x, y, math.floor(sw), 8, { fill = true }) else gg:rect(x, y + 2, math.floor(sw), 6, { line_width = 2 }) end
   end
-  y = y + 18
+  y = y + 20
   if p.img and disegno(gg, p.img, (W - IMG_W) // 2, y) then
-    gg:rect((W - IMG_W) // 2, y, IMG_W, IMG_H)
-    y = y + IMG_H + 10
+    gg:rect((W - IMG_W) // 2 - 2, y - 2, IMG_W + 4, IMG_H + 4, { radius = 10, line_width = 2 })
+    y = y + IMG_H + 14
   end
-  testo(gg, M, y, 'Passo ' .. passo, 'small')
-  y = y + lh('small') + 4
-  local tit = kit.wrap(p[1], 'large', W - 2 * M)
-  for k = 1, math.min(2, #tit) do testo(gg, M, y, tit[k], 'large'); y = y + lh('large') + 2 end
-  y = y + 6
+  -- il numero grande e il titolo
+  local tx = M
+  if n <= 15 and disegno(gg, 'num_' .. passo, M, y) then tx = M + 116 end
+  local tit = kit.wrap(p[1], 'large', W - M - tx)
+  local hn = tx > M and 64 or 0
+  local ty = y + math.max(0, hn - #tit * (lh('large') + 2) - 2)
+  if #tit > 2 then tit = { tit[1], kit.short(tit[2], 22) } end
+  for k = 1, #tit do testo(gg, tx, ty + (k - 1) * (lh('large') + 2), tit[k], 'large') end
+  y = math.max(y + hn, ty + #tit * (lh('large') + 2)) + 12
   local fondo = BTN_Y - 12
   local f, corpo, alt
-  for _k, prova in ipairs({ { 'large', 6 }, { 'medium', 6 }, { 'medium', 2 }, { 'small', 3 }, { 'small', 1 } }) do
+  for _k, prova in ipairs({ { 'large', 6 }, { 'medium', 8 }, { 'medium', 2 }, { 'small', 3 }, { 'small', 1 } }) do
     f = prova[1]
     corpo = kit.wrap(p[2], f, W - 2 * M)
     alt = lh(f) + prova[2]
@@ -489,34 +596,40 @@ local function disegna_passo(gg)
   bottone(gg, M, BTN_Y, 150, BTN_H, 'Indietro', false, function()
     if passo > 1 then passo = passo - 1 else indietro() end
   end)
-  bottone(gg, M + 162, BTN_Y, W - 2 * M - 162, BTN_H, passo < n and 'Avanti' or 'Fine', true, function()
-    if passo < n then passo = passo + 1 else fatti[t.id] = true; salva(); indietro() end
-  end)
+  if passo < n then
+    bottone_pieno(gg, 'btn_avanti', M + 162, BTN_Y, W - 2 * M - 162, 'Avanti', function() passo = passo + 1 end)
+  else
+    bottone_pieno(gg, 'btn_fine', M + 162, BTN_Y, W - 2 * M - 162, 'Fine', function() fatti[t.id] = true; salva(); indietro() end)
+  end
 end
 
 ------------------------------------------------------------------ Percorso
 
 local function disegna_percorso(gg)
-  local top = intestazione(gg, 'Percorso', nil)
-  local y = top + 14
-  testo(gg, M, y, 'Prima di partire', 'large')
-  y = y + lh('large') + 10
-  for _k, v in ipairs(PRIMA) do
+  local y
+  if disegno(gg, 'banner_percorso', 0, 0) then y = BANNER_H + 8
+  else testo(gg, M, 16, 'Percorso', 'large'); y = 64 end
+  local fatte = 0
+  for _k, v in ipairs(PRIMA) do if prima[v[1]] then fatte = fatte + 1 end end
+  y = etichetta(gg, y, 'PRIMA DI PARTIRE', fatte .. ' / ' .. #PRIMA) + 4
+  for k, v in ipairs(PRIMA) do
     local on = prima[v[1]]
-    casella(gg, M, y + 4, 30, on)
-    local righe = kit.wrap(v[2], 'medium', W - 2 * M - 46)
-    local yy = y
-    for i = 1, math.min(2, #righe) do testo(gg, M + 46, yy, righe[i], 'medium'); yy = yy + lh('medium') + 2 end
-    local h = math.max(44, yy - y + 8)
+    local righe = kit.wrap(v[2], 'medium', W - 2 * M - 50)
+    local h = math.max(56, math.min(2, #righe) * (lh('medium') + 2) + 14)
+    casella(gg, M, y + (h - 32) // 2, 32, on)
+    local yy = y + (h - math.min(2, #righe) * (lh('medium') + 2)) // 2
+    for i = 1, math.min(2, #righe) do testo(gg, M + 50, yy, righe[i], 'medium'); yy = yy + lh('medium') + 2 end
+    if k < #PRIMA then gg:line(M, y + h - 1, W - M, y + h - 1) end
     zona(0, y, W, h, function() prima[v[1]] = not on or nil; salva() end)
-    y = y + h + 6
+    y = y + h
   end
-  y = y + 10
-  gg:rect(M, y, W - 2 * M, TAB_Y - 16 - y, { radius = 12, line_width = 1 })
-  testo(gg, M + 16, y + 12, 'La mappa', 'medium')
-  paragrafo(gg, M + 16, y + 12 + lh('medium') + 6,
-    "Qui arriveranno la mappa e il percorso: lo progettiamo insieme nel prossimo passo.",
-    'small', W - 2 * M - 32, TAB_Y - 20, 2)
+  y = y + 12
+  local h = math.min(90, TAB_Y - 14 - y)
+  if h > 40 then
+    tratteggio(gg, M, y, W - 2 * M, h)
+    testo(gg, M + 16, y + 10, 'LA MAPPA · IN ARRIVO', 'small')
+    if h > 70 then paragrafo(gg, M + 16, y + 36, 'La progettiamo insieme nel prossimo passo.', 'small', W - 2 * M - 32, y + h - 4, 2) end
+  end
   barra(gg)
 end
 
