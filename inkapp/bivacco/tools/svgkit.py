@@ -13,7 +13,7 @@ I grigi diventano puntinato: usali come toni (#fff bianco, CHIARO, MEDIO, SCURO)
 import math
 
 W, H = 440, 250
-CHIARO, MEDIO, SCURO, NERO = '#d9d9d9', '#a6a6a6', '#5c5c5c', '#000'
+CHIARO, MEDIO, SCURO, NERO = '#c4c4c4', '#a0a0a0', '#5c5c5c', '#000'
 TRATTO = 2.2
 
 
@@ -312,3 +312,112 @@ def _seg_x(a, b, c, d):
         t = d1 / (d1 - d2)
         return (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
     return None
+
+
+# ============================================================================ corde in 3D
+
+def _catmull3(ctrl, per=12):
+    P = [ctrl[0]] + list(ctrl) + [ctrl[-1]]
+    out = []
+    for i in range(1, len(P) - 2):
+        p0, p1, p2, p3 = P[i - 1], P[i], P[i + 1], P[i + 2]
+        for k in range(per):
+            t = k / per
+            t2, t3 = t * t, t * t * t
+            out.append(tuple(0.5 * ((2 * p1[j]) + (-p0[j] + p2[j]) * t + (2 * p0[j] - 5 * p1[j] + 4 * p2[j] - p3[j]) * t2
+                                    + (-p0[j] + 3 * p1[j] - 3 * p2[j] + p3[j]) * t3) for j in (0, 1, 2)))
+    out.append(tuple(ctrl[-1]))
+    return out
+
+
+def giro(cx, cy, asse, ang0, ang1, r, avanza0, avanza1, n=None):
+    """punti 3D di una corda che gira intorno a un asse: asse 'v' (verticale, in x=cx) o 'o' (orizzontale,
+    in y=cy). ang in gradi: 0 = davanti, 90 = a destra (v) o sotto (o), 180 = dietro.
+    avanza = la coordinata lungo l'asse (y per 'v', x per 'o') all'inizio e alla fine."""
+    n = n or max(4, int(abs(ang1 - ang0) / 30))
+    out = []
+    for k in range(n + 1):
+        t = k / n
+        a = math.radians(ang0 + (ang1 - ang0) * t)
+        s = avanza0 + (avanza1 - avanza0) * t
+        if asse == 'v':
+            out.append((cx + r * math.sin(a), s, r * math.cos(a)))
+        else:
+            out.append((s, cy + r * math.sin(a), r * math.cos(a)))
+    return out
+
+
+def _corde3d(self, fili, oggetto=None, larg=12, fino=None, capo=None, dopo=None, dietro_x=None):
+    """fili: liste di punti di controllo (x, y, z), z > 0 verso chi guarda. Gli incroci si decidono dalla z;
+    i tratti con z < 0 dentro dietro_x=(x0, x1) sono nascosti dall'oggetto (un palo) disegnato con oggetto().
+    fino / capo: per filo (frazione disegnata, da dove è 'capo' grigio)."""
+    nf = len(fili)
+    fino = fino or [1.0] * nf
+    capo = capo or [0.6] * nf
+    P = [_catmull3(c) for c in fili]
+    # incroci fra tutti i segmenti (tranne i vicini dello stesso filo)
+    segs = [(f, i) for f in range(nf) for i in range(len(P[f]) - 1)]
+    z = [[0] * len(P[f]) for f in range(nf)]
+    win = 4
+    for a in range(len(segs)):
+        fa, ia = segs[a]
+        pa, pb = P[fa][ia], P[fa][ia + 1]
+        for b in range(a + 1, len(segs)):
+            fb, ib = segs[b]
+            if fa == fb and ib <= ia + 2:
+                continue
+            pc, pd = P[fb][ib], P[fb][ib + 1]
+            q = _seg_x(pa[:2], pb[:2], pc[:2], pd[:2])
+            if not q:
+                continue
+            za, zb = (pa[2] + pb[2]) / 2, (pc[2] + pd[2]) / 2
+            (fo, io), (fu, iu) = ((fa, ia), (fb, ib)) if za >= zb else ((fb, ib), (fa, ia))
+            for m in range(max(0, io - win), min(len(P[fo]), io + win + 2)):
+                z[fo][m] = max(z[fo][m], 1) if z[fo][m] >= 0 else 1
+            for m in range(max(0, iu - win), min(len(P[fu]), iu + win + 2)):
+                if z[fu][m] <= 0:
+                    z[fu][m] = -1
+    pezzi = []
+    for f in range(nf):
+        pts = P[f]
+        lung = [0.0]
+        for i in range(1, len(pts)):
+            lung.append(lung[-1] + math.dist(pts[i][:2], pts[i - 1][:2]))
+        tot = lung[-1]
+        fine = next((k for k in range(len(pts)) if lung[k] > tot * fino[f]), len(pts))
+        def strato(k):
+            nasc = dietro_x and pts[k][2] < -1 and dietro_x[0] - larg < pts[k][0] < dietro_x[1] + larg
+            return (-10 if nasc else 0) + z[f][k]
+        ini = 0
+        for k in range(1, fine + 1):
+            if k == fine or strato(k) != strato(ini):
+                seg = [p[:2] for p in pts[max(0, ini - 1):k]]
+                cs = [p[:2] for p, L in zip(pts[max(0, ini - 1):k], lung[max(0, ini - 1):k]) if L >= tot * capo[f]]
+                pezzi.append((strato(ini), seg, cs))
+                ini = k
+        # chiusure delle punte
+        p_fin = [pts[0][:2], pts[1][:2]], [pts[fine - 1][:2], pts[fine - 2][:2]]
+        pezzi.append((99, 'punte', p_fin))
+    fatto_oggetto = False
+    for st, seg, cs in sorted([p for p in pezzi if p[1] != 'punte'], key=lambda t: t[0]):
+        if not fatto_oggetto and st > -5 and oggetto:
+            oggetto(); fatto_oggetto = True
+        if len(seg) < 2:
+            continue
+        self.el.append(f'<polyline points="{_pts(seg)}" fill="none" stroke="#000" stroke-width="{larg}" stroke-linejoin="round"/>')
+        self.el.append(f'<polyline points="{_pts(seg)}" fill="none" stroke="#fff" stroke-width="{larg - 5}" stroke-linejoin="round"/>')
+        if len(cs) > 1:
+            self.el.append(f'<polyline points="{_pts(cs)}" fill="none" stroke="{MEDIO}" stroke-width="{larg - 5}" stroke-linejoin="round"/>')
+    if oggetto and not fatto_oggetto:
+        oggetto()
+    for st, _t, coppie in [p for p in pezzi if p[1] == 'punte']:
+        for (xb, yb), (xa, ya) in coppie:
+            ang = math.atan2(yb - ya, xb - xa)
+            h = larg / 2
+            self.linea([(xb + h * math.cos(ang + 1.5708), yb + h * math.sin(ang + 1.5708)),
+                        (xb - h * math.cos(ang + 1.5708), yb - h * math.sin(ang + 1.5708))], 1.8)
+    if dopo:
+        self.freccia(dopo, 2.4)
+
+
+Scena.corde3d = _corde3d

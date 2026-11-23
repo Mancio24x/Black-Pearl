@@ -1,6 +1,6 @@
 # Bivacco — la montagna in tasca, per Xteink X4 Pro
 
-Un'app (InkApp) in italiano per il lettore e-ink **Xteink X4 Pro**, con tre schede. È alla versione 0.3:
+Un'app (InkApp) in italiano per il lettore e-ink **Xteink X4 Pro**, con tre schede. È alla versione 0.4:
 contenuti, disegni e la grafica "taccuino da campo" ci sono; la mappa arriverà dopo.
 
 ![Attrezzatura](art/schermate/1-attrezzatura.png)
@@ -33,12 +33,17 @@ L'app rispetta queste regole, e i test le controllano:
 
 ## I disegni dei passaggi
 
-57 disegni in bianco e nero (`art/tutti.png`) per 22 tutorial: zaino, fuoco, tipi di fuoco, Dakota, archetto,
-bastoncino piumato, batoning, gancio, tarp (tettoia, capanna, diamante, punta, tettoia alta), nord, nodo a
-otto, gassa d'amante, legatura quadra, treppiede, trappola a quattro, nassa.
-I nodi li disegna la funzione `corda` di `tools/disegni.py`, che calcola gli incroci e chi passa sopra.
+Tutti i 196 passi dei 40 tutorial hanno un disegno.
 
-Gli altri 18 tutorial hanno ancora solo il testo e, come miniatura, un pittogramma.
+- 56 disegni a puntinato (`tools/disegni.py`, con la funzione `corda` che calcola gli incroci).
+- 140 disegni vettoriali (`tools/svg_passi.py`, con il kit `tools/svgkit.py`). I nodi usano una corda in 3D
+  (`corde3d`): si descrive la corda come passa davvero, davanti e dietro, e il disegno ricava da solo chi sta
+  sopra in ogni incrocio e nasconde i tratti dietro al palo.
+
+I vettoriali si vedono come storyboard (una tavola per tutorial, una pagina per sezione) sul canvas Claude
+Design "Bivacco e-ink redesign" (`tools/design_canvas.py`). Per il lettore Chromium li fotografa
+(`tools/rendi_svg.js`) e `tools/svg_esporta.py` li riduce a 1 bit.
+Le immagini stanno in `data/img1.txt`, `img2.txt`… e `ui1.txt`, ognuno sotto 1 MB (il limite del lettore).
 
 ## Installarla
 
@@ -58,8 +63,11 @@ Il menu Ink App va sbloccato una volta, come per Ai Fornelli. L'app è stata pro
 | i disegni dei passi | `tools/disegni.py` (gli strumenti di disegno sono in `tools/arte.py`) |
 | intestazioni, icone, barra, bottoni | `tools/grafica.py` |
 
+Un disegno nuovo: aggiungi la funzione `@passo('<tutorial>_<numero>')` in `tools/svg_passi.py`, poi
+`python3 -I tools/assegna_disegni.py` lo collega al passo in `src/tecniche.lua`.
+
 ```bash
-pip install pillow numpy lupa cryptography
+pip install pillow numpy lupa cryptography     # e Node con Playwright (Chromium) per i disegni vettoriali
 python3 -I tools/make_art.py     # disegni e grafica -> data/img.txt, data/ui.txt, src/immagini.lua, icon.png, art/
 python3 -I tools/test_app.py     # i test sul simulatore
 python3 -I tools/anteprima.py    # le schermate in art/schermate/

@@ -38,7 +38,7 @@ def esporta(nomi=None):
 def a_un_bit(nome):
     im = Image.open(os.path.join(CACHE, nome + '.png')).convert('L')
     im = im.resize((440, 250), Image.LANCZOS)
-    return atkinson(im, 50, 215)
+    return atkinson(im, 40, 245)
 
 
 if __name__ == '__main__':

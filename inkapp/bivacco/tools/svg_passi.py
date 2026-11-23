@@ -629,3 +629,983 @@ def _(s):
     s.legno((220, 62), (220, 140), 8, CHIARO, testa=False)
     s.pentola(220, 150, 64, 40)
     s.freccia([(300, 20), (250, 56)], 2)
+
+
+# ============================================================================ TARP
+
+def _alberi(s, y=215):
+    s.terra(y, seme=40)
+    s.albero(50, 30, y)
+    s.albero(390, 30, y)
+
+
+def _dorsale(s, y=110):
+    s.linea([(64, y), (220, y + 6), (376, y)], 3)
+
+
+@passo('tarp_corde_1')
+def _(s):
+    s.telo([(80, 50), (360, 50), (360, 200), (80, 200)])
+    s.linea([(220, 50), (220, 200)], 1.2, tratteggio='6 5')
+    for (x, y, dx, dy) in ((80, 50, -1, -1), (360, 50, 1, -1), (80, 200, -1, 1), (360, 200, 1, 1), (220, 50, 0, -1), (220, 200, 0, 1)):
+        s.ellisse(x, y, 5, 5, '#fff')
+        s.linea([(x, y), (x + 20 * dx, y + 20 * dy)], 2)
+        s.ellisse(x + 30 * dx, y + 26 * dy if dy else y, 11, 7, 'none', 2)
+
+
+@passo('tarp_corde_2')
+def _(s):
+    s.albero(70, 34)
+    s.terra(215, seme=41)
+    s.corda([(86, 110), (100, 98), (110, 112), (100, 124), (86, 116)], larg=7, capo=2, chiusa=True)
+    s.corda([(110, 112), (200, 120), (300, 126)], larg=7, capo=2)
+    for k in range(4):
+        s.ellisse(350, 150, 40 - k * 6, 26 - k * 4, 'none', 3)
+
+
+@passo('tarp_corde_3')
+def _(s):
+    s.linea([(20, 90), (420, 90)], 5)
+    for x in (130, 310):
+        s.giri((x - 12, 76), (x - 12, 104), 4, 6, dx=8)
+        s.linea([(x, 104), (x, 150)], 2.4)
+        s.ellisse(x, 156, 8, 8, '#fff')
+    s.telo([(130, 160), (310, 160), (350, 230), (90, 230)])
+    s.freccia([(130, 50), (70, 50)], 2)
+    s.freccia([(310, 50), (370, 50)], 2)
+
+
+@passo('tarp_corde_4')
+def _(s):
+    s.terra(205, seme=42)
+    s.picchetto(330, 206)
+    s.linea([(60, 40), (324, 188)], 2.4)
+    s.giri((206, 106), (220, 128), 3, 6, dx=10, dy=6)
+    s.curva((324, 188), (346, 176), (262, 150), 2.4)
+    s.telo([(20, 20), (80, 20), (60, 60)])
+    s.freccia([(150, 150), (110, 128)], 2)
+
+
+@passo('tarp_corde_5')
+def _(s):
+    s.rett(80, 100, 280, 70, CHIARO, 35)
+    for k in range(5):
+        s.curva((120 + k * 50, 100), (110 + k * 50, 135), (120 + k * 50, 170), 1.2)
+    s.ellisse(360, 135, 18, 35, '#fff')
+    s.ellisse(360, 135, 6, 12, MEDIO)
+    s.linea([(140, 100), (140, 170)], 3)
+    s.linea([(300, 100), (300, 170)], 3)
+
+
+@passo('tarp_a_1')
+def _(s):
+    _alberi(s)
+    _dorsale(s, 130)
+    s.omino(220, 214, 90, 'seduto')
+    s.freccia([(300, 214), (300, 136)], 1.8)
+    s.freccia([(300, 136), (300, 214)], 1.8)
+    s.testo(330, 176, '1 m', 18, 800)
+
+
+@passo('tarp_a_3')
+def _(s):
+    s.terra(215, seme=43)
+    s.albero(220, 26)
+    s.telo([(220, 68), (90, 212), (220, 212)])
+    s.poly([(220, 68), (250, 110), (260, 150)], '#fff', 2.4, chiuso=False)
+    s.picchetto(88, 214)
+    s.picchetto(140, 216)
+    s.freccia([(300, 120), (350, 200)], 2)
+
+
+@passo('tarp_diamante_2')
+def _(s):
+    s.terra(215, seme=44)
+    s.albero(60, 30)
+    s.telo([(80, 110), (210, 140), (392, 210), (200, 190)])
+    s.picchetto(396, 214)
+    s.scritta_vento = None
+    for k in range(3):
+        s.linea([(380 + 0, 60 + k * 12), (420, 60 + k * 12)], 1.4)
+    s.freccia([(430, 90), (400, 120)], 2)
+
+
+@passo('tarp_diamante_4')
+def _(s):
+    s.terra(215, seme=45)
+    s.albero(60, 30)
+    s.telo([(80, 110), (210, 212), (390, 210)])
+    s.omino(250, 212, 60, 'seduto')
+    s.legno((150, 212), (150, 160), 6, '#fff', testa=False)
+    s.freccia([(110, 60), (90, 100)], 2)
+
+
+@passo('tarp_vomere_2')
+def _(s):
+    s.terra(215, seme=46)
+    s.albero(70, 30)
+    s.telo([(92, 80), (380, 212), (150, 212)], MEDIO)
+    s.picchetto(150, 216)
+    s.picchetto(384, 214)
+    for k in range(3):
+        s.linea([(400, 50 + k * 12), (430, 50 + k * 12)], 1.4)
+
+
+@passo('tarp_vomere_4')
+def _(s):
+    s.terra(215, seme=47)
+    s.albero(70, 30)
+    s.telo([(92, 80), (380, 212), (150, 212)], MEDIO)
+    s.telo([(92, 80), (260, 214), (380, 212)])
+    s.omino(230, 212, 54, 'seduto')
+    s.rett(280, 186, 26, 26, SCURO, 6)
+
+
+@passo('tarp_cucina_1')
+def _(s):
+    _alberi(s)
+    s.linea([(64, 50), (220, 56), (376, 50)], 3)
+    s.omino(220, 214, 90)
+    s.freccia([(300, 60), (300, 120)], 1.8)
+
+
+@passo('tarp_cucina_2')
+def _(s):
+    _alberi(s)
+    s.linea([(64, 50), (220, 56), (376, 50)], 3)
+    s.telo([(90, 56), (350, 56), (360, 150), (80, 150)])
+    for x in (130, 310):
+        s.giri((x - 10, 46), (x - 10, 64), 3, 5, dx=7)
+
+
+@passo('tarp_cucina_4')
+def _(s):
+    _alberi(s)
+    s.linea([(64, 50), (220, 56), (376, 50)], 3)
+    s.telo([(90, 56), (350, 56), (380, 118), (60, 118)])
+    for x in (70, 370):
+        s.legno((x, 214), (x, 118), 7, '#fff', testa=False)
+        s.linea([(x, 118), (x + (40 if x > 200 else -40), 214)], 1.6)
+    s.fuoco(220, 212, 26) if False else None
+    s.omino(220, 214, 80)
+
+
+@passo('tarp_pioggia_1')
+def _(s):
+    s.terra(215, seme=48)
+    s.nuvola(40, 40)
+    s.pioggia(20, 150, 70, 150)
+    for k in range(3):
+        s.freccia([(20, 110 + k * 20), (110, 140 + k * 14)], 2, 9)
+    s.telo([(140, 214), (360, 90), (380, 120)])
+    s.legno((360, 214), (360, 92), 7, '#fff', testa=False)
+    s.omino(310, 214, 60, 'seduto')
+
+
+@passo('tarp_pioggia_2')
+def _(s):
+    s.rett(10, 20, 200, 210, '#fff', 12)
+    s.rett(230, 20, 200, 210, '#fff', 12)
+    s.poly([(30, 90), (190, 90)] + [(190 - k * 16, 90 + 40 * math.sin(math.pi * k / 10)) for k in range(11)], CHIARO)
+    s.ellisse(110, 112, 40, 12, SCURO)
+    s.segno_no(110, 180, 1.4)
+    s.poly([(250, 70), (410, 70), (410, 130), (250, 150)], CHIARO)
+    s.segno_ok(330, 190, 1.4)
+
+
+@passo('tarp_pioggia_3')
+def _(s):
+    s.linea([(10, 70), (430, 70)], 4)
+    s.telo([(160, 70), (430, 70), (430, 200), (160, 200)])
+    s.linea([(110, 70), (110, 120)], 3)
+    for k in range(4):
+        s.poly([(110, 132 + k * 22), (104, 144 + k * 22), (116, 144 + k * 22)], CHIARO, 1.2)
+    s.freccia([(30, 54), (100, 64)], 2)
+    s.segno_ok(60, 180, 1.2)
+
+
+@passo('tarp_pioggia_4')
+def _(s):
+    s.poly([(0, 250), (0, 150), (140, 200), (300, 150), (440, 150), (440, 250)], CHIARO)
+    s.ellisse(140, 204, 50, 10, SCURO)
+    s.segno_no(140, 120, 1.2)
+    s.poly([(330, 150), (360, 90), (390, 150)], '#fff')
+    s.segno_ok(360, 60, 1.2)
+
+
+@passo('tarp_pioggia_5')
+def _(s):
+    s.terra(215, seme=49)
+    s.telo([(60, 214), (220, 80), (380, 214)])
+    s.picchetto(384, 216)
+    s.linea([(330, 180), (384, 214)], 2)
+    s.freccia([(380, 160), (420, 190)], 2.4)
+    s.ellisse(80, 70, 30, 30, '#fff')
+    s.linea([(80, 70), (80, 50)], 2.4)
+    s.linea([(80, 70), (96, 76)], 2.4)
+
+
+# ============================================================================ TRAPPOLE
+
+@passo('regole_1')
+def _(s):
+    s.rett(60, 40, 150, 180, '#fff', 8)
+    s.testo(135, 100, '§', 70)
+    s.testo(135, 170, 'L. 157/1992', 16, 800)
+    s.ellisse(320, 130, 80, 80, '#fff', 6)
+    s.linea([(264, 186), (376, 74)], 6)
+    s.giri((290, 120), (350, 120), 1, 8)
+    s.ellisse(320, 140, 26, 18, 'none', 3)
+
+
+@passo('regole_2')
+def _(s):
+    s.rett(160, 30, 120, 200, '#fff', 18, 3)
+    s.rett(172, 56, 96, 140, CHIARO, 4)
+    s.testo(220, 126, '112', 40)
+    s.ellisse(220, 212, 8, 8)
+
+
+@passo('regole_3')
+def _(s):
+    voci = [('RIPARO', 1), ('FARSI TROVARE', 2), ('ACQUA', 3), ('FUOCO', 4), ('CIBO', 5)]
+    for k, (t, n) in enumerate(voci):
+        y = 24 + k * 44
+        s.rett(80, y, 280, 36, CHIARO if k < 4 else '#fff', 8)
+        s.testo(110, y + 18, str(n), 18)
+        s.testo(240, y + 18, t, 16, 800)
+    s.freccia([(390, 30), (390, 210)], 2.4)
+
+
+@passo('regole_4')
+def _(s):
+    s.terra(215, seme=50)
+    s.poly([(120, 40), (60, 150), (180, 150)], '#fff', 4)
+    s.testo(120, 112, '!', 50)
+    s.ellisse(320, 178, 50, 22, CHIARO)          # un cane stilizzato
+    s.ellisse(370, 150, 18, 16, CHIARO)
+    for x in (290, 340):
+        s.linea([(x, 196), (x, 214)], 4)
+    s.linea([(272, 170), (256, 154)], 4)
+
+
+@passo('laccio_1')
+def _(s):
+    s.terra(180, ciuffi=20, seme=51)
+    s.ellisse(110, 150, 90, 50, MEDIO)
+    s.ellisse(330, 150, 90, 50, MEDIO)
+    for k in range(6):
+        x = 60 + k * 64
+        s.ellisse(x, 210 + (k % 2) * 10, 6, 4, SCURO, 1)
+        s.ellisse(x + 10, 214 + (k % 2) * 10, 4, 3, SCURO, 1)
+    s.linea([(20, 200), (420, 220)], 1.4, tratteggio='8 8')
+
+
+@passo('laccio_2')
+def _(s):
+    s.ellisse(220, 125, 90, 70, 'none', 2.6)
+    s.ellisse(220, 125, 90, 70, 'none', 2.6)
+    s.ellisse(130, 125, 8, 6, '#fff', 2.4)
+    s.linea([(130, 125), (40, 125)], 2.6)
+    s.freccia([(80, 160), (122, 132)], 2)
+
+
+@passo('laccio_3')
+def _(s):
+    s.terra(215, seme=52)
+    s.ellisse(220, 140, 45, 45, 'none', 2.6)
+    s.linea([(220, 95), (220, 40)], 2.6)
+    s.freccia([(160, 140), (176, 140)], 1.6)
+    s.freccia([(280, 140), (264, 140)], 1.6)
+    s.linea([(290, 186), (290, 214)], 1.6)
+    s.testo(340, 200, 'UN PUGNO', 13, 800)
+    s.testo(220, 80, 'UNA MANO', 13, 800)
+
+
+@passo('laccio_4')
+def _(s):
+    s.terra(215, seme=53)
+    s.legno((220, 230), (220, 30), 10, CHIARO, testa=False)
+    s.linea([(220, 40), (250, 120)], 2.4)
+    s.ellisse(250, 150, 30, 30, 'none', 2.6)
+    for x in (180, 330):
+        for k in range(3):
+            s.legno((x + k * 8, 214), (x + k * 8 - 4, 140), 5, '#fff', testa=False)
+
+
+@passo('laccio_5')
+def _(s):
+    s.ellisse(140, 120, 70, 70, '#fff', 3)
+    for k in range(12):
+        a = k * math.pi / 6
+        s.linea([(140 + 60 * math.cos(a), 120 + 60 * math.sin(a)), (140 + 66 * math.cos(a), 120 + 66 * math.sin(a))], 2)
+    s.linea([(140, 120), (140, 70)], 4)
+    s.linea([(140, 120), (180, 120)], 4)
+    s.testo(140, 220, '2 VOLTE AL GIORNO', 13, 800)
+    s.ellisse(330, 120, 40, 40, 'none', 2.6)
+    s.segno_no(330, 120, 2)
+
+
+@passo('pesca_1')
+def _(s):
+    s.legno((40, 120), (150, 120), 8, CHIARO, testa=False)
+    s.linea([(110, 120), (140, 96)], 2.4)
+    s.linea([(200, 60), (200, 160), (230, 190), (260, 160)], 3)
+    s.linea([(310, 125), (420, 125)], 3)
+    s.linea([(310, 125), (300, 118)], 3)
+    s.linea([(420, 125), (430, 132)], 3)
+    s.linea([(365, 125), (365, 60)], 1.6)
+    s.testo(95, 200, 'SPINA', 13, 800)
+    s.testo(230, 220, 'FERMAGLIO', 13, 800)
+    s.testo(365, 200, 'BASTONCINO', 13, 800)
+
+
+@passo('pesca_2')
+def _(s):
+    s.linea([(220, 20), (220, 140), (250, 180), (280, 140)], 3)
+    s.poly([(204, 120), (250, 112), (290, 136), (276, 164), (236, 160), (210, 140)], CHIARO)
+    for k in range(4):
+        s.curva((214 + k * 18, 120), (220 + k * 18, 140), (214 + k * 18, 158), 1.2)
+
+
+@passo('pesca_3')
+def _(s):
+    s.acqua(0, 250, 6)
+    for (x, y) in ((120, 110), (300, 160)):
+        s.sasso(x, y, 50, 30)
+        s.poly([(x + 70, y), (x + 100, y - 10), (x + 120, y), (x + 100, y + 10)], SCURO)
+        s.poly([(x + 120, y), (x + 132, y - 8), (x + 132, y + 8)], SCURO)
+    s.freccia([(400, 40), (300, 60)], 2.4)
+
+
+@passo('pesca_4')
+def _(s):
+    s.acqua(150, 250, 4)
+    s.terra(150, ciuffi=0, seme=54)
+    s.rett(0, 150, 120, 100, CHIARO, sw=0)
+    s.omino(60, 150, 90)
+    s.legno((76, 90), (300, 20), 6, MEDIO, testa=False)
+    s.linea([(300, 20), (320, 200)], 1.4)
+    s.ellisse(320, 204, 6, 4, SCURO, 1)
+
+
+@passo('pesca_5')
+def _(s):
+    s.acqua(130, 250, 4)
+    s.rett(0, 110, 440, 22, CHIARO, sw=0)
+    s.linea([(0, 130), (440, 130)], 2)
+    for x in (80, 220, 360):
+        s.legno((x, 132), (x + 30, 60), 6, MEDIO, testa=False)
+        s.linea([(x + 30, 60), (x + 50, 200)], 1.4)
+        s.ellisse(x + 50, 204, 5, 4, SCURO, 1)
+
+
+def _paiute_pezzi(s, montato=False, scattato=False):
+    s.terra(215, seme=55)
+    if scattato:
+        s.poly([(60, 214), (300, 196), (306, 214)], MEDIO)
+        return
+    s.legno((200, 214), (200, 110), 9, CHIARO, testa=False)             # montante
+    s.legno((150, 104), (290, 110), 8, CHIARO)                          # leva
+    s.linea([(150, 104), (150, 170)], 1.6)                              # cordino
+    s.legno((138, 174), (180, 174), 5, '#fff', testa=False)            # levetta
+    s.legno((180, 176), (290, 196), 4, '#fff', testa=False)            # bastoncino dell'esca
+    s.poly([(290, 112), (300, 104), (420, 206), (404, 214)], MEDIO)    # pietra
+
+
+@passo('paiute_1')
+def _(s):
+    s.terra(225, ciuffi=0, seme=56)
+    s.legno((40, 50), (190, 50), 9, CHIARO)
+    s.legno((40, 100), (220, 100), 8, CHIARO)
+    s.legno((40, 150), (90, 150), 5, '#fff')
+    s.legno((40, 195), (300, 195), 4, '#fff')
+    s.linea([(260, 50), (260, 130)], 1.6)
+    for y, t in ((50, 'MONTANTE'), (100, 'LEVA'), (150, 'LEVETTA'), (195, 'ESCA')):
+        s.testo(370, y, t, 13, 800)
+
+
+@passo('paiute_2')
+def _(s):
+    s.terra(215, seme=57)
+    s.legno((200, 214), (200, 110), 9, CHIARO, testa=False)
+    s.legno((150, 104), (290, 110), 8, CHIARO)
+    s.linea([(150, 104), (150, 170)], 1.6)
+    s.poly([(290, 112), (300, 104), (420, 206), (404, 214)], MEDIO)
+
+
+@passo('paiute_3')
+def _(s):
+    _paiute_pezzi(s)
+    s.ellisse(150, 174, 26, 18, 'none', 1.4)
+
+
+@passo('paiute_4')
+def _(s):
+    _paiute_pezzi(s)
+    s.ellisse(286, 196, 10, 6, SCURO)
+    s.freccia([(250, 240), (282, 204)], 2)
+
+
+@passo('paiute_5')
+def _(s):
+    _paiute_pezzi(s, scattato=True)
+    s.freccia_curva((330, 60), (360, 100), (300, 180))
+    s.legno((80, 60), (180, 60), 6, '#fff', testa=False)
+    s.freccia([(186, 60), (240, 150)], 2)
+
+
+def _pioli(s, x, y, agganciati=True):
+    s.legno((x, y + 70), (x, y - 10), 10, CHIARO, testa=False)
+    s.poly([(x - 5, y + 6), (x + 5, y + 6), (x + 5, y + 16)], '#fff', 1.4)
+    if agganciati:
+        s.legno((x + 8, y + 2), (x + 70, y + 2), 10, CHIARO, testa=False)
+
+
+@passo('molla_1')
+def _(s):
+    s.terra(205, seme=58)
+    _pioli(s, 160, 130, agganciati=False)
+    s.legno((240, 90), (330, 90), 10, CHIARO)
+    s.poly([(250, 85), (250, 95), (262, 85)], '#fff', 1.4)
+    s.linea([(330, 90), (380, 40)], 1.8)
+    s.freccia([(230, 110), (176, 140)], 2)
+
+
+@passo('molla_2')
+def _(s):
+    s.terra(215, seme=59)
+    s.curva((380, 214), (380, 80), (200, 60), 7)
+    s.linea([(200, 60), (180, 160)], 1.8)
+    s.freccia_curva((300, 20), (250, 20), (210, 50))
+
+
+@passo('molla_3')
+def _(s):
+    s.terra(215, seme=60)
+    s.curva((380, 214), (380, 80), (200, 60), 7)
+    _pioli(s, 160, 150)
+    s.linea([(200, 60), (200, 150)], 1.8)
+
+
+@passo('molla_4')
+def _(s):
+    s.terra(215, seme=61)
+    s.curva((380, 214), (380, 80), (200, 60), 7)
+    _pioli(s, 160, 150)
+    s.linea([(200, 60), (200, 150)], 1.8)
+    s.linea([(230, 152), (260, 170)], 1.6)
+    s.ellisse(260, 190, 22, 22, 'none', 2.4)
+
+
+@passo('molla_5')
+def _(s):
+    s.terra(215, seme=62)
+    s.linea([(380, 214), (380, 30)], 7)
+    s.legno((80, 214), (180, 120), 8, '#fff', testa=False)
+    s.freccia([(186, 116), (230, 80)], 2)
+    s.segno_ok(80, 60, 1.2)
+
+
+@passo('nassa_2')
+def _(s):
+    s.rett(110, 90, 220, 80, '#fff', 30, 2.4)
+    s.poly([(112, 94), (180, 122), (196, 126), (196, 134), (180, 138), (112, 166)], CHIARO, 1.8)
+    for k in range(3):
+        s.linea([(118, 98 + k * 28), (130, 104 + k * 28)], 2)
+    for x in range(220, 320, 18):
+        for y in (110, 150):
+            s.ellisse(x, y, 3, 3, NERO, 0)
+
+
+@passo('nassa_3')
+def _(s):
+    s.rett(110, 90, 220, 80, '#fff', 30, 2.4)
+    s.poly([(112, 94), (180, 122), (196, 126), (196, 134), (180, 138), (112, 166)], CHIARO, 1.8)
+    for k in range(3):
+        s.curva((240 + k * 20, 140), (250 + k * 20, 150), (240 + k * 20, 160), 2)
+    s.freccia([(300, 40), (270, 120)], 2)
+
+
+@passo('nassa_4')
+def _(s):
+    s.acqua(40, 210, 5)
+    s.rett(0, 210, 440, 40, CHIARO, sw=0)
+    s.linea([(0, 210), (440, 210)], 2)
+    s.rett(150, 140, 180, 60, '#fff', 26, 2.4)
+    s.poly([(152, 144), (200, 164), (200, 176), (152, 196)], CHIARO, 1.6)
+    for x in (140, 340):
+        s.sasso(x, 204, 22, 12)
+    s.freccia([(420, 80), (300, 80)], 2.4)
+    s.freccia([(60, 170), (140, 170)], 1.8)
+
+
+@passo('nassa_5')
+def _(s):
+    s.poly([(60, 60), (380, 90), (380, 160), (60, 190)], '#fff', 2.4)
+    for k in range(10):
+        x = 80 + k * 30
+        s.linea([(x, 62 + k * 3), (x, 188 - k * 3)], 1.4)
+    for k in range(4):
+        s.curva((60, 80 + k * 30), (220, 100 + k * 18), (380, 100 + k * 18), 1.4)
+    s.poly([(60, 60), (140, 116), (140, 134), (60, 190)], CHIARO, 1.8)
+
+
+# ============================================================================ NODI (corde in 3D)
+
+from svgkit import giro, _catmull3  # noqa: E402
+
+
+def fr(ctrl, k):
+    """la frazione di corda che arriva al punto di controllo k (per disegnare un nodo fino a lì)"""
+    pts = _catmull3(ctrl)
+    L = [0.0]
+    for i in range(1, len(pts)):
+        L.append(L[-1] + math.dist(pts[i][:2], pts[i - 1][:2]))
+    return L[min(len(pts) - 1, k * 12)] / L[-1] + 0.002
+
+
+def palo_v(s, cx=220, w=30, y0=0, y1=250):
+    return lambda: s.legno((cx, y1), (cx, y0), w, CHIARO, testa=False)
+
+
+def _parlato():
+    c = [(20, 92, 10), (120, 92, 10), (178, 92, 20)]
+    c += giro(220, 0, 'v', -60, 90, 28, 92, 100)
+    i1 = len(c)
+    c += giro(220, 0, 'v', 90, 270, 28, 102, 150)[1:]
+    i2 = len(c)
+    c += giro(220, 0, 'v', 270, 450, 34, 150, 66)[1:]
+    i3 = len(c)
+    c += giro(220, 0, 'v', 450, 630, 28, 66, 124)[1:]
+    i4 = len(c)
+    c += giro(220, 0, 'v', 630, 780, 24, 124, 130)[1:]
+    c += [(270, 130, 10), (340, 130, 10), (430, 130, 10)]
+    return c, (i1, i2, i3, i4)
+
+
+def _disegna_parlato(s, k=None, freccia=None):
+    c, idx = _parlato()
+    f = 1.0 if k is None else fr(c, idx[k])
+    s.corde3d([c], oggetto=palo_v(s, 220, 40), fino=[f], capo=[0.3], dietro_x=(200, 240), larg=14, dopo=freccia)
+
+
+@passo('parlato_1')
+def _(s): _disegna_parlato(s, 1, [(150, 170), (186, 152)])
+
+
+@passo('parlato_2')
+def _(s): _disegna_parlato(s, 2, [(150, 40), (182, 62)])
+
+
+@passo('parlato_3')
+def _(s): _disegna_parlato(s, 3, [(150, 170), (186, 130)])
+
+
+@passo('parlato_4')
+def _(s): _disegna_parlato(s)
+
+
+@passo('parlato_5')
+def _(s):
+    _disegna_parlato(s)
+    s.freccia([(70, 70), (20, 70)], 2.4)
+    s.freccia([(370, 150), (420, 150)], 2.4)
+
+
+# ---------------------------------------------------------------- nodo piano
+
+def _fascio(s):
+    for k in range(5):
+        s.legno((90, 196 + k * 8), (350, 196 + k * 8), 9, CHIARO)
+
+
+def _piano(secondo=1.0):
+    """i due capi (S bianco da sinistra, D grigio da destra) intrecciati: prima D sopra S, poi S sopra D"""
+    r = 18
+    L = [(120, 236, 0), (160, 214, 0), (202, 196, 0)]
+    R = [(320, 236, 0), (280, 214, 0), (238, 196, 0)]
+    for k in range(13):
+        t = 180 + 360 * k / 12
+        L.append((220 + r * math.cos(math.radians(t)), 190 - 50 * k / 12, r * math.sin(math.radians(t))))
+        R.append((220 + r * math.cos(math.radians(t - 180)), 190 - 50 * k / 12, r * math.sin(math.radians(t - 180))))
+    L.append((200, 128, 0)); R.append((240, 128, 0))
+    for k in range(13):
+        t = 540 - 360 * k / 12
+        L.append((220 + r * math.cos(math.radians(t)), 122 - 50 * k / 12, r * math.sin(math.radians(t))))
+        R.append((220 + r * math.cos(math.radians(t - 180)), 122 - 50 * k / 12, r * math.sin(math.radians(t - 180))))
+    L += [(196, 62, 0), (150, 30, 0), (110, 14, 0)]
+    R += [(244, 62, 0), (290, 30, 0), (330, 14, 0)]
+    return L, R
+
+
+def _disegna_piano(s, fino=1.0, freccia=None):
+    for k in range(5):
+        s.legno((90, 236 + k * 3), (350, 236 + k * 3), 8, CHIARO)
+    L, R = _piano()
+    s.corde3d([L, R], fino=[fino, fino], capo=[2, 0.0], larg=14, dopo=freccia)
+    s.testo(84, 200, 'S', 22)
+    s.testo(356, 200, 'D', 22)
+
+
+@passo('piano_1')
+def _(s): _disegna_piano(s, fr(_piano()[0], 17), [(300, 110), (250, 126)])
+
+
+@passo('piano_2')
+def _(s): _disegna_piano(s)
+
+
+@passo('piano_3')
+def _(s):
+    _disegna_piano(s)
+    s.segno_ok(380, 60, 1.4)
+
+
+@passo('piano_4')
+def _(s):
+    _disegna_piano(s)
+    s.freccia([(110, 14), (60, 60)], 2.4)
+
+
+# ---------------------------------------------------------------- nodo di bandiera
+
+def _bandiera():
+    A = [(20, 100, 0), (150, 100, 0), (250, 100, 0), (276, 108, 0), (284, 125, 0), (276, 142, 0), (250, 150, 0), (150, 150, 0), (20, 150, 0)]
+    B = [(430, 125, -8), (330, 125, -8), (290, 125, -8), (255, 125, 6), (232, 104, 8), (218, 84, 4), (200, 82, -6), (190, 110, -10),
+         (190, 150, -10), (196, 172, -2), (214, 166, 8), (222, 146, 6), (226, 124, 2), (244, 106, 2), (262, 100, 2)]
+    return A, B
+
+
+def _disegna_bandiera(s, fb, freccia=None, mostra_b=True):
+    A, B = _bandiera()
+    fili, fino = ([A, B], [1, fb]) if mostra_b else ([A], [1])
+    s.corde3d(fili, fino=fino, capo=[2, 0.0][:len(fili)] if mostra_b else [2], larg=14, dopo=freccia)
+
+
+@passo('bandiera_1')
+def _(s):
+    A, _B = _bandiera()
+    s.corde3d([A], capo=[2], larg=16)
+
+
+@passo('bandiera_2')
+def _(s): _disegna_bandiera(s, fr(_bandiera()[1], 5), [(210, 60), (196, 78)])
+
+
+@passo('bandiera_3')
+def _(s): _disegna_bandiera(s, fr(_bandiera()[1], 11), [(200, 200), (222, 170)])
+
+
+@passo('bandiera_4')
+def _(s): _disegna_bandiera(s, 1)
+
+
+@passo('bandiera_5')
+def _(s):
+    _disegna_bandiera(s, 1)
+    s.freccia([(60, 125), (10, 125)], 2.4)
+    s.freccia([(380, 160), (430, 160)], 2.4)
+
+
+# ---------------------------------------------------------------- due mezzi colli (intorno al palo, poi sulla parte fissa)
+
+def _mezzicolli():
+    c = [(430, 96, 4), (200, 96, 4), (108, 96, 6)]
+    c += giro(70, 0, 'v', 90, 450, 30, 96, 134)[1:]
+    i0 = len(c)
+    c += [(150, 136, 4), (190, 134, 4)]
+    c += giro(0, 96, 'o', 90, -270, 22, 206, 232)
+    c += [(214, 128, -6), (196, 140, -6), (180, 136, 0)]
+    i1 = len(c)
+    c += giro(0, 96, 'o', 90, -270, 22, 170, 144)
+    c += [(150, 128, -6), (134, 142, -4), (118, 146, 4)]
+    return c, (i0, i1)
+
+
+def _disegna_mezzicolli(s, k=None, freccia=None):
+    c, idx = _mezzicolli()
+    f = 1.0 if k is None else fr(c, idx[k])
+    s.corde3d([c], oggetto=palo_v(s, 70, 40), fino=[f], capo=[0.25], dietro_x=(50, 90), larg=13, dopo=freccia)
+
+
+@passo('mezzicolli_1')
+def _(s): _disegna_mezzicolli(s, 0, [(170, 170), (200, 120)])
+
+
+@passo('mezzicolli_2')
+def _(s): _disegna_mezzicolli(s, 1, [(150, 180), (160, 120)])
+
+
+@passo('mezzicolli_3')
+def _(s): _disegna_mezzicolli(s)
+
+
+@passo('mezzicolli_4')
+def _(s):
+    _disegna_mezzicolli(s)
+    s.freccia([(380, 60), (430, 60)], 2.4)
+
+
+# ---------------------------------------------------------------- tendicavo
+
+def _tendicavo():
+    c = [(200, -4, 2), (200, 40, 2), (200, 196, 2), (204, 222, 4), (218, 234, -8), (234, 222, 4), (244, 200, 4), (244, 186, 4)]
+    i0 = len(c)
+    c += giro(200, 0, 'v', 90, -630, 24, 132, 186)
+    i1 = len(c)
+    c += [(176, 196, 12), (166, 150, 12), (170, 100, 8), (184, 84, 4)]
+    c += giro(200, 0, 'v', -90, -450, 24, 76, 96)[1:]
+    c += [(216, 112, -6), (226, 130, -6)]
+    return c, (i0, i1)
+
+
+def _disegna_tendicavo(s, k=None, freccia=None):
+    s.terra(236, ciuffi=6, seme=70)
+    s.picchetto(222, 240)
+    c, idx = _tendicavo()
+    f = 1.0 if k is None else fr(c, idx[k])
+    s.corde3d([c], fino=[f], capo=[0.5], larg=12, dopo=freccia)
+
+
+@passo('tendicavo_1')
+def _(s): _disegna_tendicavo(s, 0, [(280, 150), (244, 160)])
+
+
+@passo('tendicavo_2')
+def _(s): _disegna_tendicavo(s, 1, [(140, 200), (174, 150)])
+
+
+@passo('tendicavo_3')
+def _(s): _disegna_tendicavo(s)
+
+
+@passo('tendicavo_4')
+def _(s):
+    _disegna_tendicavo(s)
+    s.freccia([(280, 80), (280, 30)], 2.4)
+    s.freccia([(120, 30), (120, 4)], 2.4)
+
+
+# ---------------------------------------------------------------- prusik (schema)
+
+def _prusik(s, giri=3, anello=True):
+    s.legno((220, 250), (220, 0), 22, '#fff', testa=False)
+    for k in range(giri):
+        y = 80 + k * 26
+        s.giri((200, y), (240, y), 2, 7, dy=9)
+    if anello:
+        s.corda([(214, 80 + giri * 26), (190, 190), (220, 236), (250, 190), (226, 80 + giri * 26)], larg=9, capo=0.0, chiusa=True)
+
+
+@passo('prusik_1')
+def _(s):
+    s.corda([(220, 40), (330, 60), (380, 130), (320, 200), (220, 210), (120, 200), (70, 130), (110, 60), (220, 40)], larg=10, capo=0.0, chiusa=True)
+    s.giri((206, 30), (206, 54), 4, 6, dx=7)
+
+
+@passo('prusik_2')
+def _(s):
+    _prusik(s, 1)
+    s.freccia([(300, 110), (250, 96)], 2)
+
+
+@passo('prusik_3')
+def _(s): _prusik(s, 3)
+
+
+@passo('prusik_4')
+def _(s):
+    _prusik(s, 3)
+    s.freccia([(300, 200), (300, 240)], 2.4)
+    s.segno_no(320, 230, 0.8)
+    s.freccia([(120, 140), (120, 60)], 2.4)
+    s.segno_ok(100, 40, 0.8)
+
+
+# ---------------------------------------------------------------- nodo del camionista
+
+def _camionista():
+    c = [(60, 100, 0), (140, 100, 0), (200, 100, 0)]
+    i0 = len(c)
+    c += [(214, 104, 0), (228, 124, 4), (222, 144, 4), (206, 138, -4), (206, 116, -4), (222, 104, 0)]
+    i1 = len(c)
+    c += [(300, 100, 0), (386, 98, 0), (404, 96, -8), (414, 112, -8), (404, 130, 4), (330, 150, 4), (250, 160, 4), (224, 154, -6)]
+    i2 = len(c)
+    c += [(214, 124, 8), (250, 120, 8), (330, 126, 8), (360, 128, 8)]
+    return c, (i0, i1, i2)
+
+
+def _disegna_camionista(s, k=None, freccia=None):
+    s.terra(215, ciuffi=6, seme=71)
+    s.albero(40, 30)
+    s.albero(410, 30)
+    s.giri((50, 92), (50, 108), 3, 5, dx=-6)
+    c, idx = _camionista()
+    f = 1.0 if k is None else fr(c, idx[k])
+    s.corde3d([c], fino=[f], capo=[0.75], larg=10, dopo=freccia)
+
+
+@passo('camionista_1')
+def _(s): _disegna_camionista(s, 0, [(220, 100), (300, 100)])
+
+
+@passo('camionista_2')
+def _(s): _disegna_camionista(s, 1, [(240, 100), (360, 100)])
+
+
+@passo('camionista_3')
+def _(s): _disegna_camionista(s, 2)
+
+
+@passo('camionista_4')
+def _(s):
+    _disegna_camionista(s)
+    s.freccia([(370, 128), (430, 136)], 2.6)
+
+
+@passo('camionista_5')
+def _(s):
+    _disegna_camionista(s)
+    s.giri((246, 116), (246, 166), 2, 6, dx=10)
+    s.segno_ok(300, 60, 1.2)
+
+
+# ---------------------------------------------------------------- legature (schema a fasce)
+
+@passo('quadra_4')
+def _(s):
+    s.legno((220, 245), (220, 5), 22, CHIARO, testa=False)
+    s.legno((60, 130), (380, 130), 20, CHIARO)
+    for k in range(3):
+        s.giri((198 - k * 7, 112), (198 - k * 7, 148), 1, 7)
+        s.giri((242 + k * 7, 112), (242 + k * 7, 148), 1, 7)
+        s.giri((206, 108 - k * 7), (234, 108 - k * 7), 1, 7)
+        s.giri((206, 152 + k * 7), (234, 152 + k * 7), 1, 7)
+    s.giri((292, 118), (292, 142), 2, 6, dx=8)
+    s.freccia([(330, 60), (390, 60)], 2)
+    s.freccia([(330, 60), (270, 60)], 2)
+    s.segno_ok(110, 60, 1.2)
+
+
+def _x_pali(s):
+    s.legno((90, 235), (350, 15), 18, CHIARO)
+    s.legno((90, 15), (350, 235), 18, CHIARO)
+
+
+def _fasce_diag(s, ang, n=3):
+    ca, sa = math.cos(ang), math.sin(ang)
+    for k in range(n):
+        o = (k - (n - 1) / 2) * 10
+        cx, cy = 220 - sa * o, 125 + ca * o
+        s.giri((cx - 42 * ca, cy - 42 * sa), (cx + 42 * ca, cy + 42 * sa), 1, 8)
+
+
+@passo('diagonale_1')
+def _(s):
+    _x_pali(s)
+    _fasce_diag(s, math.pi / 2, 2)
+    s.corda([(240, 150), (300, 200), (330, 240)], larg=7, capo=2)
+
+
+@passo('diagonale_2')
+def _(s):
+    _x_pali(s)
+    _fasce_diag(s, math.pi / 2, 3)
+
+
+@passo('diagonale_3')
+def _(s):
+    _x_pali(s)
+    _fasce_diag(s, math.pi / 2, 3)
+    _fasce_diag(s, 0, 3)
+
+
+@passo('diagonale_4')
+def _(s):
+    _x_pali(s)
+    _fasce_diag(s, math.pi / 2, 3)
+    _fasce_diag(s, 0, 3)
+    s.ellisse(220, 125, 14, 14, 'none', 5)
+    s.giri((300, 60), (316, 70), 2, 6, dx=6)
+
+
+def _tre_pali(s, aperti=False):
+    for k, rov in enumerate((False, True, False)):
+        y = 90 + k * 30
+        if rov:
+            s.legno((400, y), (40, y), 20, CHIARO)
+        else:
+            s.legno((40, y), (400, y), 20, CHIARO)
+
+
+@passo('treppiede_1')
+def _(s):
+    _tre_pali(s)
+    s.freccia([(60, 200), (20, 200)], 2)
+    s.testo(220, 210, 'QUELLO IN MEZZO ROVESCIATO', 13, 800)
+
+
+@passo('treppiede_2')
+def _(s):
+    _tre_pali(s)
+    s.giri((330, 78), (330, 102), 2, 6, dx=8)
+    s.corda([(346, 100), (360, 160), (380, 200)], larg=7, capo=2)
+
+
+@passo('treppiede_3')
+def _(s):
+    _tre_pali(s)
+    for k in range(6):
+        s.giri((300 + k * 8, 76), (300 + k * 8, 164), 1, 7)
+
+
+@passo('treppiede_4')
+def _(s):
+    _tre_pali(s)
+    for k in range(6):
+        s.giri((300 + k * 8, 76), (300 + k * 8, 164), 1, 7)
+    for y in (105, 135):
+        s.giri((290, y - 4), (356, y - 4), 2, 6, dy=6)
+
+
+def _due_pali(s):
+    s.legno((40, 100), (400, 100), 22, CHIARO)
+    s.legno((40, 134), (400, 134), 22, CHIARO)
+
+
+@passo('cesoia_1')
+def _(s): _due_pali(s)
+
+
+@passo('cesoia_2')
+def _(s):
+    _due_pali(s)
+    s.giri((330, 86), (330, 112), 2, 6, dx=8)
+    s.corda([(346, 112), (360, 180), (380, 220)], larg=7, capo=2)
+
+
+@passo('cesoia_3')
+def _(s):
+    _due_pali(s)
+    for k in range(7):
+        s.giri((300 + k * 8, 86), (300 + k * 8, 148), 1, 7)
+
+
+@passo('cesoia_4')
+def _(s):
+    _due_pali(s)
+    for k in range(7):
+        s.giri((300 + k * 8, 86), (300 + k * 8, 148), 1, 7)
+    s.giri((294, 113), (362, 121), 2, 6, dy=4)
+    s.giri((250, 88), (250, 112), 2, 6, dx=8)
+
+
+@passo('cesoia_5')
+def _(s):
+    s.terra(215, seme=72)
+    for x in (110, 330):
+        s.legno((x - 60, 214), (x + 10, 70), 12, CHIARO)
+        s.legno((x + 60, 214), (x - 10, 70), 12, CHIARO)
+        s.giri((x - 10, 80), (x + 10, 80), 3, 6, dy=6)
+    s.legno((60, 78), (380, 78), 12, MEDIO)

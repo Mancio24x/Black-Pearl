@@ -723,3 +723,16 @@ Completed the editor suggestion strip and the Network destination, including gra
 - 22 new drawings in `tools/disegni.py`; `tools/grafica.py` 4-section selector, section pictogram as fallback
   thumbnail. `data/img.txt` now 632 KB (limit 1 MB per file: next additions may need a second file).
 - Tests: `tools/test_app.py` 9 passed on the simulator (all 40 tutorials, all steps). Not checked on a device.
+
+## 2026-11-23 — inkapp/bivacco 0.4: a drawing for every step
+
+- Owner request: drawings for all tutorials, made with Claude Design.
+- 140 new vector drawings (all 196 steps of the 40 tutorials now have one). `tools/svgkit.py` (scene kit + 3D rope
+  `corde3d`: over/under from depth, segments behind a pole hidden), `tools/svg_passi.py` (one function per step),
+  `tools/rendi_svg.js` (Playwright/Chromium screenshots at 3x), `tools/svg_esporta.py` (Atkinson to 1 bit),
+  `tools/assegna_disegni.py` (adds img = '<id>_<n>' to tecniche.lua), `tools/design_canvas.py` (40 storyboard
+  artboards on 4 pages of the "Bivacco e-ink redesign" Design canvas; raster drawings uploaded as assets, ids in
+  `tools/design_assets.json`).
+- `make_art.py`: image data split into files < 900 KB (img1..3.txt, ui1.txt); immagini.lua maps name -> {file, row}.
+- Size check vs touch-licorice-apps: package 2228 KB; Tarot (store app) carries 1.5 MB of data; installer refuses 34 MB.
+- Tests: `tools/test_app.py` 9 passed on the simulator (every step of all 40 tutorials, max 7 images per screen). Not checked on a device. Knot drawings were checked by eye.

@@ -151,7 +151,7 @@ def main():
             nw = g.height * 88 / 64
             x0 = (g.width - nw) / 2
             g = g.crop((int(x0), 0, int(x0 + nw), g.height)).resize((88, 64), Image.LANCZOS)
-            img = arte.atkinson(g, 50, 215)
+            img = arte.atkinson(g, 40, 245)
         else:
             img = grafica.miniatura(tid, sez=sez)()
         img.save(os.path.join(APP, 'art', 'ui', 'th_' + tid + '.png'))
