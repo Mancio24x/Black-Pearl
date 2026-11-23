@@ -231,7 +231,7 @@ class Lettore:
 
     def sezione(self, nome):
         """tocca una sezione di Tecniche (è un'immagine, sotto l'intestazione)"""
-        self.tocca({'Sopravvivenza': 108, 'Nodi': 254, 'Trappole': 385}[nome], 187)
+        self.tocca({'Bushcraft': 82, 'Sopravvivenza': 82, 'Nodi': 191, 'Trappole': 297, 'Tarp': 408}[nome], 187)
 
     def scorri(self, gesto):
         self.tocca(240, 400, gesto)

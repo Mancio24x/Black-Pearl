@@ -88,7 +88,7 @@ def test_massimo_7_immagini_per_schermata():
     viste = 0
     for scheda in ('Attrezzatura', 'Tecniche', 'Percorso'):
         l.scheda(scheda)
-        sezioni = ('Sopravvivenza', 'Nodi', 'Trappole') if scheda == 'Tecniche' else (None,)
+        sezioni = ('Bushcraft', 'Nodi', 'Trappole', 'Tarp') if scheda == 'Tecniche' else (None,)
         for sez in sezioni:
             if sez:
                 l.sezione(sez)

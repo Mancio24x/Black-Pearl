@@ -68,7 +68,8 @@ def tutorial_ids():
         fine = testo.find("\n{ id = '", m.end())
         blocco = testo[m.end():fine if fine > 0 else len(testo)]
         imgs = re.findall(r"img = '(\w+)'", blocco)
-        out.append((m.group(1), imgs[0] if imgs else None))
+        sez = re.search(r"sez = '(\w+)'", blocco)
+        out.append((m.group(1), imgs[0] if imgs else None, sez.group(1) if sez else None))
     return out
 
 
@@ -102,7 +103,7 @@ def main():
         img = f()
         img.save(os.path.join(APP, 'art', 'ui', n + '.png'))
         piccole.append((n, b64(img)))
-    for tid, prima in tutorial_ids():
+    for tid, prima, sez in tutorial_ids():
         if prima:
             c = tele[prima]
             z = disegni.ZOOM.get(prima) or (0, 0, disegni.W, disegni.H)
@@ -110,7 +111,7 @@ def main():
             nw = h * 88 / 64
             img = c.finale(88, 64, scatola=(x + (w - nw) / 2, y, nw, h))
         else:
-            img = grafica.miniatura(tid)()
+            img = grafica.miniatura(tid, sez=sez)()
         img.save(os.path.join(APP, 'art', 'ui', 'th_' + tid + '.png'))
         piccole.append(('th_' + tid, b64(img)))
     tg = scrivi('img.txt', [r for _n, r in grandi])

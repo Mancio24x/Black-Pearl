@@ -1,5 +1,5 @@
 -- Le tecniche, in tre sezioni. Ogni tutorial:
---   id, titolo, sez ('sopravvivenza', 'nodi', 'trappole'), livello (1-3), tempo
+--   id, titolo, sez ('sopravvivenza' = Bushcraft, 'nodi', 'trappole', 'tarp'), livello (1-3), tempo
 --   intro       a cosa serve
 --   serve       cosa ti serve (facoltativo)
 --   attenzione  l'avviso di sicurezza o di legge (facoltativo)
@@ -58,7 +58,7 @@ return {
     { "La testa", "Smussa il bordo della testa con piccoli tagli tutto intorno: quando lo batti con un sasso non si scheggia. Pianta il picchetto inclinato all'indietro, a 45 gradi rispetto alla corda." },
   } },
 
-{ id = 'tarp', titolo = 'Riparo con il tarp', sez = 'sopravvivenza', livello = 1, tempo = '20 min',
+{ id = 'tarp', titolo = 'Tarp a tettoia', sez = 'tarp', livello = 1, tempo = '20 min',
   intro = "Il riparo a tettoia: un telo, una corda e quattro picchetti. Ripara da pioggia e vento, e davanti puoi fare il fuoco che ti scalda.",
   serve = "Tarp, 10 m di corda, 4-6 picchetti, due alberi a 3-4 metri.",
   passi = {
@@ -214,5 +214,255 @@ return {
     { "La lenza", "Lega la lenza a un ramo lungo e flessibile. Lascia che l'esca scenda con la corrente verso la buca." },
     { "Linee fisse", "Più lenze legate a rami sulla riva pescano mentre fai altro. Controllale spesso e toglile tutte prima di andare via." },
   } },
+
+
+------------------------------------------------------------------ bushcraft (altre)
+
+{ id = 'tipifuoco', titolo = 'Tipi di fuoco', sez = 'sopravvivenza', livello = 1, tempo = '',
+  intro = "Ogni fuoco ha il suo scopo: accendere in fretta, cucinare, scaldare tutta la notte. La preparazione (esca, legnetti, legna) è sempre la stessa.",
+  attenzione = "Valgono le stesse regole di 'Accendere il fuoco': divieti regionali, terra nuda, niente rami sopra, sempre spento con acqua.",
+  passi = {
+    { "Tepee (a cono)", "Il più facile da accendere: i legnetti a cono intorno all'esca. Brucia alto e veloce, buono per partire e per far bollire l'acqua in fretta. Quando crolla diventa una base di brace.", img = 'tipi1' },
+    { "Capanna (a catasta)", "Due legni paralleli, poi due di traverso sopra, e così via come una capanna di tronchi, con l'esca e un piccolo tepee al centro. Brucia regolare e lascia tanta brace: il migliore per cucinare.", img = 'tipi2' },
+    { "Stella", "Quattro o cinque tronchi grossi a raggiera con le punte che si toccano al centro, dove arde il fuoco. Man mano che bruciano li spingi verso il centro. Consuma poco: dura tutta la notte con poca sorveglianza.", img = 'tipi3' },
+    { "Con il riflettore", "Dietro il fuoco una parete di tronchi verdi appoggiati a due paletti, o una roccia: rimanda il calore verso il riparo. Il fuoco va a un passo e mezzo dall'entrata del riparo." },
+    { "Quale scegliere", "Per partire: tepee. Per cucinare: capanna, e si cucina sulla brace, non sulla fiamma. Per la notte: stella, con un riflettore. Con il vento forte: il fuoco Dakota (vedi il tutorial)." },
+  } },
+
+{ id = 'dakota', titolo = 'Il fuoco Dakota', sez = 'sopravvivenza', livello = 2, tempo = '30 min',
+  intro = "Un fuoco dentro una buca, con un tunnel per l'aria: col vento non si spegne, fa poco fumo, si vede poco e consuma poca legna. Ottimo per cucinare.",
+  serve = "Un coltello o una paletta, un pentolino, legna corta e sottile.",
+  attenzione = "Non scavare tra le radici (il fuoco può covare sottoterra) né sulla torba. Valgono i divieti sui fuochi.",
+  passi = {
+    { "La buca del fuoco", "Su terreno compatto, senza radici né sassi, togli la zolla d'erba e mettila da parte. Scava una buca larga e profonda come un avambraccio (25-30 cm), con le pareti dritte.", img = 'dakota1' },
+    { "Il tunnel dell'aria", "A una spanna dalla prima, dalla parte da cui arriva il vento, scava una buca più stretta e falla scendere in diagonale fino a sbucare sul fondo della prima. Da lì entra l'aria.", img = 'dakota2' },
+    { "Accendi sul fondo", "Metti l'esca e i legnetti sul fondo della buca grande e accendi. Il tiraggio del tunnel ravviva la fiamma da solo: alimenta dall'alto con legna corta.", img = 'dakota3' },
+    { "Cucina", "Appoggia il pentolino su due bastoni verdi messi di traverso sulla buca. La fiamma resta concentrata sotto il fondo." },
+    { "Chiudi", "Spegni con acqua, mescola, ancora acqua. Riempi le buche con la terra e rimetti la zolla: non resta traccia." },
+  } },
+
+{ id = 'archetto', titolo = "Fuoco ad archetto", sez = 'sopravvivenza', livello = 3, tempo = '1-2 ore',
+  intro = "Accendere il fuoco per attrito, senza fiammiferi: un fuso che gira su una tavoletta finché la polvere di legno diventa brace. È la tecnica più impegnativa: provala a casa prima di averne bisogno.",
+  serve = "Coltello, cordino, legno secco morto e tenero (tiglio, salice, pioppo, nocciolo), un sasso o un legno duro con un incavo.",
+  passi = {
+    { "I quattro pezzi", "Tavoletta: spessa 2 cm, larga tre dita. Fuso: dritto, lungo una spanna, spesso un pollice, dello stesso legno, la punta in alto appuntita e quella in basso arrotondata. Archetto: un ramo un po' curvo lungo come il braccio, con il cordino legato non troppo teso. Impugnatura: un sasso o un legno duro con un incavo.", img = 'archetto1' },
+    { "Il primo foro", "Con la punta del coltello fai un piccolo incavo sulla tavoletta, a un dito dal bordo. Lì appoggerai il fuso." },
+    { "La posizione", "In ginocchio sul destro, il piede sinistro sulla tavoletta vicino al foro. Avvolgi una volta il cordino intorno al fuso. Il fuso verticale nel foro, l'impugnatura sopra, il polso sinistro bloccato contro lo stinco.", img = 'archetto2' },
+    { "Brucia il foro", "Muovi l'archetto avanti e indietro con colpi lunghi e regolari, usando tutto il cordino. Quando il foro è nero e largo come il fuso, fermati." },
+    { "La tacca", "Taglia una tacca a V dal bordo della tavoletta fino al centro del foro, larga come un ottavo di torta. Lì si raccoglie la polvere che diventerà brace. Metti sotto un pezzo di corteccia." },
+    { "La brace", "Ricomincia: prima piano, poi più veloce e premendo di più. Quando esce tanto fumo continua per altri 20 colpi. Se la polvere nera nella tacca continua a fumare da sola, hai la brace." },
+    { "Dal carbone alla fiamma", "Sposta la brace con la corteccia dentro il nido d'esca, chiudilo intorno e soffia piano e a lungo finché prende fiamma. Poi il fuoco come al solito." },
+  } },
+
+{ id = 'batoning', titolo = 'Spaccare la legna col coltello', sez = 'sopravvivenza', livello = 2, tempo = '10 min',
+  intro = "Il batoning: spaccare un ciocco battendo il dorso del coltello con un bastone. Serve per arrivare al legno asciutto quando fuori è tutto bagnato.",
+  serve = "Un coltello a lama fissa robusto (lama e manico in un pezzo solo), un bastone duro da battere.",
+  attenzione = "Mai con un coltello pieghevole. Legna più sottile della lunghezza della lama e senza nodi. Le gambe fuori dalla traiettoria.",
+  passi = {
+    { "Prepara il ceppo", "Metti un ciocco largo come base. Appoggia sopra in piedi il pezzo da spaccare, lungo al massimo come il tuo avambraccio." },
+    { "Appoggia la lama", "Appoggia il filo della lama al centro della testa del pezzo, dritta, con la punta che sporge dall'altra parte di qualche dito.", img = 'baton1' },
+    { "Batti", "Con il bastone batti il dorso della lama vicino al manico, con colpi decisi. Quando la lama è entrata, batti sulla punta che sporge, così scende dritta.", img = 'baton2' },
+    { "Apri", "Continua finché il pezzo si divide. Se la lama si incastra in un pezzo lungo, infila un cuneo di legno nella spaccatura e batti quello." },
+    { "Ancora a metà", "Spacca ogni metà in due e poi ancora: i quarti interni sono asciutti anche dopo giorni di pioggia. Ne ricavi esca, legnetti e il bastoncino piumato." },
+  } },
+
+{ id = 'cordame', titolo = 'Cordino di fibre naturali', sez = 'sopravvivenza', livello = 3, tempo = '1 ora',
+  intro = "Con le fibre di ortica, di tiglio o di erba lunga si intreccia un cordino robusto: il metodo della torsione inversa, usato in tutto il mondo da migliaia di anni.",
+  serve = "Fibre lunghe e flessibili: steli di ortica secchi, corteccia interna di tiglio o salice, erbe lunghe.",
+  passi = {
+    { "Prepara le fibre", "Ortica: schiaccia lo stelo secco per il lungo, apri, togli la parte legnosa e tieni le fibre esterne. Tiglio: la corteccia interna, lasciata a bagno qualche giorno, si sfoglia in strisce." },
+    { "Piega il fascio", "Prendi un fascio di fibre spesso come un fiammifero e piegalo non a metà, ma a un terzo della lunghezza: le giunte cadranno in punti diversi." },
+    { "Il primo nodino", "Tieni la piega tra pollice e indice e torci il ramo di sopra lontano da te finché si arriccia e fa un piccolo nodo alla piega." },
+    { "Torci e avvolgi", "Torci il ramo di sopra lontano da te, poi portalo sopra l'altro verso di te. Ora quello che era sotto è sopra: torci, avvolgi, e ripeti. Le due torsioni opposte si bloccano a vicenda." },
+    { "Allunga", "Quando un ramo sta per finire, sovrapponi un nuovo ciuffo di fibre per qualche centimetro e continua a torcerli insieme." },
+    { "Finisci e prova", "Chiudi con un nodo semplice e taglia i ciuffi sporgenti. Prova a tirare: un buon cordino non si srotola e regge molto più di quanto sembri." },
+  } },
+
+{ id = 'gancio', titolo = 'Il gancio per il pentolino', sez = 'sopravvivenza', livello = 2, tempo = '30 min',
+  intro = "Appendere il pentolino sopra il fuoco con legni intagliati: due forcelle, una traversa e un gancio regolabile.",
+  serve = "Coltello, legno verde (che brucia poco): due rami a forcella, una traversa, un ramo con un moncone.",
+  passi = {
+    { "Le due forcelle", "Taglia due rami verdi con una forcella in cima, lunghi come il tuo braccio. Appuntiscili in basso e piantali ai due lati del fuoco, ben dritti.", img = 'gancio1' },
+    { "La traversa", "Un ramo verde dritto e robusto appoggiato nelle due forcelle, sopra il fuoco." },
+    { "Il gancio", "Cerca un ramo con un moncone laterale: taglia il moncone lungo due dita e inclinato verso l'alto. Quello è il gancio dove si appende il manico del pentolino." },
+    { "Regolare l'altezza", "In cima al gancio intaglia una tacca e appendilo alla traversa. Per avere più altezze, fai due o tre tacche a distanze diverse: più in basso cuoce, più in alto tiene in caldo." },
+    { "Controlla", "Il legno verde col tempo si secca e può bruciare: guardalo ogni tanto e cambia la traversa se si annerisce." },
+  } },
+
+------------------------------------------------------------------ nodi e legature (altri)
+
+{ id = 'mezzicolli', titolo = 'Due mezzi colli', sez = 'nodi', livello = 1, tempo = '1 min',
+  intro = "Il modo più semplice per fissare una corda a un albero, a un palo o a un anello, e si scioglie subito. Chiude anche molti altri nodi.",
+  passi = {
+    { "Intorno al palo", "Passa il capo intorno all'albero o al palo, e riportalo verso la parte fissa." },
+    { "Primo mezzo collo", "Passa il capo intorno alla parte fissa e infilalo dentro l'occhiello che si è formato." },
+    { "Secondo mezzo collo", "Ripeti uguale, più in là sulla parte fissa, girando nello stesso verso. Se giri al contrario il nodo scivola." },
+    { "Stringi", "Fai scorrere i due mezzi colli contro il palo e tira la parte fissa." },
+  } },
+
+{ id = 'camionista', titolo = 'Nodo del camionista', sez = 'nodi', livello = 2, tempo = '3 min',
+  intro = "Tende una corda con la forza di una carrucola: per la dorsale del tarp, per legare un carico. Si scioglie con uno strattone.",
+  passi = {
+    { "Il primo ancoraggio", "Lega un capo della corda al primo albero con una gassa d'amante o due mezzi colli." },
+    { "L'asola a metà", "Più o meno a due terzi della distanza, fai un'asola sulla corda: un occhiello ripiegato chiuso con un mezzo nodo (o un'asola a farfalla se la sai fare)." },
+    { "Intorno al secondo albero", "Passa il capo libero intorno al secondo albero e riportalo indietro, facendolo entrare nell'asola." },
+    { "Tira", "Tira il capo verso il secondo albero: l'asola fa da carrucola e la corda si tende il doppio di quanto tireresti a mano." },
+    { "Blocca", "Tenendo la tensione con una mano, chiudi con due mezzi colli intorno ai due rami della corda, sotto l'asola. Per scioglierlo veloce, fai l'ultimo mezzo collo con un'ansa (ganciato)." },
+  } },
+
+{ id = 'bandiera', titolo = 'Nodo di bandiera', sez = 'nodi', livello = 1, tempo = '2 min',
+  intro = "Per unire due corde, anche di spessore diverso: quella che avanza del tarp con un cordino, due corde corte per farne una lunga.",
+  passi = {
+    { "L'ansa", "Con la corda più grossa fai un'ansa, piegandola a U." },
+    { "Entra", "Passa il capo della corda sottile dentro l'ansa, da sotto." },
+    { "Gira dietro", "Portalo intorno a tutti e due i rami dell'ansa, passando dietro." },
+    { "Sotto sé stesso", "Infila il capo sotto sé stesso, ma sopra l'ansa: non dentro l'ansa." },
+    { "Stringi e controlla", "Stringi tirando le parti lunghe. I due capi corti devono uscire dallo stesso lato. Per più sicurezza fai un secondo giro (nodo di bandiera doppio)." },
+  } },
+
+{ id = 'quadra', titolo = 'Legatura quadra', sez = 'nodi', livello = 2, tempo = '5 min',
+  intro = "Unisce due pali incrociati ad angolo retto: per tavoli, rastrelliere, le strutture dei ripari. È la legatura più usata.",
+  serve = "Due pali, 3-4 metri di cordino.",
+  passi = {
+    { "Il nodo d'inizio", "Fai un nodo parlato sul palo verticale, appena sotto il punto dove appoggerai la traversa. Avvolgi il capo corto intorno alla corda per non lasciarlo libero.", img = 'quadra1' },
+    { "I giri", "Porta la corda sopra la traversa, dietro il palo verticale, sotto la traversa dall'altra parte e di nuovo dietro il verticale. Ripeti 3-4 volte tirando forte: sulla traversa i giri vanno uno fuori dall'altro, sul verticale uno dentro l'altro.", img = 'quadra2' },
+    { "Le strozzature", "Ora gira la corda tra i due pali, intorno a tutti i giri: 2-3 strozzature, tirate più che puoi. Sono loro che rendono la legatura rigida.", img = 'quadra3' },
+    { "Chiudi", "Chiudi con un nodo parlato sulla traversa. La legatura non deve muoversi se scuoti i pali." },
+  } },
+
+{ id = 'diagonale', titolo = 'Legatura diagonale', sez = 'nodi', livello = 2, tempo = '5 min',
+  intro = "Per due pali incrociati che tendono ad allontanarsi, come le diagonali di un telaio. Li tira uno contro l'altro.",
+  serve = "Due pali, 3-4 metri di cordino.",
+  passi = {
+    { "Il nodo di legname", "Intorno ai due pali, nel punto dove si incrociano, fai un nodo di legname: passa la corda intorno a entrambi, gira il capo intorno alla parte fissa e poi su sé stesso tre volte. Tirando, stringe i pali insieme." },
+    { "Tre giri su una diagonale", "Avvolgi la corda tre volte intorno all'incrocio in diagonale, nello stesso verso del nodo di legname." },
+    { "Tre giri sull'altra", "Ora tre giri sull'altra diagonale, a formare una X." },
+    { "Strozzature e chiusura", "Due strozzature tra i pali, intorno ai giri, e chiudi con un nodo parlato su un palo." },
+  } },
+
+{ id = 'treppiede', titolo = 'Legatura a treppiede', sez = 'nodi', livello = 2, tempo = '10 min',
+  intro = "Tre pali legati in cima che si aprono a treppiede: per appendere il pentolino sul fuoco, fare la struttura di un riparo o tenere alto lo zaino.",
+  serve = "Tre pali di lunghezza simile, 3-4 metri di cordino.",
+  passi = {
+    { "Affianca i pali", "Metti i tre pali affiancati a terra, con quello in mezzo rovesciato (la punta grossa dalla parte opposta). Le cime sporgono tutte di una spanna oltre la legatura." },
+    { "Inizia", "Fai un nodo parlato su un palo esterno, vicino alla cima." },
+    { "I giri", "Avvolgi la corda intorno ai tre pali per 6-8 giri, passando sopra e sotto i pali alternati, senza stringere troppo: devono poter ruotare per aprirsi." },
+    { "Le strozzature", "Fai due strozzature in ciascuno dei due spazi tra i pali, intorno ai giri." },
+    { "Chiudi e apri", "Chiudi con un nodo parlato sull'altro palo esterno. Alza il treppiede e apri le gambe, incrociando quello di mezzo: la legatura si stringe da sola.", img = 'treppiede1' },
+  } },
+
+{ id = 'cesoia', titolo = 'Legatura a cesoia', sez = 'nodi', livello = 2, tempo = '5 min',
+  intro = "Due pali legati in cima che si aprono ad A: il bipode per la dorsale di un riparo quando mancano gli alberi, o la testata di una capanna.",
+  serve = "Due pali, 2-3 metri di cordino.",
+  passi = {
+    { "Affianca", "Metti i due pali paralleli, uno accanto all'altro." },
+    { "Inizia", "Fai un nodo parlato (o di legname) su un palo, a una spanna dalle cime." },
+    { "I giri", "Avvolgi 6-8 giri intorno ai due pali insieme, non troppo stretti." },
+    { "Strozzature e chiusura", "Due strozzature tra i pali e un nodo parlato sull'altro palo." },
+    { "Apri ad A", "Apri i pali a forbice: la legatura si stringe. Con due bipodi e un palo di traverso hai il telaio di un riparo." },
+  } },
+
+------------------------------------------------------------------ tarp (altri)
+
+{ id = 'tarp_corde', titolo = 'Preparare il tarp', sez = 'tarp', livello = 1, tempo = '30 min',
+  intro = "Un tarp ben preparato a casa si monta in cinque minuti anche sotto la pioggia, con i guanti, al buio.",
+  serve = "Il tarp, 15 m di cordino da 3-4 mm, 8 picchetti, 2 anelli di cordino sottile per i prusik.",
+  passi = {
+    { "Un cordino per ogni occhiello", "Lega ai quattro angoli e agli occhielli dei lati un cordino da 2 metri con una gassa d'amante. Avvolgili e tienili legati: non si aggrovigliano." },
+    { "La dorsale", "Un cordino lungo 10-12 metri per la dorsale. Un capo già pronto con una gassa d'amante da passare intorno all'albero." },
+    { "I prusik", "Sulla dorsale metti due anelli di cordino sottile con il nodo prusik (vedi Nodi). Agganci lì gli angoli del tarp e li fai scorrere per tenderlo." },
+    { "Tendicavi ai picchetti", "Ai capi dei cordini degli angoli bassi farai un tendicavo intorno al picchetto: così regoli la tensione senza slegare niente." },
+    { "Riporlo", "Arrotola il tarp sulla dorsale, con i cordini dentro. La prossima volta srotoli e tiri." },
+  } },
+
+{ id = 'tarp_a', titolo = 'Tarp a capanna (A)', sez = 'tarp', livello = 1, tempo = '15 min',
+  intro = "Il tarp a cavallo della dorsale, i due lati a terra: una tenda senza fondo. Ripara da pioggia e vento da due lati.",
+  serve = "Tarp, dorsale, 6 picchetti.",
+  passi = {
+    { "La dorsale bassa", "Tendi la dorsale tra due alberi a un metro da terra (o poco più alta della tua spalla da seduto), con il camionista per tenderla bene." },
+    { "A cavallo", "Appoggia il tarp a metà sulla dorsale, con la linea centrale esattamente sopra la corda. Fissa i due occhielli centrali con i prusik.", img = 'tarpa1' },
+    { "Picchetta i lati", "Tira un lato verso terra e picchetta i due angoli, poi l'altro lato. Stessa inclinazione a destra e a sinistra." },
+    { "Tendi", "Regola con i tendicavi finché il telo è liscio. Se un'estremità è verso il vento, abbassala o chiudila con un sacco." , img = 'tarpa2' },
+  } },
+
+{ id = 'tarp_diamante', titolo = 'Tarp a diamante', sez = 'tarp', livello = 2, tempo = '10 min',
+  intro = "Il tarp girato a rombo, con un solo albero: un angolo in alto, quello opposto a terra. Veloce, leggero, perfetto per una persona.",
+  serve = "Tarp quadrato, un albero, 3-4 picchetti, un bastone (facoltativo).",
+  passi = {
+    { "L'angolo alto", "Lega un angolo del tarp all'albero, all'altezza del petto, con due mezzi colli o un tendicavo.", img = 'diam1' },
+    { "L'angolo basso", "Tira l'angolo opposto lontano dall'albero e picchettalo a terra, dalla parte da cui arriva il vento." },
+    { "I due lati", "Tendi i due angoli laterali verso il basso e in fuori, con i cordini ai picchetti. Più li abbassi, più ripara; più li alzi, più spazio hai.", img = 'diam2' },
+    { "Dentro", "Si dorme con la testa verso l'albero, dove il telo è più alto. Con un bastone sotto il centro di un lato guadagni spazio." },
+  } },
+
+{ id = 'tarp_vomere', titolo = 'Tarp a punta (piramide)', sez = 'tarp', livello = 2, tempo = '15 min',
+  intro = "Il 'vomere': tre angoli a terra e uno in alto, appeso a un albero o a un bastone. Chiuso su tre lati, tiene il vento meglio di tutti.",
+  serve = "Tarp quadrato, 4 picchetti, un albero o un bastone lungo 1,3 m.",
+  passi = {
+    { "L'angolo in alto", "Lega un angolo del tarp all'albero a un metro e mezzo, o appoggialo sulla punta di un bastone piantato dritto e tenuto da un tirante.", img = 'vomere1' },
+    { "I due angoli posteriori", "Picchetta i due angoli adiacenti a terra, ben tesi, dalla parte del vento: formano la schiena del riparo." },
+    { "L'angolo davanti", "Il quarto angolo è l'entrata: picchettalo a terra per chiuderti dentro, oppure alzalo con un bastone per fare una veranda.", img = 'vomere2' },
+    { "Sistema", "Tendi i lati con gli occhielli intermedi. Dentro c'è spazio per una persona e lo zaino." },
+  } },
+
+{ id = 'tarp_cucina', titolo = 'Tettoia per stare in piedi', sez = 'tarp', livello = 1, tempo = '15 min',
+  intro = "Il tarp alto e quasi piatto, inclinato: una tettoia sotto cui cucinare, mangiare e aspettare che smetta di piovere.",
+  serve = "Tarp, dorsale, 4 picchetti, due bastoni lunghi 1,5 m (facoltativi).",
+  attenzione = "Il fornelletto sotto il tarp solo se il telo è alto e c'è tanta aria. Mai il fuoco sotto il telo.",
+  passi = {
+    { "La dorsale alta", "Tendi la dorsale tra due alberi più in alto della tua testa." },
+    { "Il lato alto", "Appendi un lato lungo del tarp alla dorsale con i prusik, così che il telo stia tutto da una parte." },
+    { "Il lato basso", "Tira l'altro lato in giù a un metro e mezzo, con i cordini ai picchetti. Deve pendere abbastanza da far scolare la pioggia da quel lato.", img = 'cucina1' },
+    { "Più spazio", "Per alzare il lato basso, mettilo su due bastoni dritti tenuti da tiranti. Togli le pieghe: dove resta una conca, l'acqua si accumula e il telo cede." },
+  } },
+
+{ id = 'tarp_pioggia', titolo = 'Tarp col brutto tempo', sez = 'tarp', livello = 2, tempo = '',
+  intro = "Le regole per restare asciutti con la pioggia battente e il vento forte.",
+  passi = {
+    { "Il lato al vento", "Il lato basso e chiuso del tarp va sempre verso il vento. Se il vento gira, abbassa quel lato fino a terra." },
+    { "Niente conche", "Il telo deve essere teso e in pendenza ovunque. Una conca piena d'acqua pesa chili e può strappare gli occhielli." },
+    { "I gocciolatoi", "La pioggia scende lungo la dorsale e i cordini fino a te. Lega un pezzetto di cordino sulla dorsale appena fuori dal tarp, che pende: l'acqua gocciola lì e non entra." },
+    { "Il terreno", "Mai in una conca o sotto una pendenza da cui scende l'acqua. Meglio un piccolo rilievo, con uno strato di frasche sotto il materassino." },
+    { "Ritendi", "Il telo bagnato si allunga: dopo un'ora di pioggia ritendi i tendicavi. Di notte allentali un poco se fa molto freddo: il nylon gelato si accorcia." },
+  } },
+
+------------------------------------------------------------------ trappole (altre)
+
+{ id = 'paiute', titolo = 'Trappola Paiute', sez = 'trappole', livello = 3, tempo = '1 ora',
+  attenzione = "Solo in una vera emergenza di sopravvivenza: in Italia è vietata. Le mani mai sotto la pietra mentre la armi.",
+  intro = "Una variante della trappola a quattro che usa un cordino: scatta con un tocco leggerissimo ed è più sensibile. Inventata dal popolo Paiute del Nord America.",
+  serve = "Coltello, quattro bastoncini, 20 cm di cordino, una pietra piatta pesante.",
+  passi = {
+    { "I pezzi", "Montante: 25 cm, verticale. Leva: 30 cm, appoggiata in cima al montante. Levetta: 5 cm, legata al cordino. Bastoncino dell'esca: lungo e sottile." },
+    { "La leva", "Lega il cordino a un capo della leva. Appoggia la leva in cima al montante: un capo regge il bordo della pietra, dall'altro pende il cordino." },
+    { "La levetta", "Lega la levetta all'altro capo del cordino e girala intorno al montante: il cordino tirato dalla leva la tiene premuta contro il montante." },
+    { "L'esca", "Incastra il bastoncino dell'esca tra la punta della levetta e il bordo della pietra. Un tocco all'esca libera la levetta, la leva scatta e la pietra cade." },
+    { "Prova e smonta", "Provala più volte con un ramo, da lontano. Controllala spesso e smontala sempre prima di andare via." },
+  } },
+
+{ id = 'molla', titolo = 'Laccio a molla', sez = 'trappole', livello = 3, tempo = '40 min',
+  attenzione = "Solo in una vera emergenza di sopravvivenza: in Italia è vietato. Un ramo in tensione può colpire il viso: lavora di lato.",
+  intro = "Il laccio legato a un ramo flessibile piegato: quando scatta, il ramo si raddrizza e solleva la preda, che non scappa e resta lontano da altri animali.",
+  serve = "Cordino, filo per il cappio, coltello, un alberello flessibile vicino al passaggio, due pioli.",
+  passi = {
+    { "Il grilletto", "Due pioli con una tacca ciascuno che si incastrano tra loro: uno piantato a terra con la tacca verso il basso, l'altro legato al cordino con la tacca verso l'alto." },
+    { "La molla", "Lega il cordino alla cima di un alberello flessibile e piegalo verso il passaggio degli animali." },
+    { "Arma", "Incastra il piolo del cordino sotto quello piantato: la tensione dell'alberello li tiene agganciati." },
+    { "Il cappio", "Al piolo del cordino lega il laccio, aperto sul passaggio come nel tutorial 'Il laccio'. Quando l'animale tira il cappio, i pioli si sganciano." },
+    { "Controlla e smonta", "Controlla almeno due volte al giorno. Prima di andare via, sgancia la molla con un bastone e smonta tutto." },
+  } },
+
+{ id = 'nassa', titolo = 'Nassa per pesci', sez = 'trappole', livello = 2, tempo = '30 min',
+  attenzione = "In Italia pescare con le nasse è vietato senza permesso: solo per l'emergenza.",
+  intro = "Una trappola a imbuto: il pesce entra seguendo l'esca e non trova più l'uscita. La versione più semplice si fa con una bottiglia di plastica.",
+  serve = "Una bottiglia grande di plastica (o rami sottili e cordino), coltello, esca, sassi.",
+  passi = {
+    { "Taglia la bottiglia", "Taglia la bottiglia dove inizia a stringersi. Capovolgi la parte del collo e infilala dentro il corpo: diventa l'imbuto d'entrata.", img = 'nassa1' },
+    { "Fissa e fora", "Fissa l'imbuto con qualche punto di cordino. Fai dei buchi nel corpo, così l'acqua passa e la bottiglia affonda." },
+    { "L'esca", "Dentro metti l'esca: vermi, pane, insetti." },
+    { "Posizionala", "In acqua bassa e calma, vicino alla riva, con l'imbuto verso valle: il pesce risale la corrente. Tienila ferma con dei sassi." },
+    { "Con i rami", "La versione grande si intreccia con rami sottili: un cono d'entrata dentro un cesto più lungo, legati con cordino. Il principio è lo stesso." },
+  } },
+
 
 }

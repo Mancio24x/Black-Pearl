@@ -1,6 +1,6 @@
 # Bivacco — la montagna in tasca, per Xteink X4 Pro
 
-Un'app (InkApp) in italiano per il lettore e-ink **Xteink X4 Pro**, con tre schede. È alla versione 0.2:
+Un'app (InkApp) in italiano per il lettore e-ink **Xteink X4 Pro**, con tre schede. È alla versione 0.3:
 contenuti, disegni e la grafica "taccuino da campo" ci sono; la mappa arriverà dopo.
 
 ![Attrezzatura](art/schermate/1-attrezzatura.png)
@@ -8,7 +8,7 @@ contenuti, disegni e la grafica "taccuino da campo" ci sono; la mappa arriverà 
 | Scheda | Cosa c'è |
 |---|---|
 | **Attrezzatura** | Le 20 voci della lista, nell'ordine in cui si carica lo zaino da 60 L: gli zaini, cosa tieni addosso, il fondo (la notte), il centro contro la schiena (il peso), la cima (pioggia e freddo), tasche e cintura. Ogni voce ha un'icona e si spunta; la sua scheda dice dove va, quanto pesa, perché serve e dà un consiglio. In più ci sono 5 voci consigliate (primo soccorso, telo termico, accendino e acciarino, carta e bussola, fischietto) e la pagina "Come caricare lo zaino". |
-| **Tecniche** | **Sopravvivenza**: S.T.O.P. e le priorità, accendere il fuoco, il bastoncino piumato, coltello e intaglio, riparo con il tarp, capanna di frasche, l'acqua, trovare il nord. **Nodi**: otto, gassa d'amante, piano, parlato, tendicavo, prusik. **Trappole**, solo per un'emergenza e con la legge in testa: la legge, trappola a quattro, laccio, pesca di sopravvivenza. In tutto 18 tutorial, con un passo per schermata. |
+| **Tecniche** | 40 tutorial in quattro sezioni, un passo per schermata. **Bushcraft** (13): S.T.O.P., accendere il fuoco, tipi di fuoco, fuoco Dakota, fuoco ad archetto, bastoncino piumato, spaccare la legna col coltello, coltello e intaglio, gancio per il pentolino, cordino di fibre naturali, capanna di frasche, l'acqua, trovare il nord. **Nodi e legature** (13): otto, gassa d'amante, piano, parlato, due mezzi colli, camionista, bandiera, tendicavo, prusik, legatura quadra, diagonale, a treppiede, a cesoia. **Trappole**, solo per l'emergenza (7): la legge, trappola a quattro, Paiute, laccio, laccio a molla, nassa, pesca. **Tarp** (6): preparare il tarp, a tettoia, a capanna, a diamante, a punta, tettoia per stare in piedi, col brutto tempo. |
 | **Percorso** | Per ora contiene la lista "Prima di partire": a chi l'hai detto, il meteo, l'ora del buio, le batterie, la carta, il 112. La mappa è ancora da progettare. |
 
 ## L'aspetto: taccuino da campo
@@ -33,36 +33,12 @@ L'app rispetta queste regole, e i test le controllano:
 
 ## I disegni dei passaggi
 
-I disegni dei passaggi sono 34, in bianco e nero, raccolti in `art/tutti.png`:
+57 disegni in bianco e nero (`art/tutti.png`) per 22 tutorial: zaino, fuoco, tipi di fuoco, Dakota, archetto,
+bastoncino piumato, batoning, gancio, tarp (tettoia, capanna, diamante, punta, tettoia alta), nord, nodo a
+otto, gassa d'amante, legatura quadra, treppiede, trappola a quattro, nassa.
+I nodi li disegna la funzione `corda` di `tools/disegni.py`, che calcola gli incroci e chi passa sopra.
 
-| Tutorial | Disegni |
-|---|---|
-| zaino | 1 |
-| fuoco | 6 |
-| bastoncino piumato | 4 |
-| tarp | 5 |
-| nord | 4 |
-| nodo a otto | 4 |
-| gassa d'amante | 5 |
-| trappola a quattro | 5 |
-
-I nodi li disegna una funzione apposta, `corda` in `tools/disegni.py`: calcola dove la corda si incrocia e chi
-passa sopra e chi sotto. Per aggiungere un nodo basta descrivere il percorso della corda.
-
-Questi tutorial hanno ancora solo il testo:
-
-- S.T.O.P.
-- coltello e picchetto
-- capanna di frasche
-- acqua
-- nodo piano
-- parlato
-- tendicavo
-- prusik
-- laccio
-- pesca
-
-Per ora la loro miniatura è un pittogramma.
+Gli altri 18 tutorial hanno ancora solo il testo e, come miniatura, un pittogramma.
 
 ## Installarla
 

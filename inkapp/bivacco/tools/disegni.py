@@ -746,8 +746,345 @@ def quattro5(c):
         c.tratto([(x - 20, 70), (x, 140)], 1.0, 0)
 
 
+# ============================================================================ tipi di fuoco
+
+def tipi1(c):
+    terreno(c, 200, ciuffi=4, seme=21)
+    _focolare(c)
+    _tepee(c)
+    fiamma(c, 220, 186, 46, 30)
+
+
+def tipi2(c):
+    terreno(c, 205, ciuffi=4, seme=22)
+    _focolare(c, 220, 196)
+    # la capanna di tronchi: livelli alternati (tronchi di fronte e teste dei tronchi di lato)
+    for liv in range(5):
+        y = 192 - liv * 17
+        if liv % 2 == 0:
+            legno(c, (140, y), (300, y - 2), 14, 160 + liv * 6)
+        else:
+            for x in (150, 290):
+                m = c.ellisse(x, y, 8, 8)
+                c.forma(m, 215, rilievo=2, grana=8, bordo=1.2, tono_bordo=0)
+                c.tratto([(x - 3, y), (x + 3, y)], 0.6, 90)
+    fiamma(c, 220, 175, 70, 50)
+
+
+def tipi3(c):
+    terreno(c, 150, ciuffi=0, seme=23)
+    m = c.rett(0, 150, W, 100)
+    c.forma(m, 215, rilievo=0, grana=10, bordo=0)
+    cx, cy = 220, 190
+    for k in range(5):
+        a = -math.pi / 2 + k * 2 * math.pi / 5 + 0.3
+        x0, y0 = cx + 190 * math.cos(a), cy + 55 * math.sin(a)
+        legno(c, (x0, y0), (cx + 18 * math.cos(a), cy + 6 * math.sin(a)), 16, 150 + k * 10)
+    fiamma(c, cx, cy + 4, 80, 56)
+    for k in range(5):
+        a = -math.pi / 2 + k * 2 * math.pi / 5 + 0.3
+        x0, y0 = cx + 150 * math.cos(a), cy + 44 * math.sin(a)
+        freccia(c, [(x0, y0 - 10), (cx + 70 * math.cos(a), cy + 20 * math.sin(a) - 10)], 1.2, 0, 7)
+
+
+# ============================================================================ fuoco Dakota (in sezione)
+
+def _terra_sezione(c, y=95):
+    terreno(c, y, ciuffi=12, seme=24)
+    m = c.rett(0, y, W, H - y)
+    c.forma(m, 175, rilievo=0, grana=18, bordo=0)
+    c.punti(m, 120, 1.2, 60)
+    c.tratto([(0, y), (W, y)], 1.8, 0)
+
+
+def _buca(c, x0, x1, y0, y1):
+    m = c.rett(x0, y0, x1 - x0, y1 - y0, 6)
+    c.forma(m, 252, rilievo=0, grana=0, bordo=1.4, tono_bordo=0)
+
+
+def dakota1(c):
+    _terra_sezione(c)
+    _buca(c, 250, 330, 92, 210)
+    zolla = c.rett(70, 74, 70, 20, 3)
+    c.forma(zolla, 150, rilievo=2, grana=14, bordo=1.2, tono_bordo=0)
+    for x in range(74, 138, 7):
+        c.tratto([(x, 74), (x + 2, 66)], 0.8, 0)
+    freccia(c, curva((300, 60), (200, 30), (120, 66)), 1.4)
+    c.tratto([(340, 92), (340, 210)], 0.8, 0)
+    c.tratto([(336, 92), (344, 92)], 0.8, 0)
+    c.tratto([(336, 210), (344, 210)], 0.8, 0)
+
+
+def _dakota_base(c):
+    _terra_sezione(c)
+    _buca(c, 250, 330, 92, 210)
+    tunnel = c.poligono([(120, 95), (160, 95), (262, 200), (252, 210), (240, 205)])
+    c.forma(tunnel, 252, rilievo=0, grana=0, bordo=1.4, tono_bordo=0)
+    c.forma(c.rett(252, 96, 76, 112, 5), 252, rilievo=0, grana=0, bordo=0)
+
+
+def dakota2(c):
+    _dakota_base(c)
+    scritta_vento(c, 20, 50)
+    freccia(c, [(130, 102), (220, 192)], 1.6)
+
+
+def dakota3(c):
+    _dakota_base(c)
+    for k in range(4):
+        legno(c, (262 + k * 14, 206), (270 + k * 10, 186), 6, 150, testa=False, venature=False)
+    fiamma(c, 290, 200, 100, 56)
+    legno(c, (230, 92), (350, 92), 9, 140)
+    legno(c, (232, 82), (352, 82), 9, 150)
+    pot = c.rett(258, 40, 64, 40, 6)
+    c.forma(pot, 205, rilievo=6, luce=90, grana=8, bordo=1.4, tono_bordo=0)
+    c.tratto([(258, 44), (322, 44)], 1.0, 0)
+    for k in range(3):
+        freccia(c, [(132 + k * 10, 110 + k * 4), (230 + k * 6, 196)], 1.0, 0, 6)
+
+
+# ============================================================================ archetto
+
+def _tavoletta(c, x, y, w=200):
+    m = c.rett(x, y, w, 20, 3)
+    c.forma(m, 185, rilievo=3, luce=80, grana=12, bordo=1.3, tono_bordo=0)
+    c.forma(c.ellisse(x + 40, y + 4, 9, 4), 40, rilievo=0, grana=0, bordo=0)
+    c.forma(c.poligono([(x + 32, y + 20), (x + 40, y + 6), (x + 48, y + 20)]), 30, rilievo=0, grana=0, bordo=0)
+
+
+def archetto1(c):
+    _tavoletta(c, 30, 190)
+    legno(c, (270, 200), (420, 200), 14, 175)
+    c.forma(c.poligono([(420, 193), (432, 200), (420, 207)]), 175, rilievo=0, grana=8, bordo=1.0, tono_bordo=0)
+    arco = [(40 + t * 360, 120 - 40 * math.sin(math.pi * t)) for t in np.linspace(0, 1, 30)]
+    m = c.tratto_maschera(arco, 9)
+    c.forma(m, 160, rilievo=2, grana=10, bordo=1.0, tono_bordo=0)
+    c.tratto([(42, 120), (220, 106), (398, 120)], 1.4, 0)
+    pietra(c, 220, 40, 40, 20, 160)
+    c.forma(c.ellisse(220, 46, 9, 5), 60, rilievo=0, grana=0, bordo=0)
+
+
+def archetto2(c):
+    terreno(c, 215, ciuffi=4, seme=25)
+    _tavoletta(c, 110, 196, 220)
+    # il piede sulla tavoletta
+    c.forma(c.rett(170, 176, 70, 22, 8), 120, rilievo=4, luce=80, grana=12, bordo=1.3, tono_bordo=0)
+    legno(c, (150, 200), (150, 56), 13, 180, testa=False, venature=False)
+    pietra(c, 150, 46, 30, 14, 160)
+    # l'archetto con il cordino avvolto
+    arco = [(20 + t * 380, 120 - 28 * math.sin(math.pi * t)) for t in np.linspace(0, 1, 30)]
+    m = c.tratto_maschera(arco, 9)
+    c.forma(m, 160, rilievo=2, grana=10, bordo=1.0, tono_bordo=0)
+    c.tratto([(22, 122), (142, 128), (158, 124), (142, 118), (398, 120)], 1.4, 0)
+    freccia(c, [(250, 160), (330, 160)], 1.8)
+    freccia(c, [(250, 160), (170, 160)], 1.8)
+
+
+# ============================================================================ batoning
+
+def _ceppo_e_pezzo(c):
+    terreno(c, 220, ciuffi=6, seme=26)
+    m = c.rett(110, 180, 220, 42, 6)
+    c.forma(m, 165, rilievo=4, luce=80, grana=14, bordo=1.4, tono_bordo=0)
+    c.forma(c.ellisse(220, 180, 110, 12), 220, rilievo=0, grana=8, bordo=1.2, tono_bordo=0)
+    pezzo = c.rett(190, 80, 60, 100, 4)
+    c.forma(pezzo, 175, rilievo=4, luce=90, grana=14, bordo=1.4, tono_bordo=0)
+    c.forma(c.ellisse(220, 80, 30, 7), 225, rilievo=0, grana=6, bordo=1.2, tono_bordo=0)
+
+
+def baton1(c):
+    _ceppo_e_pezzo(c)
+    coltello(c, 90, 76, 0.0, 200)
+
+
+def baton2(c):
+    _ceppo_e_pezzo(c)
+    coltello(c, 90, 96, 0.0, 200)
+    c.tratto([(218, 104), (222, 130), (216, 160), (220, 178)], 1.6, 0)
+    legno(c, (330, 20), (282, 84), 18, 140)
+    freccia(c, [(350, 40), (318, 84)], 1.8)
+
+
+# ============================================================================ gancio per il pentolino
+
+def gancio1(c):
+    terreno(c, 215, ciuffi=6, seme=27)
+    _focolare(c, 220, 206)
+    for x in (90, 350):
+        legno(c, (x, 214), (x, 60), 10, 165, testa=False)
+        legno(c, (x, 72), (x - 16, 48), 8, 165, testa=False, venature=False)
+        legno(c, (x, 72), (x + 16, 48), 8, 165, testa=False, venature=False)
+    legno(c, (70, 62), (372, 62), 10, 150)
+    legno(c, (220, 62), (220, 140), 8, 170, testa=False, venature=False)
+    legno(c, (220, 132), (234, 120), 6, 170, testa=False, venature=False)
+    c.tratto([(200, 160), (220, 126), (240, 160)], 1.6, 0)
+    pot = c.rett(188, 156, 64, 40, 6)
+    c.forma(pot, 205, rilievo=6, luce=90, grana=8, bordo=1.4, tono_bordo=0)
+    fiamma(c, 220, 212, 30, 50)
+
+
+# ============================================================================ legature
+
+def _pali_quadra(c):
+    legno(c, (220, 245), (220, 5), 22, 175, testa=False)
+    legno(c, (60, 130), (380, 130), 20, 165)
+
+
+def _fascia(c, p0, p1, larg=7):
+    corda(c, [p0, p1], larg=larg, capo=2)
+
+
+def quadra1(c):
+    _pali_quadra(c)
+    for k in range(2):
+        _fascia(c, (204, 152 + k * 8), (236, 154 + k * 8))
+    corda(c, [(236, 156), (260, 170), (300, 200), (330, 240)], larg=7, capo=2)
+    freccia(c, curva((300, 130), (330, 100), (300, 80)), 1.4)
+
+
+def quadra2(c):
+    _pali_quadra(c)
+    for k in range(3):
+        _fascia(c, (198 - k * 7, 112), (198 - k * 7, 148))
+        _fascia(c, (242 + k * 7, 112), (242 + k * 7, 148))
+        _fascia(c, (206, 108 - k * 7), (234, 108 - k * 7))
+        _fascia(c, (206, 152 + k * 7), (234, 152 + k * 7))
+
+
+def quadra3(c):
+    quadra2(c)
+    for (x, y) in ((206, 114), (234, 114), (206, 146), (234, 146)):
+        _fascia(c, (x - 6, y - 6), (x + 6, y + 6), 6)
+    freccia(c, curva((300, 60), (270, 70), (250, 100)), 1.4)
+
+
+def treppiede1(c):
+    terreno(c, 220, ciuffi=6, seme=28)
+    _focolare(c, 220, 212)
+    for (x0, x1) in ((80, 228), (360, 212), (220, 220)):
+        legno(c, (x0, 222), (x1, 22), 12, 165, testa=False)
+    for k in range(4):
+        _fascia(c, (206, 46 + k * 6), (234, 46 + k * 6), 6)
+    c.tratto([(220, 70), (220, 140)], 1.4, 0)
+    pot = c.rett(188, 150, 64, 40, 6)
+    c.tratto([(196, 154), (220, 138), (244, 154)], 1.4, 0)
+    c.forma(pot, 205, rilievo=6, luce=90, grana=8, bordo=1.4, tono_bordo=0)
+    fiamma(c, 220, 214, 26, 46)
+
+
+# ============================================================================ nassa
+
+def nassa1(c):
+    # l'acqua
+    m = c.rett(0, 60, W, 190)
+    c.forma(m, 225, rilievo=0, grana=8, bordo=0)
+    for k in range(5):
+        y = 70 + k * 10
+        c.tratto([(x, y + 3 * math.sin(x / 15 + k)) for x in np.linspace(10, 430, 40)], 0.8, 90)
+    sabbia = c.rett(0, 210, W, 40)
+    c.forma(sabbia, 170, rilievo=0, grana=16, bordo=0)
+    c.tratto([(0, 210), (W, 210)], 1.2, 0)
+    # la bottiglia orizzontale, imbuto a sinistra (verso valle)
+    corpo = c.rett(110, 120, 220, 80, 30)
+    c.forma(corpo, 245, rilievo=4, luce=40, grana=3, bordo=1.6, tono_bordo=0)
+    c.tratto([(112, 124), (180, 152), (196, 156), (196, 164), (180, 168), (112, 196)], 1.6, 0)
+    for x in range(220, 320, 18):
+        for y in (140, 178):
+            c.forma(c.ellisse(x, y, 2.5, 2.5), 0, rilievo=0, grana=0, bordo=0)
+    c.forma(c.blob(290, 186, 10, 5, 0.3), 110, rilievo=0, grana=12, bordo=1.0, tono_bordo=0)
+    for x in (100, 340):
+        pietra(c, x, 206, 24, 12, 150)
+    freccia(c, [(40, 160), (100, 160)], 1.8)
+
+
+# ============================================================================ i montaggi del tarp
+
+def _alberello_dietro(c, x=220):
+    m = c.poligono([(x - 14, 0), (x + 14, 0), (x + 18, 215), (x - 18, 215)])
+    c.forma(m, 165, rilievo=6, luce=100, grana=14, bordo=1.2, tono_bordo=0)
+
+
+def tarpa1(c):
+    terreno(c, 215, ciuffi=8, seme=29)
+    _alberello_dietro(c)
+    c.forma(c.ellisse(220, 70, 6, 6), 0, rilievo=0, grana=0, bordo=0)
+    m = c.poligono([(220, 70), (196, 196), (244, 196)])
+    c.forma(m, 200, rilievo=3, luce=40, grana=10, bordo=1.5, tono_bordo=0)
+    freccia(c, [(190, 170), (110, 205)], 1.6)
+    freccia(c, [(250, 170), (330, 205)], 1.6)
+
+
+def tarpa2(c):
+    terreno(c, 215, ciuffi=8, seme=30)
+    _alberello_dietro(c)
+    m = c.poligono([(220, 68), (90, 212), (350, 212)])
+    c.forma(m, 200, rilievo=3, luce=40, grana=10, bordo=1.5, tono_bordo=0)
+    c.tratto([(220, 68), (220, 212)], 0.8, 90)
+    c.forma(c.ellisse(220, 68, 6, 6), 0, rilievo=0, grana=0, bordo=0)
+    for x in (86, 354):
+        _picchetto(c, x, 214)
+    for (a, b) in (((90, 212), (40, 214)), ((350, 212), (400, 214))):
+        c.tratto([a, b], 1.0, 0)
+        _picchetto(c, b[0], 216)
+    omino(c, 220, 214, 46) if False else None
+
+
+def diam1(c):
+    terreno(c, 215, ciuffi=8, seme=31)
+    albero(c, 60)
+    m = c.poligono([(80, 110), (150, 120), (170, 214), (100, 200)])
+    c.forma(m, 200, rilievo=3, luce=40, grana=10, bordo=1.5, tono_bordo=0)
+    corda(c, [(78, 110), (60, 104), (44, 110)], larg=6, capo=2)
+    freccia(c, curva((180, 200), (280, 180), (380, 208)), 1.6)
+
+
+def diam2(c):
+    terreno(c, 215, ciuffi=8, seme=32)
+    albero(c, 60)
+    retro = c.poligono([(80, 110), (300, 150), (390, 210)])
+    c.forma(retro, 150, rilievo=0, grana=12, bordo=1.2, tono_bordo=0)
+    fronte = c.poligono([(80, 110), (210, 212), (390, 210)])
+    c.forma(fronte, 205, rilievo=3, luce=40, grana=10, bordo=1.5, tono_bordo=0)
+    corda(c, [(78, 110), (60, 104), (44, 110)], larg=6, capo=2)
+    c.tratto([(210, 212), (180, 216)], 1.0, 0)
+    _picchetto(c, 176, 216)
+    _picchetto(c, 394, 214)
+
+
+def vomere1(c):
+    terreno(c, 215, ciuffi=8, seme=33)
+    albero(c, 70)
+    m = c.poligono([(92, 80), (160, 100), (140, 212), (100, 200)])
+    c.forma(m, 200, rilievo=3, luce=40, grana=10, bordo=1.5, tono_bordo=0)
+    corda(c, [(90, 80), (70, 74), (54, 80)], larg=6, capo=2)
+    freccia(c, curva((170, 190), (240, 170), (300, 210)), 1.6)
+
+
+def vomere2(c):
+    terreno(c, 215, ciuffi=8, seme=34)
+    albero(c, 70)
+    retro = c.poligono([(92, 80), (380, 212), (150, 212)])
+    c.forma(retro, 150, rilievo=0, grana=12, bordo=1.2, tono_bordo=0)
+    fronte = c.poligono([(92, 80), (260, 214), (380, 212)])
+    c.forma(fronte, 205, rilievo=3, luce=40, grana=10, bordo=1.5, tono_bordo=0)
+    corda(c, [(90, 80), (70, 74), (54, 80)], larg=6, capo=2)
+    for x in (150, 260, 384):
+        _picchetto(c, x, 216)
+
+
+def cucina1(c):
+    _due_alberi(c)
+    corda(c, [(78, 50), (220, 56), (362, 50)], larg=7, capo=2)
+    m = c.poligono([(90, 56), (350, 56), (392, 150), (48, 150)])
+    c.forma(m, 205, rilievo=3, luce=40, grana=10, bordo=1.5, tono_bordo=0)
+    for x in (48, 392):
+        c.tratto([(x, 150), (x + (30 if x > 200 else -30), 214)], 1.0, 0)
+        _picchetto(c, x + (30 if x > 200 else -30), 216)
+    omino(c, 220, 214, 90)
+
+
 # le scene piccole si ingrandiscono ritagliando la tela (x, y, larghezza, altezza; 440:250)
-ZOOM = {'fuoco1': (60, 40, 352, 200), 'fuoco3': (100, 110, 246, 140), 'fuoco4': (40, 50, 352, 200),
+ZOOM = {'tipi1': (40, 50, 352, 200), 'fuoco1': (60, 40, 352, 200), 'fuoco3': (100, 110, 246, 140), 'fuoco4': (40, 50, 352, 200),
         'fuoco5': (60, 50, 352, 200), 'fuoco6': (60, 45, 352, 200)}
 
 DISEGNI = {
@@ -758,5 +1095,10 @@ DISEGNI = {
     'nord1': nord1, 'nord2': nord2, 'nord3': nord3, 'nord4': nord4,
     'otto1': otto1, 'otto2': otto2, 'otto3': otto3, 'otto4': otto4,
     'gassa1': gassa1, 'gassa2': gassa2, 'gassa3': gassa3, 'gassa4': gassa4, 'gassa5': gassa5,
+    'tipi1': tipi1, 'tipi2': tipi2, 'tipi3': tipi3, 'dakota1': dakota1, 'dakota2': dakota2, 'dakota3': dakota3,
+    'archetto1': archetto1, 'archetto2': archetto2, 'baton1': baton1, 'baton2': baton2, 'gancio1': gancio1,
+    'quadra1': quadra1, 'quadra2': quadra2, 'quadra3': quadra3, 'treppiede1': treppiede1, 'nassa1': nassa1,
+    'tarpa1': tarpa1, 'tarpa2': tarpa2, 'diam1': diam1, 'diam2': diam2, 'vomere1': vomere1, 'vomere2': vomere2,
+    'cucina1': cucina1,
     'quattro1': quattro1, 'quattro2': quattro2, 'quattro3': quattro3, 'quattro4': quattro4, 'quattro5': quattro5,
 }

@@ -2,7 +2,7 @@
 --
 -- Tre schede in basso:
 --   Attrezzatura  la lista nell'ordine in cui si carica lo zaino, da spuntare; ogni voce ha dove va e perché
---   Tecniche      Sopravvivenza, Nodi, Trappole: tutorial passo passo, con un disegno per passo
+--   Tecniche      Bushcraft, Nodi (e legature), Trappole, Tarp: tutorial passo passo, con i disegni
 --   Percorso      per ora la lista "Prima di partire": la mappa arriverà dopo
 -- I testi sono in attrezzatura.lua e tecniche.lua; i disegni in data/img.txt (tools/make_art.py),
 -- immagini.lua dice in che riga è ciascuno.
@@ -17,7 +17,7 @@ local TAB_Y = 736
 local BTN_Y, BTN_H = 716, 64
 local IMG_W, IMG_H = 440, 250
 
-local SEZIONI = { { 'sopravvivenza', 'Sopravvivenza' }, { 'nodi', 'Nodi' }, { 'trappole', 'Trappole' } }
+local SEZIONI = { { 'sopravvivenza', 'Bushcraft' }, { 'nodi', 'Nodi' }, { 'trappole', 'Trappole' }, { 'tarp', 'Tarp' } }
 local LIVELLI = { 'facile', 'medio', 'esperto' }
 local PRIMA = {
   { 'detto', "Ho lasciato detto a qualcuno dove vado e quando rientro" },
@@ -465,7 +465,7 @@ local function di_sezione()
 end
 
 local TEC_RIGA = 88
-local SEZ_W = { 176, 116, 146 }     -- le larghezze delle tre sezioni nell'immagine sez_*
+local SEZ_W = { 124, 94, 118, 104 } -- le larghezze delle sezioni nell'immagine sez_* (tools/grafica.py)
 
 local function meta_tut(t)
   return #t.passi .. ' passi · ' .. LIVELLI[t.livello] .. (t.tempo ~= '' and (' · ' .. t.tempo) or '')
@@ -477,7 +477,7 @@ local function disegna_tecniche(gg)
   if disegno(gg, 'banner_tecniche', 0, 0) then y = BANNER_H + 6
   else testo(gg, M, 16, 'Tecniche', 'large'); y = 64 end
   if not disegno(gg, 'sez_' .. sez, M, y) then
-    for k, x in ipairs(SEZIONI) do testo(gg, M + (k - 1) * 150, y + 12, (sez == x[1] and '> ' or '') .. x[2], 'small') end
+    for k, x in ipairs(SEZIONI) do testo(gg, M + (k - 1) * 110, y + 12, (sez == x[1] and '> ' or '') .. x[2], 'small') end
   end
   local x = M
   for k, sx in ipairs(SEZIONI) do

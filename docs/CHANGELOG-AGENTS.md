@@ -712,3 +712,14 @@ Completed the editor suggestion strip and the Network destination, including gra
   `data/img.txt` + `data/ui.txt` (each < 1 MB) and `src/immagini.lua` = name -> {file, row}.
 - `src/main.lua`: screens rewritten to the design; image cache LRU of 7 (host keeps 8); gear checkbox moved right.
 - Tests: `tools/test_app.py` 9 passed on the simulator (new: at most 7 images per screen). Not checked on a device.
+
+## 2026-11-23 — inkapp/bivacco 0.3: more techniques
+
+- Owner request: more traps, more bushcraft, knots, lashings, tarp methods.
+- `src/tecniche.lua`: 18 → 40 tutorials; new 4th section "tarp" (the old lean-to moved there), "Sopravvivenza"
+  shown as "Bushcraft". New: tipi di fuoco, Dakota, archetto, batoning, cordame, gancio; due mezzi colli, camionista,
+  bandiera, legature quadra/diagonale/treppiede/cesoia; preparare il tarp, A, diamante, punta, tettoia alta, brutto
+  tempo; Paiute, laccio a molla, nassa (traps emergency-only, legal warning kept).
+- 22 new drawings in `tools/disegni.py`; `tools/grafica.py` 4-section selector, section pictogram as fallback
+  thumbnail. `data/img.txt` now 632 KB (limit 1 MB per file: next additions may need a second file).
+- Tests: `tools/test_app.py` 9 passed on the simulator (all 40 tutorials, all steps). Not checked on a device.

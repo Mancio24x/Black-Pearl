@@ -175,7 +175,15 @@ def _pitto_stop(L, E, G, T):
     G(30, 6, 58, 6, 74, 22, 74, 46, 58, 60, 30, 60, 14, 46, 14, 22)
 
 
-def miniatura(tut_id, img=None):
+SEZ_PITTO = {
+    'sopravvivenza': lambda L, E, G, T: (L(44, 60, 22, 36, 30, 18, 38, 30, 44, 6, 58, 30, 54, 48, 44, 60, w=4),),
+    'nodi': lambda L, E, G, T: (E(16, 10, 50, 44, w=5), E(38, 22, 72, 56, w=5), L(4, 60, 18, 46, w=5)),
+    'trappole': lambda L, E, G, T: (L(44, 60, 44, 8, w=5), L(14, 44, 76, 44, w=5), L(20, 54, 60, 14, w=5)),
+    'tarp': lambda L, E, G, T: (L(6, 58, 44, 8, 82, 58, w=5), L(44, 8, 44, 58, w=3), L(2, 60, 86, 60, w=4)),
+}
+
+
+def miniatura(tut_id, img=None, sez=None):
     """la miniatura 88x64 di un tutorial: dal suo disegno se ce l'ha, sennò un pittogramma"""
     def f():
         if img is not None:
@@ -186,7 +194,9 @@ def miniatura(tut_id, img=None):
             d = ImageDraw.Draw(im2)
             d.text(_P(44, 33), 'STOP', font=_font(TITOLO, 18), fill=255, anchor='mm')
             return _netto(im2, 88, 64)
-        return _pitto(PITTOGRAMMI[tut_id])
+        if tut_id in PITTOGRAMMI:
+            return _pitto(PITTOGRAMMI[tut_id])
+        return _pitto(SEZ_PITTO[sez or 'sopravvivenza'])
     return f
 
 
@@ -239,12 +249,22 @@ def tabbar(attiva):
     return _netto(im, W, H)
 
 
+def _ico_tarp(d, x, y, colore):
+    d.line(_P(x + 1, y + 24, x + 13, y + 4, x + 25, y + 24), fill=colore, width=int(2.6 * SS), joint='curve')
+    d.line(_P(x + 13, y + 4, x + 13, y + 24), fill=colore, width=int(1.6 * SS))
+    d.line(_P(x, y + 26, x + 26, y + 26), fill=colore, width=int(2 * SS))
+
+
+SEZ_W = [124, 94, 118, 104]
+
+
 def sezioni(attiva):
     W, H = 440, 50
     im, d = _tela(W, H)
-    voci = [('sopravvivenza', 'Sopravvivenza', _ico_fuoco), ('nodi', 'Nodi', _ico_nodo), ('trappole', 'Trappole', _ico_trappola)]
+    voci = [('sopravvivenza', 'Bushcraft', _ico_fuoco), ('nodi', 'Nodi', _ico_nodo), ('trappole', 'Trappole', _ico_trappola),
+            ('tarp', 'Tarp', _ico_tarp)]
     d.rounded_rectangle(_P(1, 1, W - 1, H - 1), radius=24 * SS, outline=0, width=int(2 * SS))
-    larghezze = [176, 116, 146]
+    larghezze = SEZ_W
     f = _font(FORTE, 14)
     x0 = 0
     for k, (id_, nome, ico) in enumerate(voci):
@@ -299,7 +319,7 @@ def bottone(testo, w, freccia=False, spunta=False, h=64):
 
 GRAFICA = {
     'banner_attrezzatura': lambda: banner('ATTREZZATURA', 'DAL FONDO ALLA CIMA DELLO ZAINO', 3),
-    'banner_tecniche': lambda: banner('TECNICHE', 'SOPRAVVIVERE · NODI · TRAPPOLE', 7),
+    'banner_tecniche': lambda: banner('TECNICHE', 'BUSHCRAFT · NODI · TRAPPOLE · TARP', 7),
     'banner_percorso': lambda: banner('PERCORSO', 'PRIMA DI PARTIRE · LA MAPPA', 11),
     'tab_attrezzatura': lambda: tabbar('attrezzatura'),
     'tab_tecniche': lambda: tabbar('tecniche'),
@@ -307,6 +327,7 @@ GRAFICA = {
     'sez_sopravvivenza': lambda: sezioni('sopravvivenza'),
     'sez_nodi': lambda: sezioni('nodi'),
     'sez_trappole': lambda: sezioni('trappole'),
+    'sez_tarp': lambda: sezioni('tarp'),
     'btn_avanti': bottone('Avanti', 278, freccia=True),
     'btn_fine': bottone('Fine', 278, spunta=True),
     'btn_inizia': bottone('Inizia', 440, freccia=True),
