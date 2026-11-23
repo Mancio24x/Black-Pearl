@@ -18,6 +18,8 @@ from PIL import Image, ImageDraw  # noqa: E402
 import arte  # noqa: E402
 import disegni  # noqa: E402
 import grafica  # noqa: E402
+import svg_esporta  # noqa: E402
+import svg_passi  # noqa: E402
 
 
 def nomi_usati():
@@ -73,30 +75,64 @@ def tutorial_ids():
     return out
 
 
+MAX_FILE = 900000          # il lettore apre file di dati fino a 1 MB
+
+
+def scrivi_a_pezzi(base, righe):
+    """righe (nome, b64) in base1.txt, base2.txt... ognuno sotto MAX_FILE; restituisce {nome: (file, riga)}"""
+    for f in os.listdir(os.path.join(APP, 'data')):
+        if re.match(base + r'\d*\.txt$', f):
+            os.remove(os.path.join(APP, 'data', f))
+    dove, gruppo, n_file = {}, [], 1
+    def chiudi():
+        nonlocal gruppo, n_file
+        if gruppo:
+            nome_file = f'{base}{n_file}.txt'
+            scrivi(nome_file, [r for _n, r in gruppo])
+            for k, (n, _r) in enumerate(gruppo, 1):
+                dove[n] = (nome_file, k)
+            gruppo, n_file = [], n_file + 1
+    for n, r in righe:
+        L = max([len(x) for _y, x in gruppo] + [len(r)]) + 1
+        if gruppo and L * (len(gruppo) + 1) > MAX_FILE:
+            chiudi()
+        gruppo.append((n, r))
+    chiudi()
+    return dove
+
+
 def main():
     nomi = nomi_usati()
-    mancano = [n for n in nomi if n not in disegni.DISEGNI]
+    mancano = [n for n in nomi if n not in disegni.DISEGNI and n not in svg_passi.PASSI]
     if mancano:
         raise SystemExit(f'manca il disegno di: {mancano}')
     os.makedirs(os.path.join(APP, 'data'), exist_ok=True)
     os.makedirs(os.path.join(APP, 'art', 'ui'), exist_ok=True)
-    # 1. i disegni dei passi (e le intestazioni, grandi anche loro): img.txt
+    os.makedirs(os.path.join(APP, 'art', 'svg_png'), exist_ok=True)
+    vettoriali = [n for n in nomi if n in svg_passi.PASSI]
+    if vettoriali:
+        svg_esporta.esporta(vettoriali)
+    # 1. i disegni dei passi e le intestazioni: img1.txt, img2.txt...
     grandi, piccole, imgs = [], [], []
     tele = {}
     for i, n in enumerate(nomi):
-        c = arte.Tela(disegni.W, disegni.H, seme=i + 1)
-        disegni.DISEGNI[n](c)
-        tele[n] = c
-        z = disegni.ZOOM.get(n)
-        img = c.finale(disegni.W, disegni.H, scatola=z) if z else c.finale()
-        img.save(os.path.join(APP, 'art', n + '.png'))
+        if n in disegni.DISEGNI:
+            c = arte.Tela(disegni.W, disegni.H, seme=i + 1)
+            disegni.DISEGNI[n](c)
+            tele[n] = c
+            z = disegni.ZOOM.get(n)
+            img = c.finale(disegni.W, disegni.H, scatola=z) if z else c.finale()
+            img.save(os.path.join(APP, 'art', n + '.png'))
+        else:
+            img = svg_esporta.a_un_bit(n)
+            img.save(os.path.join(APP, 'art', 'svg_png', n + '.png'))
         grandi.append((n, b64(img)))
         imgs.append(img)
     for n in ('banner_attrezzatura', 'banner_tecniche', 'banner_percorso'):
         img = grafica.GRAFICA[n]()
         img.save(os.path.join(APP, 'art', 'ui', n + '.png'))
         grandi.append((n, b64(img)))
-    # 2. la grafica piccola: ui.txt
+    # 2. la grafica piccola: ui1.txt...
     for n, f in grafica.GRAFICA.items():
         if n.startswith('banner_'):
             continue
@@ -104,24 +140,29 @@ def main():
         img.save(os.path.join(APP, 'art', 'ui', n + '.png'))
         piccole.append((n, b64(img)))
     for tid, prima, sez in tutorial_ids():
-        if prima:
+        if prima and prima in tele:
             c = tele[prima]
             z = disegni.ZOOM.get(prima) or (0, 0, disegni.W, disegni.H)
             x, y, w, h = z
             nw = h * 88 / 64
             img = c.finale(88, 64, scatola=(x + (w - nw) / 2, y, nw, h))
+        elif prima:
+            g = Image.open(os.path.join(svg_esporta.CACHE, prima + '.png')).convert('L')
+            nw = g.height * 88 / 64
+            x0 = (g.width - nw) / 2
+            g = g.crop((int(x0), 0, int(x0 + nw), g.height)).resize((88, 64), Image.LANCZOS)
+            img = arte.atkinson(g, 50, 215)
         else:
             img = grafica.miniatura(tid, sez=sez)()
         img.save(os.path.join(APP, 'art', 'ui', 'th_' + tid + '.png'))
         piccole.append(('th_' + tid, b64(img)))
-    tg = scrivi('img.txt', [r for _n, r in grandi])
-    tp = scrivi('ui.txt', [r for _n, r in piccole])
+    dove = scrivi_a_pezzi('img', grandi)
+    dove.update(scrivi_a_pezzi('ui', piccole))
     with open(os.path.join(APP, 'src', 'immagini.lua'), 'w', encoding='utf-8', newline='\n') as f:
         f.write('-- GENERATO da tools/make_art.py: dove sta ogni immagine (file in data/, numero di riga)\nreturn {\n')
-        for k, (n, _r) in enumerate(grandi, 1):
-            f.write(f"  {n} = {{ 'img.txt', {k} }},\n")
-        for k, (n, _r) in enumerate(piccole, 1):
-            f.write(f"  {n} = {{ 'ui.txt', {k} }},\n")
+        for n, _r in grandi + piccole:
+            fl, k = dove[n]
+            f.write(f"  {n} = {{ '{fl}', {k} }},\n")
         f.write('}\n')
     icona().save(os.path.join(APP, 'icon.png'))
     col = 3
@@ -130,8 +171,11 @@ def main():
     for k, im in enumerate(imgs):
         foglio.paste(im, ((k % col) * 450, (k // col) * 260))
     foglio.save(os.path.join(APP, 'art', 'tutti.png'))
-    print(f'img.txt {len(grandi)} immagini, {tg} byte; ui.txt {len(piccole)} immagini, {tp} byte')
-    assert tg < 1000000 and tp < 1000000, 'un file di dati supera 1 MB: il lettore non lo apre'
+    for f in sorted(os.listdir(os.path.join(APP, 'data'))):
+        dim = os.path.getsize(os.path.join(APP, 'data', f))
+        print(f'data/{f}: {dim} byte')
+        assert dim < 1000000, f'{f} supera 1 MB: il lettore non lo apre'
+    print(f'{len(grandi)} immagini grandi ({len(vettoriali)} vettoriali), {len(piccole)} piccole')
 
 
 if __name__ == '__main__':
