@@ -1,0 +1,10 @@
+{
+  "app_id": "bivacco",
+  "display_name": "Bivacco",
+  "version": "0.1.0",
+  "author": "Leo",
+  "description": "La montagna in tasca: l'attrezzatura nell'ordine in cui si carica lo zaino, le tecniche di sopravvivenza, i nodi e le trappole d'emergenza passo passo con i disegni, e la lista per partire.",
+  "entry": "index.lua",
+  "api": "2.0",
+  "permissions": []
+}

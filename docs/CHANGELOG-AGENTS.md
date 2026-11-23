@@ -686,3 +686,18 @@ Completed the editor suggestion strip and the Network destination, including gra
   step text fits, dose scaling, timers survive restart and alert, diary, filters, paging, dates, side keys).
 - **Not checked on a device**: install (key of current firmware), accented letters and ½ in the device font,
   `rect` radius / `circle` options, image decoding of the 1-bit PNGs, keep_awake.
+
+## 2026-11-23 — inkapp: "Bivacco", mountain app for Xteink X4 Pro (foundations, v0.1)
+
+- Owner request: start a mountain app with 3 screens: Attrezzatura (the owner's 20 items "in the right
+  order"), Tecniche (bushcraft: fire, shelter, carving, water, north; knots; traps; step-by-step with
+  pictures), Percorso (map: to be designed later).
+- New folder `inkapp/bivacco/`, same structure and tools as `ai-fornelli` (copied, not shared, to keep the
+  two apps independent). `src/attrezzatura.lua` (packing order bottom→top, + 5 suggested safety items),
+  `src/tecniche.lua` (18 tutorials), `src/main.lua`, `tools/disegni.py` (34 step drawings; a rope renderer
+  that finds crossings and draws over/under), `tools/make_art.py`, `tools/test_app.py`.
+- Decisions: "correct order" = packing order of the 60 L pack. Traps presented as emergency-only with the
+  Italian law (L. 157/1992) first. Percorso is a placeholder with a "before you leave" checklist.
+- Tests: `tools/test_app.py` 8 tests passed on the simulator (every tutorial and step, text fits, under 900
+  draw commands, checklist persistence, paging, sections, keys). Not checked on a device.
+- Open: drawings missing for 10 tutorials (listed in the README); the map; device check as for Ai Fornelli.
