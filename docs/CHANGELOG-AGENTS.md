@@ -669,3 +669,20 @@ Completed the editor suggestion strip and the Network destination, including gra
   two `Note()` built across a clock second differ (`creationDate`); not touched.
 - **Not checked on a device**: the whole screen, the camera scan, picking a picture, the brightness, R8 release
   build. No colour or note per card yet.
+
+## 2026-11-23 — inkapp: "Ai Fornelli", recipe app for Xteink X4 Pro
+
+- Owner request: an Italian version of the InkApp "Stove Side" for the owner's X4 Pro, with the 5 recipes of
+  "Quaderno delle Ricette Sburrate" plus at least 10 classic grandma recipes (12 added), and own illustrations.
+- New self-contained folder `inkapp/ai-fornelli/` (Lua InkApp, API 2.0); the Android app is not touched.
+  `src/ricette.lua` (17 recipes, scalable doses, step timers), `src/main.lua` (Oggi, Ricette, Ricetta, Consigli,
+  Cucina with timers, Cucinati calendar), `tools/arte.py` + `tools/piatti.py` + `tools/make_art.py` (1-bit
+  Atkinson-dithered dish drawings → `data/foto_*.txt`, `icon.png`), `tools/anteprima.py` (lupa simulator that
+  renders 480x800 screens), `tools/test_app.py`, `tools/build.py` → `dist/aifornelli.xtapp`.
+- Decisions: own name and look (not a copy of Stove Side). Packaging, API knowledge and `gamekit` come from the
+  community repo omer-faruq-xteink/touch-licorice-apps (MIT, commit 04d46f0), vendored in `inkapp/ai-fornelli/vendor/`.
+  Text restricted to Latin-1. No sound on the device: timers flash the screen and show a dialog.
+- Tests: `tools/test_app.py` 12 tests passed on the simulator (every recipe and step drawn, under 900 draw commands,
+  step text fits, dose scaling, timers survive restart and alert, diary, filters, paging, dates, side keys).
+- **Not checked on a device**: install (key of current firmware), accented letters and ½ in the device font,
+  `rect` radius / `circle` options, image decoding of the 1-bit PNGs, keep_awake.

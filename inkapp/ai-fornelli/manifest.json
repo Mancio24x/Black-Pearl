@@ -1,0 +1,10 @@
+{
+  "app_id": "aifornelli",
+  "display_name": "Ai Fornelli",
+  "version": "1.0.0",
+  "author": "Chef Leo",
+  "description": "Il ricettario da tenere accanto ai fornelli: le ricette di Chef Leo e i classici della nonna, un piatto al giorno, passo dopo passo con i timer, e il calendario di quello che hai cucinato.",
+  "entry": "index.lua",
+  "api": "2.0",
+  "permissions": []
+}
